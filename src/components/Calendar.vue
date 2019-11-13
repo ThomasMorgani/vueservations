@@ -86,17 +86,17 @@
 </template>
 
 <script>
-import {mapState } from 'vuex'
-import eventDetailsCard from '@/components/eventDetailCard'
+import { mapState } from "vuex";
+import eventDetailsCard from "@/components/eventDetailCard";
 export default {
-  name: 'Calendar',
+  name: "Calendar",
   components: {
     eventDetailsCard
   },
   data: () => ({
     today: new Date().toISOString().substring(0, 10),
     focus: new Date().toISOString().substring(0, 10),
-    type: 'month',
+    type: "month",
     typeToLabel: {
       month: "Month",
       week: "Week",
@@ -105,11 +105,11 @@ export default {
     },
     name: null,
     details: null,
-       navDrawer: false,
+    navDrawer: false,
     start: null,
     end: null,
     calendarMonthHeight: 1000,
-    color: '#000066',
+    color: "#000066",
     currentlyEditing: null,
     selectedEvent: {},
     selectedElement: null,
@@ -122,48 +122,49 @@ export default {
       filter: state => state.filter
     }),
     title() {
-      const { start, end } = this
+      const { start, end } = this;
       if (!start || !end) {
-        return 'Default Month'
+        return "Default Month";
       }
-      const startMonth = this.monthFormatter(start)
-      const endMonth = this.monthFormatter(end)
-      const suffixMonth = startMonth === endMonth ? '' : endMonth
-      const startYear = start.year
-      const endYear = end.year
-      const suffixYear = startYear === endYear ? '' : endYear
+      const startMonth = this.monthFormatter(start);
+      const endMonth = this.monthFormatter(end);
+      const suffixMonth = startMonth === endMonth ? "" : endMonth;
+      const startYear = start.year;
+      const endYear = end.year;
+      const suffixYear = startYear === endYear ? "" : endYear;
 
-      const startDay = start.day + this.nth(start.day)
-      const endDay = end.day + this.nth(end.day)
+      const startDay = start.day + this.nth(start.day);
+      const endDay = end.day + this.nth(end.day);
 
       switch (this.type) {
-        case 'month':
-          return `${startMonth} ${startYear}`
-        case 'week':
-        case '4day':
-          return `${startMonth} ${startDay} ${startYear} - ${suffixMonth} ${endDay} ${suffixYear}`
-        case 'day':
-          return `${startMonth} ${startDay} ${startYear}`
+        case "month":
+          return `${startMonth} ${startYear}`;
+        case "week":
+        case "4day":
+          return `${startMonth} ${startDay} ${startYear} - ${suffixMonth} ${endDay} ${suffixYear}`;
+        case "day":
+          return `${startMonth} ${startDay} ${startYear}`;
       }
-      return ''
+      return "";
     },
-    monthFormatter () {
+    monthFormatter() {
       return this.$refs.calendar.getFormatter({
-        timeZone: 'UTC', month: 'long',
-      })
-    },
+        timeZone: "UTC",
+        month: "long"
+      });
+    }
   },
   methods: {
     initializeApp() {
-      console.log('get events method')
-            this.axios
-        .get("https://eipl.org/reservations/api/initialize_page_data")
+      console.log("get events method");
+      this.axios
+        .get(`${this.$apiSettings.baseUrl}/initialize_page_data`)
         .then(response => {
-          console.log(response)
+          console.log(response);
           if (response.data && response.data.reservations) {
             // response.data.reservations.forEach(res => this.events.push({...res, name: res.title, start: res.startDate, end: res.endDate}))
-            this.events = response.data.reservations
-            }
+            this.events = response.data.reservations;
+          }
           // if (response.data) {
           //   this.device = [];
           //   this.events = [];
@@ -182,127 +183,125 @@ export default {
           // }
         })
         .catch(e => {
-          console.log(e)
+          console.log(e);
         });
     },
     eventAdd() {
-      console.log('eventAdd')
+      console.log("eventAdd");
     },
     eventDelete(eid) {
       //expects event id
-      console.log(eid)
+      console.log(eid);
     },
     eventEdit(eid) {
       //expects event id
-      console.log(eid)
-      console.log(this.getEventById(eid))
-      let event = this.getEventById(eid)
+      console.log(eid);
+      console.log(this.getEventById(eid));
+      let event = this.getEventById(eid);
       if (event) {
-        console.log('event found open modal')
-        } else {
-          console.log('error: event not found')
+        console.log("event found open modal");
+      } else {
+        console.log("error: event not found");
       }
     },
     contextDay(e) {
-      console.log(e)
+      console.log(e);
     },
     formatEventPreview(event) {
       //this will format each reservation until we do so in backend
-      let formattedEvent = {}
-      console.log(event)
-      switch(parseInt(event.itemCategory)) {
+      let formattedEvent = {};
+      console.log(event);
+      switch (parseInt(event.itemCategory)) {
         case 1:
-        formattedEvent = {
-          title: event.title,
-          id: event.id,
-          class: {
-            color: event.classes
-          },
-          details: {
-            'Item': event.device,
-            'First Name': event.patronInfo.first,
-            'Last Name': event.patronInfo.last,
-            'Barcode': event.patronInfo.barcode,
-            'Start Date': event.startDate,
-            'End Date': event.endDate,
-            'Notes': event.Notes
-          }
-        }
-        return formattedEvent
-        default:
           formattedEvent = {
-            title: event.title || '',
-            id: event.id || null,
+            title: event.title,
+            id: event.id,
             class: {
-              color: event.classes || 'primary'
+              color: event.classes
             },
             details: {
-              'Details': 'Unknown Device Category. '
+              Item: event.device,
+              "First Name": event.patronInfo.first,
+              "Last Name": event.patronInfo.last,
+              Barcode: event.patronInfo.barcode,
+              "Start Date": event.startDate,
+              "End Date": event.endDate,
+              Notes: event.Notes
             }
-          }
-          return formattedEvent
+          };
+          return formattedEvent;
+        default:
+          formattedEvent = {
+            title: event.title || "",
+            id: event.id || null,
+            class: {
+              color: event.classes || "primary"
+            },
+            details: {
+              Details: "Unknown Device Category. "
+            }
+          };
+          return formattedEvent;
       }
     },
     getColor(e) {
-      return e.classes
+      return e.classes;
     },
 
     getEventById(eid) {
-      const eventKey = this.events.findIndex(event => event.id === eid)
-      return eventKey > -1 ? this.events[eventKey] : null
+      const eventKey = this.events.findIndex(event => event.id === eid);
+      return eventKey > -1 ? this.events[eventKey] : null;
     },
     getEventKeyById(eid) {
-      return this.events.findIndex(event => event.id === eid)
+      return this.events.findIndex(event => event.id === eid);
     },
-    getEventColor (event) {
-      return event.color
+    getEventColor(event) {
+      return event.color;
     },
-    setToday () {
-      this.focus = this.today
+    setToday() {
+      this.focus = this.today;
     },
-    prev () {
-      this.$refs.calendar.prev()
+    prev() {
+      this.$refs.calendar.prev();
     },
-    next () {
-      this.$refs.calendar.next()
+    next() {
+      this.$refs.calendar.next();
     },
-    showEvent ({ nativeEvent, event }) {
+    showEvent({ nativeEvent, event }) {
       const open = () => {
-        this.selectedEvent = this.formatEventPreview(event)
-        this.selectedElement = nativeEvent.target
-        setTimeout(() => this.selectedOpen = true, 10)
-      }
+        this.selectedEvent = this.formatEventPreview(event);
+        this.selectedElement = nativeEvent.target;
+        setTimeout(() => (this.selectedOpen = true), 10);
+      };
       if (this.selectedOpen) {
-        this.selectedOpen = false
+        this.selectedOpen = false;
         if (this.selectedElement !== nativeEvent.target) {
-          setTimeout(open, 10)
+          setTimeout(open, 10);
         }
       } else {
-        open()
+        open();
       }
-      nativeEvent.stopPropagation()
+      nativeEvent.stopPropagation();
     },
-    updateRange ({ start, end }) {
+    updateRange({ start, end }) {
       // You could load events from an outside source (like database) now that we have the start and end dates on the calendar
-      this.start = start
-      this.end = end
+      this.start = start;
+      this.end = end;
     },
-    nth (d) {
+    nth(d) {
       return d > 3 && d < 21
-        ? 'th'
-        : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
+        ? "th"
+        : ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"][d % 10];
     },
-    viewDay ({ date }) {
-      this.focus = date
-      this.type = 'day'
+    viewDay({ date }) {
+      this.focus = date;
+      this.type = "day";
     }
   },
   mounted() {
-    this.initializeApp()
+    this.initializeApp();
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

@@ -1,36 +1,29 @@
-import Vue from 'vue'
-import App from './App.vue'
-import vuetify from './plugins/vuetify'
-import vueTextAreaAutosize from 'vue-textarea-autosize'
+import Vue from "vue";
+import App from "./App.vue";
+import store from "./store"; //vuex
+import vuetify from "./plugins/vuetify";
 
-import axios from 'axios'
-import VueAxios from 'vue-axios'
+import axios from "axios";
+import VueAxios from "vue-axios";
 
-Vue.use(VueAxios, axios)
+import vueTextAreaAutosize from "vue-textarea-autosize";
 
-import firebase from 'firebase/app'
-import 'firebase/firestore'
-import store from './store'
+import { apiSettings, firebaseSettings } from "./.env.local";
 
-Vue.use(vueTextAreaAutosize)
+import firebase from "firebase/app";
+import "firebase/firestore";
 
-Vue.config.productionTip = false
+firebase.initializeApp({ ...firebaseSettings });
+export const db = firebase.firestore();
 
-firebase.initializeApp({
-  apiKey: 'AIzaSyBA4yqiF_8hpxmOjmDjvThTfUfjPtXTw1s',
-  authDomain: 'vueservation.firebaseapp.com',
-  databaseURL: 'https://vueservation.firebaseio.com',
-  projectId: 'vueservation',
-  storageBucket: 'vueservation.appspot.com',
-  messagingSenderId: '331265235328',
-  appId: '1:331265235328:web:20a27e13567bf594154965',
-  measurementId: 'G-ML4Z9XXW1Q'
-})
+Vue.prototype.$apiSettings = apiSettings;
 
-export const db = firebase.firestore()
+Vue.use(VueAxios, axios);
+Vue.use(vueTextAreaAutosize);
 
+Vue.config.productionTip = false;
 new Vue({
   vuetify,
   store,
   render: h => h(App)
-}).$mount('#app')
+}).$mount("#app");
