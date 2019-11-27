@@ -1,39 +1,50 @@
 <template>
   <v-app>
-    <FilterDrawer :value="navDrawer"></FilterDrawer>
     <v-app-bar color="primary" app dark clipped-right>
-      <v-toolbar-title>{{title}}</v-toolbar-title>
+      <v-toolbar-title>{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-format-list-bulleted-type</v-icon>
+      <v-btn icon @click="setView">
+        <v-icon>{{
+          view === 'Calendar' ? 'mdi-format-list-bulleted-type' : 'mdi-calendar'
+        }}</v-icon>
       </v-btn>
-      <v-btn icon @click="navDrawer = !navDrawer">
-        <v-icon>{{navDrawer ? 'mdi-filter-remove' : 'mdi-filter'}}</v-icon>
-      </v-btn>
+
       <!-- <v-btn icon>
         <v-icon>mdi-bookmark-plus-outline</v-icon>
       </v-btn>-->
     </v-app-bar>
     <v-content>
-      <Calendar></Calendar>
+      <component :is="view"></component>
+      <!-- <Calendar></Calendar> -->
     </v-content>
   </v-app>
 </template>
 
 <script>
-import Calendar from '@/components/Calendar'
-import FilterDrawer from '@/components/FilterDrawer'
+import Calendar from '@/components/calendar/Calendar'
+import Catalog from '@/components/catalog/catalog'
 
 export default {
   name: 'App',
   components: {
     Calendar,
-    FilterDrawer
+    Catalog
   },
   data: () => ({
     title: 'EIPL RESERVATIONS',
-    navDrawer: false
+
+    view: 'Calendar'
     //
   }),
-};
+  methods: {
+    setView() {
+      this.view = this.view === 'Calendar' ? 'Catalog' : 'Calendar'
+      localStorage.setItem('lastView', this.view)
+    }
+  },
+  created() {
+    this.view = localStorage.getItem('lastView') ? localStorage.getItem('lastView') : 'Calendar'
+    this.$store.dispatch('initializeApp', this.$apiSettings)
+  }
+}
 </script>

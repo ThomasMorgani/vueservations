@@ -1,16 +1,7 @@
 <template>
-  <v-navigation-drawer
-    app
-    clipped
-    right
-    :value="value"
-    @input="$emit('input')"
-    width="350"
-  >
+  <v-navigation-drawer app clipped right :value="value" @input="$emit('input')" width="350">
     <v-card class="d-flex flex-column pa-5 justify-start" height="100%">
-      <span class="title align-center primary--text">
-        <v-icon left color="primary">mdi-filter</v-icon>FILTERS
-      </span>
+      <span class="title align-center primary--text">FILTERS</span>
       <v-text-field
         solo
         rounded
@@ -60,47 +51,45 @@
   </v-navigation-drawer>
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 
 export default {
-  props: ["events", "value"],
+  props: ['events', 'value'],
   data: () => ({
-    filterCategorySelect: [],
     filterSearchInput: null
   }),
   computed: {
     ...mapState({
-      categories: state => state.eventsFilterCategories
+      categories: state => state.eventsFilterCategories,
+      filterCategorySelect: state => state.filterCategorySelect
     }),
     categorySelect: {
       get() {
-        return this.$store.state.filterCategorySelect;
+        return this.filterCategorySelect
       },
       set(val) {
-        this.$store.commit("categorySelect", val);
+        this.$store.commit('eventsFilterCategorySelect', val)
       }
     },
     dateRangeText() {
-      return this.dateRange.length === 2
-        ? this.dateRange.join(" ~ ")
-        : "select range above";
+      return this.dateRange.length === 2 ? this.dateRange.join(' ~ ') : 'select range above'
     },
     dateRange: {
       get() {
-        return this.$store.state.eventsFilterDateRange;
+        return this.$store.state.eventsFilterDateRange
       },
       set(val) {
-        this.$store.commit("eventsFilterDateRange", val);
+        this.$store.commit('eventsFilterDateRange', val)
       }
     },
     searchField: {
       get() {
-        return this.$store.state.eventsFilterSearchbox;
+        return this.$store.state.eventsFilterSearchbox
       },
       set(val) {
-        this.$store.commit("eventsFilterSearchbox", val);
+        this.$store.commit('eventsFilterSearchbox', val)
       }
     }
   }
-};
+}
 </script>
