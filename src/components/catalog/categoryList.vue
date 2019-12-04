@@ -30,6 +30,7 @@
           v-model="categorySelect"
           :multiple="catalogView === 'overview'"
           color="primary"
+          :key="'ig' + catalogView"
         >
           <v-list-item v-for="(category, i) in categoryList" :key="i">
             <v-list-item-avatar :color="category.color"> </v-list-item-avatar>
@@ -128,6 +129,13 @@ export default {
     },
     setMode(mode) {
       this.mode = this.mode === mode ? 'search' : mode;
+    }
+  },
+  created() {
+    console.log('category list created');
+    //set category filter back to array if overview to statisfy multiselect requirement
+    if (!Array.isArray(this.categorySelect)) {
+      this.categorySelect = [];
     }
   }
 };

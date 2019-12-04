@@ -17,12 +17,21 @@
       <component :is="view"></component>
       <!-- <Calendar></Calendar> -->
     </v-content>
+    <v-footer color="primary" app dark clipped-right>
+      <v-spacer></v-spacer>
+      <v-btn icon>
+        <v-icon>mdi-help-circle-outline</v-icon>
+      </v-btn>
+      <v-btn icon>
+        <v-icon>mdi-settings-outline</v-icon>
+      </v-btn>
+    </v-footer>
   </v-app>
 </template>
 
 <script>
-import Calendar from '@/components/calendar/Calendar'
-import Catalog from '@/components/catalog/catalog'
+import Calendar from '@/components/calendar/Calendar';
+import Catalog from '@/components/catalog/catalog';
 
 export default {
   name: 'App',
@@ -38,13 +47,15 @@ export default {
   }),
   methods: {
     setView() {
-      this.view = this.view === 'Calendar' ? 'Catalog' : 'Calendar'
-      localStorage.setItem('lastView', this.view)
+      this.view = this.view === 'Calendar' ? 'Catalog' : 'Calendar';
+      localStorage.setItem('lastView', this.view);
     }
   },
   created() {
-    this.view = localStorage.getItem('lastView') ? localStorage.getItem('lastView') : 'Calendar'
-    this.$store.dispatch('initializeApp', this.$apiSettings)
+    this.view = localStorage.getItem('lastView')
+      ? localStorage.getItem('lastView')
+      : 'Calendar';
+    this.$store.dispatch('initializeApp', this.$apiSettings);
   }
-}
+};
 </script>

@@ -60,17 +60,19 @@
       >
         <categoryEdit
           @cancel="categoryEditCancel"
-          :key="String(categoryEditting)"
+          :key="'cEdit' + String(categoryEditting)"
         ></categoryEdit>
       </v-dialog>
-    </v-col>
-    <v-col cols="12">
       <v-dialog
         v-model="modalCatalogitemEdit"
         persistent
         max-width="500px"
         transition="dialog-transition"
       >
+        <catalogItemEdit
+          @cancel="catalogItemEditCancel"
+          :key="'ciEdit' + String(catalogItemEditting)"
+        ></catalogItemEdit>
       </v-dialog>
     </v-col>
   </v-row>
@@ -79,12 +81,14 @@
 <script>
 import { mapState } from 'vuex';
 import catalog from '@/views/catalog/catalog';
+import catalogItemEdit from '@/components/catalog/catalogItemEdit';
 import categoryEdit from '@/components/catalog/categoryEdit';
 import category from '@/views/catalog/category';
 import overview from '@/views/catalog/overview';
 export default {
   components: {
     catalog,
+    catalogItemEdit,
     category,
     categoryEdit,
     overview
@@ -106,6 +110,7 @@ export default {
   computed: {
     ...mapState({
       catalogView: state => state.catalogView,
+      catalogItemEditting: state => state.catalogItemEditting,
       categoryEditting: state => state.categoryEditting,
       modalCatalogitemEdit: state => state.modalCatalogitemEdit,
       modalCategoryEdit: state => state.modalCategoryEdit
@@ -128,6 +133,10 @@ export default {
       console.log('categoryAdd');
       this.$store.dispatch('categoryEdit', null);
       this.$store.dispatch('toggleModalEditCategory');
+    },
+    catalogItemEditCancel() {
+      console.log('categoryEditCancel');
+      this.editCatalogItemModal = false;
     },
     categoryEditCancel() {
       console.log('categoryEditCancel');

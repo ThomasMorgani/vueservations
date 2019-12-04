@@ -1,7 +1,19 @@
-<template> <h1>catalog</h1></template>
+<template>
+  <v-row justify="center">
+    <v-col cols="12" md="9" lg="8" xl="6">
+      <catalogItemList></catalogItemList>
+    </v-col>
+  </v-row>
+</template>
 
 <script>
-export default {};
+import catalogItemList from '@/components/catalog/catalogItemList';
+
+export default {
+  components: {
+    catalogItemList
+  }
+};
 </script>
 
 <style></style>

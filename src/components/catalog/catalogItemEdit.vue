@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title class="justify-center title primary--text">
-      {{ id ? 'EDIT CATEGORY' : 'ADD CATEGORY' }}
+      {{ id ? 'EDIT ITEM' : 'ADD ITEM' }}
     </v-card-title>
     <v-card-text>
       <form>
@@ -42,13 +42,12 @@
             <v-row class="justify-center align-center">
               <v-col cols="12" class="align-center">
                 <p class="font-weight-bold text-center">
-                  WARNING: You are about to delete the category called "{{
+                  WARNING: You are about to delete the catalog item called "{{
                     name
                   }}".
                 </p>
                 <p class=" text-center">
-                  All catalog items under this category will be set to the
-                  configured default category of "[default name]"
+                  All current reservations for this item will be removed."
                 </p>
               </v-col>
             </v-row>
@@ -94,7 +93,7 @@
 import { mapState } from 'vuex';
 import filters from '@/modules/filters';
 export default {
-  name: 'categoryEdit',
+  name: 'catalogItemEdit',
   data: () => ({
     color: 'primary',
     id: null,
@@ -107,7 +106,7 @@ export default {
   computed: {
     ...mapState({
       categories: state => state.categories,
-      categoryEditting: state => state.categoryEditting
+      catalogItemEditting: state => state.categoryEditting
     }),
     dataChanged() {
       return (

@@ -1,72 +1,97 @@
 <template>
-  <v-expansion-panel>
-    <v-expansion-panel-header>
-      <v-layout row wrap align-center>
-        <v-flex
-          xs4
-          sm2
-          class="align-content-center justify-content-center pa-2"
-        >
+  <v-expansion-panel @change="isActive = !isActive">
+    <v-expansion-panel-header class="pa-2">
+      <v-row dense justify-start>
+        <v-col cols="2" align-self="center">
           <v-img
             :src="thumbnailSrc ? thumbnailSrc : null"
             contain
             :max-height="thumbnailMaxHeight"
           ></v-img>
-        </v-flex>
-        <v-flex xs8 sm10>
-          <v-layout column class="justify-start align-start">
-            <v-flex class="text-xs-left font-weight-medium title">
-              <a
-                @click.native.stop
-                target="_blank"
-                :href="item.catalogUrl"
-                v-html="item.name"
-              ></a>
-            </v-flex>
-            <v-flex class="text-xs-left "
-              ><p
+        </v-col>
+        <v-col cols="10">
+          <v-row dense class="display-flex align-center justify-start">
+            <v-chip
+              label
+              small
+              v-html="item.abbreviation"
+              class="font-weight-bold ma-2"
+            >
+            </v-chip>
+
+            <a v-html="item.name" class="font-weight-medium title"></a>
+          </v-row>
+
+          <v-row dense class="display-flex align-start justify-start">
+            <v-col class="text-xs-left ">
+              <p
                 v-html="item.categoryName"
                 class="font-weight-light font-italic subheading text-capitalize"
+                style="display: inline;"
               ></p
-            ></v-flex>
-            <v-flex class="text-xs-left body-1 pa-2">
-              <div
-                v-if="item.description"
-                class="descFlex caption"
-                v-html="
-                  isActivePanel
-                    ? item.description
-                    : item.description.substring(0, 200) + '...'
+            ></v-col>
+          </v-row>
+          <v-row dense class="display-flex align-start justify-start">
+            <v-col class="text-xs-left">
+              <p
+                class="caption body-1 pa-2"
+                :class="!isActive ? 'text-truncate' : ''"
+                v-html="item.description"
+              ></p>
+            </v-col>
+          </v-row>
+          <v-row dense align="center" justify="start">
+            <!-- STATUS enabled, disabled, blocked, unk-->
+            <v-card flat class="d-flex align-center text-left grow">
+              <v-icon
+                :color="
+                  statusData[item.status].color || statusData.unknown.color
                 "
-              ></div>
-            </v-flex>
-            <!-- <template v-if="item.vuekey === expandedPanel"> -->
-            <template v-if="isActivePanel">
-              <v-flex class="text-xs-left">
-                <font class="font-weight-bold">GENRE:</font>
-                <font
-                  v-for="(category, catKey) in item.categories"
-                  :key="catKey"
-                  >{{
-                    catKey === item.categories.length - 1
-                      ? category
-                      : catergory + ','
-                  }}</font
-                >
-              </v-flex>
-              <v-flex>
-                <font class="font-weight-bold">LENGTH:</font>
-                <font>{{ item.length }}</font>
-              </v-flex>
-              <v-flex>
-                <font class="font-weight-bold">PUBLISHING:</font>
-                <font>{{ item.publisher }}, {{ item.publishedDate }}</font>
-              </v-flex>
-            </template>
-          </v-layout>
-        </v-flex>
-      </v-layout>
+                v-text="statusData[item.status].icon || statusData.unknown.icon"
+              ></v-icon>
+              <p
+                v-text="statusData[item.status].text"
+                :class="
+                  ` ml-1 font-weight-bold ${statusData[item.status].color ||
+                    statusData.unknown.color}--text`
+                "
+              ></p>
+            </v-card>
+            <!-- CHECKOUT STATUS available, reserved, disabled-->
+            <v-card flat class="d-flex align-center text-left grow">
+              <v-icon
+                :color="statusData.available.color || statusData.unknown.color"
+                v-text="statusData.available.icon || statusData.unknown.icon"
+              ></v-icon>
+              <p
+                v-text="statusData.available.text"
+                :class="
+                  ` ml-1 font-weight-bold ${statusData.available.color ||
+                    statusData.unknown.color}--text`
+                "
+              ></p>
+            </v-card>
+            <!-- LAST CHECKOUT date, never-->
+            <v-card flat class="d-flex align-center text-left grow">
+              <v-icon color="primary" v-text="'mdi-history'"></v-icon>
+              <p
+                v-text="'10/21/2019'"
+                class="ml-1 font-weight-bold primary--text"
+              ></p>
+            </v-card>
+          </v-row>
+        </v-col>
+      </v-row>
     </v-expansion-panel-header>
+    <v-expansion-panel-content>
+      <v-row dense justify-start>
+        <v-col cols="2" align-self="center"> </v-col>
+        <v-col cols="10" align-self="center">
+          <v-divider></v-divider>
+          <p class="subheading font-weight-bold">DETAILS:</p>
+        </v-col>
+      </v-row>
+    </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
 
@@ -80,12 +105,15 @@ export default {
       type: Object,
       required: true
     },
-    isActivePanel: {
-      type: Boolean,
-      required: false,
-      default: false
+    statusData: {
+      type: Object,
+      required: true
     }
   },
+  data: () => ({
+    isActive: false,
+    loading: null
+  }),
   computed: {
     ...mapState({
       categories: state => state.categories

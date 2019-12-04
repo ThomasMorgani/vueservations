@@ -6,6 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     catalogItems: [],
+    catalogItemEditting: null, //category id ? set id,
     catalogView: 'overview',
     categories: [],
     categoryEditting: null, //category id ? set id,
@@ -39,7 +40,7 @@ export default new Vuex.Store({
       return catalogItems;
     },
     eventsDisplayed(state, getters) {
-      console.log(getters.categoriesDisplayed);
+      // console.log(getters.categoriesDisplayed);
       let events = state.events;
       if (getters.categoriesDisplayed.length > 0) {
         events = events.filter(event => {
@@ -61,6 +62,10 @@ export default new Vuex.Store({
     },
     categoryEditting(state, data) {
       state.categoryEditting = data;
+    },
+    categoryUpdate(state, data) {
+      //data expects: {key: state.category key, value: state.category value}
+      Vue.set(state.categories, data.key, data.value);
     },
     eventsFilterCategorySelect(state, val) {
       state.eventsFilterCategorySelect = val;
@@ -139,7 +144,7 @@ export default new Vuex.Store({
     categoryEdit({ commit }, data) {
       commit('categoryEditting', data);
     },
-    categoryEditSave({ commit, dispatch }, data) {
+    categoryEditSave({ commit, dispatch, state }, data) {
       console.log('data', data);
       return new Promise((resolve, reject) => {
         dispatch('callApi', {
@@ -148,11 +153,16 @@ export default new Vuex.Store({
         })
           .then(res => {
             console.log('res', res);
-            if (data.isNew) {
-              data.id = res.data;
-              commit('categoryAdd', data);
-            } else {
-              //update category
+            if (res.status === 'success') {
+              if (data.isNew) {
+                data.id = res.data;
+                commit('categoryAdd', data);
+              } else {
+                const catKey = state.categories.findIndex(
+                  el => el.id === data.id
+                );
+                commit('categoryUpdate', { key: catKey, value: data });
+              }
             }
             console.log(res);
             resolve(res);
