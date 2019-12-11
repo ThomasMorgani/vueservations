@@ -6,7 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     catalogItems: [],
-    catalogItemEditting: null, //category id ? set id,
+    catalogitemEditting: null, //category id ? set id,
     catalogView: 'overview',
     categories: [],
     categoryEditting: null, //category id ? set id,
@@ -51,6 +51,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    catalogitemEditting(state, data) {
+      state.catalogitemEditting = data;
+    },
     catalogView(state, data) {
       state.catalogView = data;
     },
@@ -79,6 +82,9 @@ export default new Vuex.Store({
     setStateValue(state, data) {
       //data expects: {key: state key, value: state value}
       state[data.key] = data.value;
+    },
+    toggleModalCatalogitemEdit(state, data) {
+      state.modalCatalogitemEdit = data;
     },
     toggleModalEditCategory(state, data) {
       state.modalCategoryEdit = data;
@@ -118,6 +124,9 @@ export default new Vuex.Store({
           }
         );
       });
+    },
+    catalogitemEditting({ commit }, data) {
+      commit('catalogitemEditting', data);
     },
     categoryDelete({ commit, dispatch, state }, data) {
       console.log(data);
@@ -172,6 +181,9 @@ export default new Vuex.Store({
             reject(err);
           });
       });
+    },
+    toggleModalCatalogitemEdit({ commit, state }) {
+      commit('toggleModalCatalogitemEdit', !state.modalCatalogitemEdit);
     },
     toggleModalEditCategory({ commit, state }) {
       commit('toggleModalEditCategory', !state.modalCategoryEdit);

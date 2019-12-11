@@ -58,10 +58,7 @@
         max-width="500px"
         transition="dialog-transition"
       >
-        <categoryEdit
-          @cancel="categoryEditCancel"
-          :key="'cEdit' + String(categoryEditting)"
-        ></categoryEdit>
+        <categoryEdit :key="'cEdit' + String(categoryEditting)"></categoryEdit>
       </v-dialog>
       <v-dialog
         v-model="modalCatalogitemEdit"
@@ -70,8 +67,13 @@
         transition="dialog-transition"
       >
         <catalogItemEdit
-          @cancel="catalogItemEditCancel"
-          :key="'ciEdit' + String(catalogItemEditting)"
+          :key="
+            `ciEdit${String(
+              catalogItemEditting && catalogItemEditting.id
+                ? catalogItemEditting.id
+                : 'none'
+            )}`
+          "
         ></catalogItemEdit>
       </v-dialog>
     </v-col>
@@ -99,8 +101,6 @@ export default {
       color: 'primary',
       name: null
     },
-    editCategoryModal: false,
-    editCatalogItemModal: false,
     viewLabels: {
       overview: 'OVERVIEW',
       catalog: 'CATALOG',
@@ -110,7 +110,7 @@ export default {
   computed: {
     ...mapState({
       catalogView: state => state.catalogView,
-      catalogItemEditting: state => state.catalogItemEditting,
+      catalogItemEditting: state => state.catalogitemEditting,
       categoryEditting: state => state.categoryEditting,
       modalCatalogitemEdit: state => state.modalCatalogitemEdit,
       modalCategoryEdit: state => state.modalCategoryEdit
@@ -133,19 +133,6 @@ export default {
       console.log('categoryAdd');
       this.$store.dispatch('categoryEdit', null);
       this.$store.dispatch('toggleModalEditCategory');
-    },
-    catalogItemEditCancel() {
-      console.log('categoryEditCancel');
-      this.editCatalogItemModal = false;
-    },
-    categoryEditCancel() {
-      console.log('categoryEditCancel');
-      this.editCategoryModal = false;
-      this.editCategoryData = {
-        id: null,
-        color: 'primary',
-        name: null
-      };
     }
   }
 };

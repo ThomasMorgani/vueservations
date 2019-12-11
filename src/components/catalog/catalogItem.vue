@@ -35,7 +35,7 @@
             <v-col class="text-xs-left">
               <p
                 class="caption body-1 pa-2"
-                :class="!isActive ? 'text-truncate' : ''"
+                :class="!isActive ? '' : ''"
                 v-html="item.description"
               ></p>
             </v-col>
@@ -88,7 +88,26 @@
         <v-col cols="2" align-self="center"> </v-col>
         <v-col cols="10" align-self="center">
           <v-divider></v-divider>
-          <p class="subheading font-weight-bold">DETAILS:</p>
+
+          <v-row justify-space-between>
+            <v-col>
+              <p class="title font-weight-bold primary--text">DETAILS</p>
+            </v-col>
+
+            <v-col class="text-right">
+              <v-btn text icon color="warning" @click="edit">
+                <v-icon color="warning">mdi-pencil</v-icon>
+              </v-btn>
+            </v-col>
+            <v-col cols="12" text-center>
+              <template v-if="item.customFields">
+                CUSTOM FIELDS HERE
+              </template>
+              <template v-else>
+                NO FIELDS
+              </template>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-expansion-panel-content>
@@ -140,6 +159,15 @@ export default {
         'https://www.eipl.org/newsite/static/images/generic/music_cd_art_not_found.png'
         ? 50
         : 100;
+    }
+  },
+  methods: {
+    edit() {
+      console.log('edit', this.item);
+      this.$store.dispatch('catalogitemEditting', this.item);
+      setTimeout(() => {
+        this.$store.dispatch('toggleModalCatalogitemEdit');
+      }, 500);
     }
   }
 };

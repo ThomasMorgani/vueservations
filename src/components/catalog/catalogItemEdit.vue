@@ -5,20 +5,8 @@
     </v-card-title>
     <v-card-text>
       <form>
-        <v-row class="justify-center align-center">
-          <v-col cols="2">
-            <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
-              <template v-slot:activator="{ on }">
-                <v-avatar v-on="on" :color="color"> </v-avatar>
-              </template>
-              <v-color-picker
-                v-model="color"
-                class="ma-2"
-                hide-inputs
-              ></v-color-picker>
-            </v-menu>
-          </v-col>
-          <v-col>
+        <v-row align="center" justify="center" dense>
+          <v-col cols="12">
             <v-text-field
               v-model="name"
               label="Name"
@@ -26,6 +14,100 @@
               textarea
               :error-messages="nameAvailable"
             ></v-text-field>
+          </v-col>
+          <v-col cols="2" class="text-left">
+            <v-card
+              flat
+              class="d-flex flex-column align-start justify-center pa-1"
+            >
+              <p class="mb-0">Color</p>
+              <div>
+                <v-menu
+                  :close-on-content-click="false"
+                  :nudge-width="200"
+                  offset-x
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-avatar tile v-on="on" :color="color"> </v-avatar>
+                  </template>
+                  <v-color-picker
+                    v-model="color"
+                    class="ma-2"
+                    hide-inputs
+                  ></v-color-picker>
+                </v-menu>
+              </div>
+            </v-card>
+          </v-col>
+          <v-col cols="10" class="text-left">
+            <v-text-field
+              v-model="abbreviation"
+              label="Abbreviation"
+              name="abbr"
+              textarea
+              :error-messages="abbreviationAvailable"
+            ></v-text-field
+          ></v-col>
+          <v-col cols="12">
+            <v-textarea
+              v-model="description"
+              label="Decription"
+              auto-grow
+              dense
+              outlined
+              rows="4"
+              class="mt-4"
+            >
+            </v-textarea>
+          </v-col>
+          <v-col cols="6">
+            <v-select
+              v-model="categoryName"
+              :items="categories"
+              item-text="name"
+              item-value="name"
+              label="Category"
+            ></v-select>
+          </v-col>
+          <v-col cols="6">
+            <v-select
+              label="Status"
+              :items="statusOptions"
+              v-model="status"
+            ></v-select>
+          </v-col>
+          <v-col cols="12">
+            IMAGE UPLOAD
+          </v-col>
+          <v-col cols="12">
+            <v-card outlined class="pa-2">
+              <v-row justify="space-between" no-gutters="">
+                <v-col cols="8">
+                  <span class="title primary--text">ADDITIONAL DETAILS</span>
+                </v-col>
+                <v-col class="text-right">
+                  <v-btn flat icon color="warning">
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                  <v-btn flat icon color="primary">
+                    <v-icon>mdi-plus</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+              <template v-for="field in customFields">
+                <v-row :key="field + 'rw'" align="center">
+                  <v-col class="subheadin primary--text font-weight-bold">{{
+                    field.name
+                  }}</v-col>
+                  <v-col>{{ field.value }}</v-col>
+                  <v-col
+                    ><v-icon small>{{
+                      field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye'
+                    }}</v-icon></v-col
+                  >
+                </v-row>
+              </template>
+            </v-card>
           </v-col>
         </v-row>
       </form>
@@ -91,30 +173,41 @@
 
 <script>
 import { mapState } from 'vuex';
-import filters from '@/modules/filters';
 export default {
   name: 'catalogItemEdit',
   data: () => ({
     color: 'primary',
+    customFields: [],
+    defaultItem: {
+      abbreviation: null,
+      categoryName: null,
+      customFields: [],
+      id: null,
+      description: null,
+      name: null,
+      status: null
+    },
     id: null,
     loading: false,
     name: null,
     modalConfirmDelete: false,
-    originalName: null,
-    originalColor: 'primary'
+    status: null,
+    statusOptions: ['blocked', 'enabled', 'disabled']
   }),
   computed: {
     ...mapState({
-      categories: state => state.categories,
-      catalogItemEditting: state => state.categoryEditting
+      catalogItems: state => state.catalogItems,
+      catalogItemEditting: state => state.catalogitemEditting,
+      categories: state => state.categories
     }),
     dataChanged() {
-      return (
-        this.name !== this.originalName || this.color !== this.originalColor
-      );
+      return true;
+    },
+    abbreviationAvailable() {
+      return null;
     },
     nameAvailable() {
-      const nameMatches = this.categories.find(
+      const nameMatches = this.catalogItems.find(
         el =>
           el.name.toLowerCase() === String(this.name).toLowerCase() &&
           el.id !== this.id
@@ -135,7 +228,7 @@ export default {
     cancel() {
       // this.resetForm();
       this.loading = null;
-      this.$store.dispatch('toggleModalEditCategory');
+      this.$store.dispatch('toggleModalCatalogitemEdit');
     },
     resetForm() {
       this.color = this.$vuetify.theme.primary || 'primary';
@@ -198,14 +291,10 @@ export default {
     }
   },
   created() {
-    if (this.categoryEditting) {
-      const data = filters.categoryById(this.categoryEditting, this.categories);
-      this.color = data.color;
-      this.id = data.id;
-      this.name = data.name;
-      //SET INITIAL VALUES TO KEEP TRACK OF
-      this.originalColor = data.color;
-      this.originalName = data.name;
+    if (this.catalogItemEditting) {
+      for (let item in this.catalogItemEditting) {
+        this[item] = this.catalogItemEditting[item];
+      }
     }
   },
   mounted() {}

@@ -87,7 +87,8 @@ export default {
           this.categories
         );
         catalogItem.categoryName = category.name || 'MISC';
-        // return prep[category.name](catalogItem); //can remove
+        // catalogItem.customFields = cata
+
         return prep.catalogItem(catalogItem);
       } else {
         console.log('no cat');

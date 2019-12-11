@@ -4,6 +4,10 @@ const catalogItem = item => {
   return {
     abbreviation: item.abbreviation || 'EIPL',
     categoryName: item.categoryName || 'MISC',
+    customFields:
+      item.custom_fields && item.custom_fields.length > 0
+        ? item.custom_fields
+        : null,
     description: item.description || '',
     id: item.id,
     name: item.name || '',
