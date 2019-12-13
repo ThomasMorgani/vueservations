@@ -1,0 +1,258 @@
+<template>
+  <v-card>
+    <v-card-title class="justify-center title primary--text">
+      {{ catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS' }}
+    </v-card-title>
+    <v-card-text>
+      <template v-for="field in fieldsDisplayed">
+        <v-card text outlined :key="field.objectKey + 'row'" class="pa-3 mb-1">
+          <v-row dense align="center">
+            <v-col cols="8" class="pt-0">
+              <p class="title font-weight-bold primary--text mb-0">
+                {{ fields[field.objectKey].name }}
+              </p>
+            </v-col>
+            <v-col cols="4" class="text-right pt-0">
+              <v-btn
+                small
+                icon
+                color="error"
+                :disabled="!isEditting(field.objectKey)"
+                @click="deleteField(field.objectKey)"
+                class="mr-2"
+                ><v-icon>mdi-trash-can</v-icon></v-btn
+              >
+              <v-btn
+                small
+                icon
+                color="warning"
+                @click="editField(field.objectKey)"
+                ><v-icon>{{
+                  isEditting(field.objectKey) ? 'mdi-pencil-off' : 'mdi-pencil'
+                }}</v-icon></v-btn
+              >
+            </v-col>
+          </v-row>
+          <v-row dense v-if="!isEditting(field.objectKey)">
+            <v-col cols="12">
+              <v-row align="center" dense>
+                <v-col
+                  class="subheading primary--text font-weight-bold d-flex shrink py-0"
+                  >Value:
+                </v-col>
+                <v-col>{{ field.value }}</v-col>
+              </v-row>
+              <!-- <v-row align="center" dense>
+                <v-col
+                  class="subheading primary--text font-weight-bold d-flex shrink py-0"
+                  >Type:
+                </v-col>
+                <v-col>{{ field.type }}</v-col>
+              </v-row> -->
+              <v-row align="center" dense>
+                <v-col
+                  class="subheading primary--text font-weight-bold d-flex shrink py-0"
+                  >Visibility:
+                </v-col>
+                <v-col>{{
+                  field.internal === '1' ? 'internal' : 'public'
+                }}</v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row dense v-else>
+            <v-col cols="12">
+              <v-combobox
+                v-model="fields[field.objectKey].name"
+                :items="fieldsAvailable"
+                label="Name"
+              >
+              </v-combobox>
+            </v-col>
+            <v-col cols="5">
+              <v-select
+                v-model="fields[field.objectKey].type"
+                :items="fieldTypes"
+                label="Type"
+              >
+              </v-select>
+            </v-col>
+            <v-spacer></v-spacer>
+            <v-col cols="5">
+              <v-select
+                v-model="fields[field.objectKey].internal"
+                :items="visibilityTypes"
+                label="Visibility"
+              >
+              </v-select>
+            </v-col>
+            <v-col cols="12">
+              <template v-if="fields[field.objectKey].type === 'bool'">
+                <v-select
+                  v-model="fields[field.objectKey].value"
+                  :items="boolTypes"
+                  label="Value"
+                >
+                </v-select>
+              </template>
+              <template v-else>
+                <v-text-field
+                  v-model="fields[field.objectKey].value"
+                  outlined
+                  label="Value"
+                  :type="
+                    fields[field.objectKey].type === 'int' ? 'number' : 'text'
+                  "
+                >
+                </v-text-field>
+              </template>
+            </v-col>
+          </v-row>
+        </v-card>
+      </template>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn text small color="primary" @click="addField">ADD</v-btn>
+      <v-spacer></v-spacer>
+      <v-btn text small color="primary" @click="cancel">CANCEL</v-btn>
+      <v-btn
+        text
+        small
+        color="primary"
+        :disabled="saveDisabled"
+        :loading="loading === 'save'"
+        @click="saveFields"
+        >SAVE</v-btn
+      >
+    </v-card-actions>
+  </v-card>
+</template>
+
+<script>
+import { mapState } from 'vuex';
+
+export default {
+  name: 'catalogItemEditFields',
+  data: () => ({
+    boolTypes: [
+      {
+        value: '0',
+        text: 'False'
+      },
+      {
+        value: '1',
+        text: 'True'
+      }
+    ],
+    fields: {},
+    fieldsEditting: [],
+    fieldsOriginal: {},
+    loading: null,
+    fieldsAvailable: ['Serial', 'Barcode', 'Brand'],
+    fieldTemplate: {
+      abbreviation: null,
+      internal: null,
+      name: 'New Field',
+      type: null,
+      value: null
+    },
+    fieldTypes: [
+      {
+        value: 'int',
+        text: 'Number'
+      },
+      {
+        value: 'text',
+        text: 'Text'
+      },
+      {
+        value: 'bool',
+        text: 'True/False'
+      }
+    ],
+    visibilityTypes: [
+      {
+        value: '0',
+        text: 'Public'
+      },
+      {
+        value: '1',
+        text: 'Internal'
+      }
+    ]
+  }),
+  computed: {
+    ...mapState({
+      catalogItemEditting: state => state.catalogitemEditting,
+      catalogitemFieldsEditting: state => state.catalogitemFieldsEditting
+    }),
+    fieldsDisplayed() {
+      let fields = [];
+      Object.keys(this.fields).forEach(key =>
+        fields.push({ ...this.fields[key], objectKey: key })
+      );
+      return fields;
+    },
+    saveDisabled() {
+      return false;
+    }
+  },
+  methods: {
+    cancel() {
+      this.$store.dispatch('toggleModalCatalogitemEditCustomFields');
+      this.reset();
+    },
+    addField() {
+      const newKey = Object.keys(this.fields).length + 1;
+      this.$set(this.fields, newKey, this.fieldTemplate);
+      this.editField(newKey);
+    },
+    deleteField(key) {
+      //key = String(key);
+      this.$delete(this.fields, key);
+      this.fieldsEditting.splice(this.fieldsEditting.indexOf(key), 1);
+    },
+    editField(key) {
+      key = String(key);
+      const fieldKey = this.fieldsEditting.indexOf(key);
+      console.log(key);
+      console.log(fieldKey);
+      fieldKey < 0
+        ? this.fieldsEditting.push(key)
+        : this.fieldsEditting.splice(fieldKey, 1);
+    },
+    isEditting(key) {
+      //determine if "edit mode" is enabled for field from field.objectKey
+      key = String(key);
+      const fieldKey = this.fieldsEditting.indexOf(key);
+      return fieldKey > -1;
+    },
+    reset() {
+      this.$store.dispatch('catalogitemEdittingCustomfieldsSetEditting', []);
+      this.fieldsEditting = [];
+      this.loading = null;
+    },
+    saveFields() {
+      console.log('saveFields');
+    }
+  },
+  created() {
+    console.log('edit fields modal created');
+    //Form available for creating new fields in app or an exisiting castalog item
+    //if editting an existing item check custom fields are present and set each to
+    //fields object to initialize reactivity
+    if (
+      this.catalogitemFieldsEditting &&
+      this.catalogItemEditting.customFields.length > 0
+    ) {
+      for (let key in this.catalogitemFieldsEditting) {
+        this.$set(this.fields, key, {
+          ...this.catalogitemFieldsEditting[key]
+        });
+      }
+    }
+  }
+};
+</script>
+
+<style></style>

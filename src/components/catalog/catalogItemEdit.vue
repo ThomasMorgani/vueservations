@@ -15,52 +15,19 @@
               :error-messages="nameAvailable"
             ></v-text-field>
           </v-col>
-          <v-col cols="2" class="text-left">
-            <v-card
-              flat
-              class="d-flex flex-column align-start justify-center pa-1"
-            >
-              <p class="mb-0">Color</p>
-              <div>
-                <v-menu
-                  :close-on-content-click="false"
-                  :nudge-width="200"
-                  offset-x
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-avatar tile v-on="on" :color="color"> </v-avatar>
-                  </template>
-                  <v-color-picker
-                    v-model="color"
-                    class="ma-2"
-                    hide-inputs
-                  ></v-color-picker>
-                </v-menu>
-              </div>
-            </v-card>
-          </v-col>
-          <v-col cols="10" class="text-left">
+
+          <v-col cols="3" class="text-left">
             <v-text-field
               v-model="abbreviation"
               label="Abbreviation"
               name="abbr"
               textarea
+              filled=""
+              maxlength="4"
               :error-messages="abbreviationAvailable"
             ></v-text-field
           ></v-col>
-          <v-col cols="12">
-            <v-textarea
-              v-model="description"
-              label="Decription"
-              auto-grow
-              dense
-              outlined
-              rows="4"
-              class="mt-4"
-            >
-            </v-textarea>
-          </v-col>
-          <v-col cols="6">
+          <v-col cols="9">
             <v-select
               v-model="categoryName"
               :items="categories"
@@ -69,29 +36,98 @@
               label="Category"
             ></v-select>
           </v-col>
-          <v-col cols="6">
+          <v-col cols="12">
             <v-select
               label="Status"
               :items="statusOptions"
               v-model="status"
             ></v-select>
           </v-col>
+
           <v-col cols="12">
-            IMAGE UPLOAD
+            <v-row dense>
+              <v-col cols="12">
+                <span>Color and Image</span>
+              </v-col>
+              <v-col cols="2" class="text-left">
+                <v-card
+                  text
+                  flat
+                  class="d-flex flex-column align-start justify-center pa-1"
+                >
+                  <!-- <p class="mb-0">Color</p> -->
+                  <div>
+                    <v-menu
+                      :close-on-content-click="false"
+                      :nudge-width="200"
+                      offset-x
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-avatar v-on="on" :color="color"
+                          ><v-icon color="white">mdi-palette</v-icon>
+                        </v-avatar>
+                      </template>
+                      <v-color-picker
+                        v-model="color"
+                        class="ma-2"
+                        hide-inputs
+                      ></v-color-picker>
+                    </v-menu>
+                  </div>
+                </v-card>
+              </v-col>
+              <v-spacer></v-spacer>
+              <v-col cols="2" class="text-left">
+                <v-card
+                  text
+                  flat
+                  class="d-flex flex-column align-start justify-center pa-1"
+                >
+                  <!-- <p class="mb-0"></p> -->
+                  <v-img
+                    src="https://www.eipl.org/newsite/static/images/generic/music_cd_art_not_found.png"
+                    height="45"
+                    width="45"
+                  ></v-img>
+                </v-card>
+              </v-col>
+              <v-col cols="8" class="d-flex align-self-end text-left">
+                <v-file-input
+                  prepend-inner-icon="mdi-image"
+                  prepend-icon=""
+                  label="Select Image"
+                ></v-file-input>
+              </v-col>
+            </v-row>
           </v-col>
+
           <v-col cols="12">
-            <v-card outlined class="pa-2">
+            <v-textarea
+              v-model="description"
+              label="Decription"
+              auto-grow
+              dense
+              outlined
+              rows="4"
+              class="mt-2"
+            >
+            </v-textarea>
+          </v-col>
+
+          <v-col cols="12">
+            <v-divider></v-divider>
+            <v-card flat class="pa-2">
               <v-row justify="space-between" no-gutters="">
                 <v-col cols="8">
                   <span class="title primary--text">ADDITIONAL DETAILS</span>
                 </v-col>
                 <v-col class="text-right">
-                  <v-btn flat icon color="warning">
+                  <v-btn text icon color="warning" @click="editCustomFields">
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
-                  <v-btn flat icon color="primary">
+                  <!-- <v-btn flat icon color="primary">
                     <v-icon>mdi-plus</v-icon>
-                  </v-btn>
+                  </v-btn> -->
                 </v-col>
               </v-row>
               <template v-for="field in customFields">
@@ -229,6 +265,12 @@ export default {
       // this.resetForm();
       this.loading = null;
       this.$store.dispatch('toggleModalCatalogitemEdit');
+    },
+    editCustomFields() {
+      this.$store.dispatch('catalogitemEdittingCustomfieldsSetEditting', [
+        ...this.catalogItemEditting.customFields
+      ]);
+      this.$store.dispatch('toggleModalCatalogitemEditCustomFields');
     },
     resetForm() {
       this.color = this.$vuetify.theme.primary || 'primary';

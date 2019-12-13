@@ -52,6 +52,7 @@
       <component :is="view" :view="view"></component>
     </v-col>
     <v-col cols="12">
+      <!-- Edit Category Modal  -->
       <v-dialog
         v-model="modalCategoryEdit"
         persistent
@@ -60,6 +61,7 @@
       >
         <categoryEdit :key="'cEdit' + String(categoryEditting)"></categoryEdit>
       </v-dialog>
+      <!-- Edit Catalog Item Modal  -->
       <v-dialog
         v-model="modalCatalogitemEdit"
         persistent
@@ -76,6 +78,17 @@
           "
         ></catalogItemEdit>
       </v-dialog>
+      <!-- Edit Catalog Item Modal  -->
+      <v-dialog
+        v-model="modalEditCatalogItemFields"
+        persistent
+        max-width="500px"
+        transition="dialog-transition"
+      >
+        <catalogItemEditFields
+          :key="`cifEdit${catalogitemFieldsEditting.length}`"
+        ></catalogItemEditFields>
+      </v-dialog>
     </v-col>
   </v-row>
 </template>
@@ -84,6 +97,7 @@
 import { mapState } from 'vuex';
 import catalog from '@/views/catalog/catalog';
 import catalogItemEdit from '@/components/catalog/catalogItemEdit';
+import catalogItemEditFields from '@/components/catalog/catalogItemEditFields';
 import categoryEdit from '@/components/catalog/categoryEdit';
 import category from '@/views/catalog/category';
 import overview from '@/views/catalog/overview';
@@ -91,6 +105,7 @@ export default {
   components: {
     catalog,
     catalogItemEdit,
+    catalogItemEditFields,
     category,
     categoryEdit,
     overview
@@ -111,8 +126,11 @@ export default {
     ...mapState({
       catalogView: state => state.catalogView,
       catalogItemEditting: state => state.catalogitemEditting,
+      catalogitemFieldsEditting: state => state.catalogitemFieldsEditting,
       categoryEditting: state => state.categoryEditting,
       modalCatalogitemEdit: state => state.modalCatalogitemEdit,
+      modalEditCatalogItemFields: state =>
+        state.modalCatalogitemEditCustomFields,
       modalCategoryEdit: state => state.modalCategoryEdit
     }),
     view: {
