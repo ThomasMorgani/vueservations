@@ -16,6 +16,7 @@ export default new Vuex.Store({
     eventsFilterCategories: [],
     eventsFilterCategorySelect: [],
     eventsFilterDateRange: [],
+    modalCatalogCustomfield: false,
     modalCatalogitemEdit: false,
     modalCatalogitemEditCustomFields: false,
     modalCategoryEdit: false
@@ -88,6 +89,9 @@ export default new Vuex.Store({
     setStateValue(state, data) {
       //data expects: {key: state key, value: state value}
       state[data.key] = data.value;
+    },
+    toggleModalCatalogCustomfield(state, data) {
+      state.modalCatalogCustomfield = data;
     },
     toggleModalCatalogitemEdit(state, data) {
       state.modalCatalogitemEdit = data;
@@ -193,6 +197,9 @@ export default new Vuex.Store({
             reject(err);
           });
       });
+    },
+    modalCatalogCustomfield({ commit, state }) {
+      commit('toggleModalCatalogCustomfield', !state.modalCatalogCustomfield);
     },
     toggleModalCatalogitemEdit({ commit, state }) {
       commit('toggleModalCatalogitemEdit', !state.modalCatalogitemEdit);

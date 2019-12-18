@@ -40,14 +40,14 @@
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
                   >Value:
                 </v-col>
-                <v-col>{{ field.value }}</v-col>
+                <v-col>{{ fields[field.objectKey].value }}</v-col>
               </v-row>
               <!-- <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
                   >Type:
                 </v-col>
-                <v-col>{{ field.type }}</v-col>
+                <v-col>{{ fields[field.objectKey].type }}</v-col>
               </v-row> -->
               <v-row align="center" dense>
                 <v-col
@@ -55,19 +55,24 @@
                   >Visibility:
                 </v-col>
                 <v-col>{{
-                  field.internal === '1' ? 'internal' : 'public'
+                  fields[field.objectKey].internal === '1' ? 'internal' : 'public'
                 }}</v-col>
               </v-row>
             </v-col>
           </v-row>
-          <v-row dense v-else>
-            <v-col cols="12">
-              <v-combobox
+          <v-row dense align="center" v-else>
+            <v-col cols="11">
+              <v-autocomplete
                 v-model="fields[field.objectKey].name"
                 :items="fieldsAvailable"
                 label="Name"
               >
-              </v-combobox>
+              </v-autocomplete>
+            </v-col>
+            <v-col cols="1">
+            <v-btn large text icon color="primary" @click="createNewField">
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
             </v-col>
             <v-col cols="5">
               <v-select
@@ -87,11 +92,14 @@
               </v-select>
             </v-col>
             <v-col cols="12">
+
               <template v-if="fields[field.objectKey].type === 'bool'">
                 <v-select
                   v-model="fields[field.objectKey].value"
                   :items="boolTypes"
                   label="Value"
+                  :key="fields[field.objectKey].type"
+
                 >
                 </v-select>
               </template>
@@ -103,6 +111,7 @@
                   :type="
                     fields[field.objectKey].type === 'int' ? 'number' : 'text'
                   "
+                  :key="fields[field.objectKey].type"
                 >
                 </v-text-field>
               </template>
@@ -150,7 +159,6 @@ export default {
     loading: null,
     fieldsAvailable: ['Serial', 'Barcode', 'Brand'],
     fieldTemplate: {
-      abbreviation: null,
       internal: null,
       name: 'New Field',
       type: null,
@@ -203,20 +211,28 @@ export default {
       this.reset();
     },
     addField() {
-      const newKey = Object.keys(this.fields).length + 1;
-      this.$set(this.fields, newKey, this.fieldTemplate);
+      //set unique key to track field
+      const newKey = Object.keys(this.fields).length < 1 ? 0 : parseInt(this.fieldsDisplayed[Object.keys(this.fields).length - 1].objectKey) + 1;
+      //add new field which will always be one more than last
+      this.$set(this.fields, newKey, {...this.fieldTemplate});
+      //set new field to edit mode
       this.editField(newKey);
+    },
+    createNewField() {
+      this.$store.dispatch('modalCatalogCustomfield')
     },
     deleteField(key) {
       //key = String(key);
+      console.log(key)
+      console.log(this.fields)
       this.$delete(this.fields, key);
       this.fieldsEditting.splice(this.fieldsEditting.indexOf(key), 1);
     },
     editField(key) {
       key = String(key);
+      //check if field is in array, get key
       const fieldKey = this.fieldsEditting.indexOf(key);
-      console.log(key);
-      console.log(fieldKey);
+      //if editting, remove to disable, else add to editting
       fieldKey < 0
         ? this.fieldsEditting.push(key)
         : this.fieldsEditting.splice(fieldKey, 1);
@@ -234,6 +250,15 @@ export default {
     },
     saveFields() {
       console.log('saveFields');
+      if (Object.keys(this.fields).length < 1) {
+
+        console.log('no fields. if fields !== fields_original:');
+        console.log('confirm removing all fields, set new endpoint?');
+
+      }
+      this.$store.dispatch('callApi', {endpoint: '/catalogitem_fields_edit', postData: {catalogItem: this.catalogItemEditting.id, fields: this.fields}}).then(resp => {
+        console.log(resp)
+      })
     }
   },
   created() {

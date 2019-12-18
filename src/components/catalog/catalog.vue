@@ -89,6 +89,17 @@
           :key="`cifEdit${catalogitemFieldsEditting.length}`"
         ></catalogItemEditFields>
       </v-dialog>
+      <!-- Catalog Custom Fields Mgmtm Modal  -->
+      <v-dialog
+        v-model="modalCatalogCustomfield"
+        persistent
+        max-width="500px"
+        transition="dialog-transition"
+      >
+        <catalogCustomfield
+          :key="`cifEdit${catalogitemFieldsEditting.length}`"
+        ></catalogCustomfield>
+      </v-dialog>
     </v-col>
   </v-row>
 </template>
@@ -96,6 +107,7 @@
 <script>
 import { mapState } from 'vuex';
 import catalog from '@/views/catalog/catalog';
+import catalogCustomfield from '@/components/catalog/catalogCustomfieldManagement';
 import catalogItemEdit from '@/components/catalog/catalogItemEdit';
 import catalogItemEditFields from '@/components/catalog/catalogItemEditFields';
 import categoryEdit from '@/components/catalog/categoryEdit';
@@ -104,6 +116,7 @@ import overview from '@/views/catalog/overview';
 export default {
   components: {
     catalog,
+    catalogCustomfield,
     catalogItemEdit,
     catalogItemEditFields,
     category,
@@ -129,6 +142,7 @@ export default {
       catalogitemFieldsEditting: state => state.catalogitemFieldsEditting,
       categoryEditting: state => state.categoryEditting,
       modalCatalogitemEdit: state => state.modalCatalogitemEdit,
+      modalCatalogCustomfield: state => state.modalCatalogCustomfield,
       modalEditCatalogItemFields: state =>
         state.modalCatalogitemEditCustomFields,
       modalCategoryEdit: state => state.modalCategoryEdit
