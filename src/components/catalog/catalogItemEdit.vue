@@ -3,7 +3,7 @@
     <v-card-title class="justify-center title primary--text">
       {{ id ? 'EDIT ITEM' : 'ADD ITEM' }}
     </v-card-title>
-    <v-card-text>
+    <v-card-text  class="modalBody">
       <form>
         <v-row align="center" justify="center" dense>
           <v-col cols="12">
@@ -339,8 +339,16 @@ export default {
       }
     }
   },
-  mounted() {}
+  mounted() {
+    console.log('hh')
+  }
 };
 </script>
 
-<style></style>
+<style scoped>
+.modalBody{
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+</style>

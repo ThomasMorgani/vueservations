@@ -1,11 +1,11 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text">
+    <v-card-title class="justify-center title primary--text ">
       {{ catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS' }}
     </v-card-title>
-    <v-card-text>
+    <v-card-text class="modalBody">
       <template v-for="field in fieldsDisplayed">
-        <v-card text outlined :key="field.objectKey + 'row'" class="pa-3 mb-1">
+        <v-card elevation="3" outlined :key="field.objectKey + 'row'" class="pa-3 mb-1">
           <v-row dense align="center">
             <v-col cols="8" class="pt-0">
               <p class="title font-weight-bold primary--text mb-0">
@@ -55,17 +55,22 @@
                   >Visibility:
                 </v-col>
                 <v-col>{{
-                  fields[field.objectKey].internal === '1' ? 'internal' : 'public'
+                  fields[field.objectKey].internal === '1' ? 'Internal' : 'Public'
                 }}</v-col>
               </v-row>
             </v-col>
           </v-row>
+          <!-- IS EDITTING-->
           <v-row dense align="center" v-else>
             <v-col cols="11">
               <v-autocomplete
                 v-model="fields[field.objectKey].name"
-                :items="fieldsAvailable"
+                :items="orderBy(customFields, 'name')"
+                item-text="name"
+                item-value="name"
                 label="Name"
+                return-object
+                @change="updateField(field.objectKey, $event)"
               >
               </v-autocomplete>
             </v-col>
@@ -74,7 +79,7 @@
               <v-icon>mdi-plus</v-icon>
             </v-btn>
             </v-col>
-            <v-col cols="5">
+            <!-- <v-col cols="5">
               <v-select
                 v-model="fields[field.objectKey].type"
                 :items="fieldTypes"
@@ -90,6 +95,17 @@
                 label="Visibility"
               >
               </v-select>
+            </v-col> -->
+            <v-col cols="12">
+               <v-row align="center" dense>
+                <v-col
+                  class="subheading primary--text font-weight-bold d-flex shrink py-0"
+                  >Visibility:
+                </v-col>
+                <v-col>{{
+                  fields[field.objectKey].internal === '1' ? 'Internal' : 'Public'
+                }}</v-col>
+              </v-row>
             </v-col>
             <v-col cols="12">
 
@@ -139,9 +155,13 @@
 
 <script>
 import { mapState } from 'vuex';
+import Vue2Filters from 'vue2-filters'
+import filters from '@/modules/filters';
+
 
 export default {
   name: 'catalogItemEditFields',
+  mixins: [Vue2Filters.mixin],
   data: () => ({
     boolTypes: [
       {
@@ -153,6 +173,7 @@ export default {
         text: 'True'
       }
     ],
+
     fields: {},
     fieldsEditting: [],
     fieldsOriginal: {},
@@ -192,7 +213,8 @@ export default {
   computed: {
     ...mapState({
       catalogItemEditting: state => state.catalogitemEditting,
-      catalogitemFieldsEditting: state => state.catalogitemFieldsEditting
+      catalogitemFieldsEditting: state => state.catalogitemFieldsEditting,
+      customFields: state => state.customFields
     }),
     fieldsDisplayed() {
       let fields = [];
@@ -221,6 +243,9 @@ export default {
     createNewField() {
       this.$store.dispatch('modalCatalogCustomfield')
     },
+    customFieldById(id) {
+      return filters.customfieldById(id, this.customFields)
+    },
     deleteField(key) {
       //key = String(key);
       console.log(key)
@@ -243,6 +268,16 @@ export default {
       const fieldKey = this.fieldsEditting.indexOf(key);
       return fieldKey > -1;
     },
+    updateField(fieldKey, fields) {
+      console.log(fieldKey)
+      console.log(fields)
+      for(let key in fields) {
+        if (key !== 'id') {
+          // if (this.fields[fieldKey][key] !== undefined)
+          this.$set(this.fields[fieldKey], key, fields[key])
+        }
+      }
+    },
     reset() {
       this.$store.dispatch('catalogitemEdittingCustomfieldsSetEditting', []);
       this.fieldsEditting = [];
@@ -262,7 +297,7 @@ export default {
     }
   },
   created() {
-    console.log('edit fields modal created');
+    console.log('edit fields modal created___');
     //Form available for creating new fields in app or an exisiting castalog item
     //if editting an existing item check custom fields are present and set each to
     //fields object to initialize reactivity
@@ -280,4 +315,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+
+
+.modalBody{
+  height: 70vh;
+  overflow-y: auto;
+}
+</style>

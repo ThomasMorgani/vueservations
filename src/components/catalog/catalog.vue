@@ -107,7 +107,6 @@
 <script>
 import { mapState } from 'vuex';
 import catalog from '@/views/catalog/catalog';
-import catalogCustomfield from '@/components/catalog/catalogCustomfieldManagement';
 import catalogItemEdit from '@/components/catalog/catalogItemEdit';
 import catalogItemEditFields from '@/components/catalog/catalogItemEditFields';
 import categoryEdit from '@/components/catalog/categoryEdit';
@@ -116,7 +115,7 @@ import overview from '@/views/catalog/overview';
 export default {
   components: {
     catalog,
-    catalogCustomfield,
+    'catalogCustomfield': () => import('@/components/catalog/catalogCustomfieldManagement'),
     catalogItemEdit,
     catalogItemEditFields,
     category,
@@ -150,6 +149,7 @@ export default {
     view: {
       set(val) {
         this.$store.commit('catalogView', val);
+        localStorage.setItem('lastViewCatalog', val)
       },
       get() {
         return this.catalogView;
@@ -166,6 +166,11 @@ export default {
       this.$store.dispatch('categoryEdit', null);
       this.$store.dispatch('toggleModalEditCategory');
     }
+  },
+  created() {
+    this.view = localStorage.getItem('lastViewCatalog')
+      ? localStorage.getItem('lastViewCatalog')
+      : 'overview';
   }
 };
 </script>

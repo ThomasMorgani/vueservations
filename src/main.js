@@ -6,13 +6,14 @@ import vuetify from './plugins/vuetify'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-import { apiSettings, firebaseSettings } from './.env.local.js'
+// import { apiSettings, firebaseSettings } from './.env.local.js'
+import { apiSettings } from './.env.local.js'
 
-import firebase from 'firebase/app'
-import 'firebase/firestore'
+// import firebase from 'firebase/app'
+// import 'firebase/firestore'
 
-firebase.initializeApp({ ...firebaseSettings })
-export const db = firebase.firestore()
+// firebase.initializeApp({ ...firebaseSettings })
+// export const db = firebase.firestore()
 
 Vue.prototype.$apiSettings = apiSettings
 
