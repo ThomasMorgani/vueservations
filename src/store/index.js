@@ -19,7 +19,7 @@ export default new Vuex.Store({
     eventsFilterDateRange: [],
     modalCatalogCustomfield: false,
     modalCatalogitemEdit: false,
-    modalCatalogitemEditCustomFields: false,
+    modalCatalogitemEditCustomfields: false,
     modalCategoryEdit: false
   },
   getters: {
@@ -78,6 +78,9 @@ export default new Vuex.Store({
       //data expects: {key: state.category key, value: state.category value}
       state.catalogitemFieldsEditting = data
     },
+    customfieldsAddField(state, field) {
+      state.customFields.push(field)
+    },
     eventsFilterCategorySelect(state, val) {
       state.eventsFilterCategorySelect = val
     },
@@ -97,8 +100,8 @@ export default new Vuex.Store({
     toggleModalCatalogitemEdit(state, data) {
       state.modalCatalogitemEdit = data
     },
-    toggleModalCatalogitemEditCustomFields(state, data) {
-      state.modalCatalogitemEditCustomFields = data
+    toggleModalCatalogitemEditCustomfields(state, data) {
+      state.modalCatalogitemEditCustomfields = data
     },
     toggleModalEditCategory(state, data) {
       state.modalCategoryEdit = data
@@ -143,7 +146,7 @@ export default new Vuex.Store({
     catalogitemEditting({ commit }, data) {
       commit('catalogitemEditting', data)
     },
-    catalogitemEdittingCustomfieldsSetEditting({ commit }, data) {
+    catalogitemEdittingcustomfieldsSetEditting({ commit }, data) {
       console.log(data)
       commit('customfieldsSetEditting', data)
     },
@@ -201,16 +204,19 @@ export default new Vuex.Store({
           })
       })
     },
-    modalCatalogCustomfield({ commit, state }) {
+    customfieldsAddField({commit}, data) {
+      commit('customfieldsAddField', data)
+    },
+    toggleModalCatalogCustomfield({ commit, state }) {
       commit('toggleModalCatalogCustomfield', !state.modalCatalogCustomfield)
     },
     toggleModalCatalogitemEdit({ commit, state }) {
       commit('toggleModalCatalogitemEdit', !state.modalCatalogitemEdit)
     },
-    toggleModalCatalogitemEditCustomFields({ commit, state }) {
+    toggleModalCatalogitemEditCustomfields({ commit, state }) {
       commit(
-        'toggleModalCatalogitemEditCustomFields',
-        !state.modalCatalogitemEditCustomFields
+        'toggleModalCatalogitemEditCustomfields',
+        !state.modalCatalogitemEditCustomfields
       )
     },
     toggleModalEditCategory({ commit, state }) {

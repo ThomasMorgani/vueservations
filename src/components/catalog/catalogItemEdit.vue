@@ -233,9 +233,10 @@ export default {
         ? this.catalogItemEditting.customFields
         : []
       this.$store
-        .dispatch('catalogitemEdittingCustomfieldsSetEditting', customFields)
+        .dispatch('catalogitemEdittingcustomfieldsSetEditting', customFields)
         .then(() => {
-          this.$store.dispatch('toggleModalCatalogitemEditCustomFields')
+          console.log('then')
+          this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
         })
     },
     resetForm() {

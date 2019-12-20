@@ -150,7 +150,7 @@ export default {
       modalCatalogitemEdit: state => state.modalCatalogitemEdit,
       modalCatalogCustomfield: state => state.modalCatalogCustomfield,
       modalEditCatalogItemFields: state =>
-        state.modalCatalogitemEditCustomFields,
+        state.modalCatalogitemEditCustomfields,
       modalCategoryEdit: state => state.modalCategoryEdit
     }),
     view: {

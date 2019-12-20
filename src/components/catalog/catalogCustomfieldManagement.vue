@@ -33,6 +33,18 @@
                 ></v-text-field>
               </template>
             </v-col>
+            <v-col cols="12">
+              <v-alert
+                text
+                outlined
+                color="error"
+                icon="mdi-alert"
+                dense
+                :value="alertVisible"
+              >
+                {{alertText}}
+              </v-alert>
+            </v-col>
           </v-row>
         </v-col>
       </v-row>
@@ -49,6 +61,8 @@
 import { mapState } from 'vuex'
 export default {
   data: () => ({
+    alertText: null,
+    alertVisible: false,
     boolTypes: [
       {
         value: '0',
@@ -94,12 +108,13 @@ export default {
       customFields: state => state.customFields
     }),
     isDisabled() {
-      let disabled = false
-      disabled =
-        this.messagesName.length > 0 ||
-        this.type === null ||
-        this.visibility === null
-      return disabled
+      return false
+      // let disabled = false
+      // disabled =
+      //   this.messagesName.length > 0 ||
+      //   this.type === null ||
+      //   this.visibility === null
+      // return disabled
     },
     messagesName() {
       const nameLower = String(this.name)
@@ -110,28 +125,21 @@ export default {
       })
       const nameMatch = nameExists > -1 ? false : nameLower
       let messages = []
-      console.log(nameLower)
-      console.log(nameMatch)
-      console.log(nameExists > -1)
 
       switch (nameMatch) {
         case 'new field':
-          console.log('new fiedl')
           messages.push('Select Unique Name')
           break
         case '':
-          console.log('null')
           messages.push('Field name required')
           break
         case 'null':
-          console.log('null')
           messages.push('Field name required')
           break
         case false:
           messages.push('Name already exists')
           break
         default:
-          console.log('hi')
           break
       }
       return messages
@@ -150,6 +158,17 @@ export default {
           internal: this.internal,
           type: this.type,
           value: this.value
+        }
+      }).then(resp => {
+        console.log(resp)
+        if (resp.status === 'success') {
+          if (resp.data) {
+            this.$store.dispatch('customfieldsAddField', resp.data)
+            this.$store.dispatch('toggleModalCatalogCustomfield')
+          }
+        } else {
+          this.alertText = resp.message
+          this.alertVisible = true
         }
       })
     }

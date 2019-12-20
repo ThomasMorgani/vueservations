@@ -219,7 +219,7 @@ export default {
   },
   methods: {
     cancel() {
-      this.$store.dispatch('toggleModalCatalogitemEditCustomFields')
+      this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
       this.reset()
     },
     addField() {
@@ -237,7 +237,7 @@ export default {
       this.editField(newKey)
     },
     createNewField() {
-      this.$store.dispatch('modalCatalogCustomfield')
+      this.$store.dispatch('toggleModalCatalogCustomfield')
     },
     customFieldById(id) {
       return filters.customfieldById(id, this.customFields)
@@ -275,7 +275,7 @@ export default {
       }
     },
     reset() {
-      this.$store.dispatch('catalogitemEdittingCustomfieldsSetEditting', [])
+      this.$store.dispatch('catalogitemEdittingcustomfieldsSetEditting', [])
       this.fieldsEditting = []
       this.loading = null
     },
