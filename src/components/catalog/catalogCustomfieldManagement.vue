@@ -6,7 +6,7 @@
         <v-col cols="12">
           <v-row align="center" dense>
             <v-col cols="11">
-              <v-text-field v-model="name" label="Name"></v-text-field>
+              <v-text-field v-model="name" label="Name" :messages="messagesName"></v-text-field>
             </v-col>
           </v-row>
           <v-row align="center" dense>
@@ -40,7 +40,7 @@
     <v-card-actions>
       <v-btn text small color="primary" @click="cancel">cancel</v-btn>
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" @click="save">save</v-btn>
+      <v-btn text small color="primary" :disabled="isDisabled" @click="save">save</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -92,12 +92,56 @@ export default {
   computed: {
     ...mapState({
       customFields: state => state.customFields
-    })
+    }),
+    isDisabled() {
+      let disabled = false
+      disabled =
+        this.messagesName.length > 0 ||
+        this.type === null ||
+        this.visibility === null
+      return disabled
+    },
+    messagesName() {
+      const nameLower = String(this.name)
+        .trim()
+        .toLowerCase()
+      const nameExists = this.customFields.findIndex(field => {
+        return String(field.name).toLowerCase() === nameLower
+      })
+      const nameMatch = nameExists > -1 ? false : nameLower
+      let messages = []
+      console.log(nameLower)
+      console.log(nameMatch)
+      console.log(nameExists > -1)
+
+      switch (nameMatch) {
+        case 'new field':
+          console.log('new fiedl')
+          messages.push('Select Unique Name')
+          break
+        case '':
+          console.log('null')
+          messages.push('Field name required')
+          break
+        case 'null':
+          console.log('null')
+          messages.push('Field name required')
+          break
+        case false:
+          messages.push('Name already exists')
+          break
+        default:
+          console.log('hi')
+          break
+      }
+      return messages
+    }
   },
   methods: {
     cancel() {
       this.$store.dispatch('modalCatalogCustomfield')
     },
+
     save() {
       this.$store.dispatch('callApi', {
         endpoint: '/customfield_new',

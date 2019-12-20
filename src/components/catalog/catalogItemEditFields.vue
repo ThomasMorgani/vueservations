@@ -1,16 +1,16 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text ">
-      {{ catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS' }}
-    </v-card-title>
+    <v-card-title
+      class="justify-center title primary--text outlined"
+    >{{ catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS' }}</v-card-title>
     <v-card-text class="modalBody">
       <template v-for="field in fieldsDisplayed">
         <v-card elevation="3" outlined :key="field.objectKey + 'row'" class="pa-3 mb-1">
           <v-row dense align="center">
             <v-col cols="8" class="pt-0">
-              <p class="title font-weight-bold primary--text mb-0">
-                {{ fields[field.objectKey].name }}
-              </p>
+              <p
+                class="title font-weight-bold primary--text mb-0"
+              >{{ fields[field.objectKey].name }}</p>
             </v-col>
             <v-col cols="4" class="text-right pt-0">
               <v-btn
@@ -20,26 +20,22 @@
                 :disabled="!isEditting(field.objectKey)"
                 @click="deleteField(field.objectKey)"
                 class="mr-2"
-                ><v-icon>mdi-trash-can</v-icon></v-btn
               >
-              <v-btn
-                small
-                icon
-                color="warning"
-                @click="editField(field.objectKey)"
-                ><v-icon>{{
+                <v-icon>mdi-trash-can</v-icon>
+              </v-btn>
+              <v-btn small icon color="warning" @click="editField(field.objectKey)">
+                <v-icon>
+                  {{
                   isEditting(field.objectKey) ? 'mdi-pencil-off' : 'mdi-pencil'
-                }}</v-icon></v-btn
-              >
+                  }}
+                </v-icon>
+              </v-btn>
             </v-col>
           </v-row>
           <v-row dense v-if="!isEditting(field.objectKey)">
             <v-col cols="12">
               <v-row align="center" dense>
-                <v-col
-                  class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                  >Value:
-                </v-col>
+                <v-col class="subheading primary--text font-weight-bold d-flex shrink py-0">Value:</v-col>
                 <v-col>{{ fields[field.objectKey].value }}</v-col>
               </v-row>
               <!-- <v-row align="center" dense>
@@ -48,15 +44,16 @@
                   >Type:
                 </v-col>
                 <v-col>{{ fields[field.objectKey].type }}</v-col>
-              </v-row> -->
+              </v-row>-->
               <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                  >Visibility:
-                </v-col>
-                <v-col>{{
+                >Visibility:</v-col>
+                <v-col>
+                  {{
                   fields[field.objectKey].internal === '1' ? 'Internal' : 'Public'
-                }}</v-col>
+                  }}
+                </v-col>
               </v-row>
             </v-col>
           </v-row>
@@ -71,13 +68,12 @@
                 label="Name"
                 return-object
                 @change="updateField(field.objectKey, $event)"
-              >
-              </v-autocomplete>
+              ></v-autocomplete>
             </v-col>
             <v-col cols="1">
-            <v-btn large text icon color="primary" @click="createNewField">
-              <v-icon>mdi-plus</v-icon>
-            </v-btn>
+              <v-btn large text icon color="primary" @click="createNewField">
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
             </v-col>
             <!-- <v-col cols="5">
               <v-select
@@ -95,29 +91,27 @@
                 label="Visibility"
               >
               </v-select>
-            </v-col> -->
+            </v-col>-->
             <v-col cols="12">
-               <v-row align="center" dense>
+              <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                  >Visibility:
-                </v-col>
-                <v-col>{{
+                >Visibility:</v-col>
+                <v-col>
+                  {{
                   fields[field.objectKey].internal === '1' ? 'Internal' : 'Public'
-                }}</v-col>
+                  }}
+                </v-col>
               </v-row>
             </v-col>
             <v-col cols="12">
-
               <template v-if="fields[field.objectKey].type === 'bool'">
                 <v-select
                   v-model="fields[field.objectKey].value"
                   :items="boolTypes"
                   label="Value"
                   :key="fields[field.objectKey].type"
-
-                >
-                </v-select>
+                ></v-select>
               </template>
               <template v-else>
                 <v-text-field
@@ -128,8 +122,7 @@
                     fields[field.objectKey].type === 'int' ? 'number' : 'text'
                   "
                   :key="fields[field.objectKey].type"
-                >
-                </v-text-field>
+                ></v-text-field>
               </template>
             </v-col>
           </v-row>
@@ -147,17 +140,15 @@
         :disabled="saveDisabled"
         :loading="loading === 'save'"
         @click="saveFields"
-        >SAVE</v-btn
-      >
+      >SAVE</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'vuex'
 import Vue2Filters from 'vue2-filters'
-import filters from '@/modules/filters';
-
+import filters from '@/modules/filters'
 
 export default {
   name: 'catalogItemEditFields',
@@ -173,7 +164,6 @@ export default {
         text: 'True'
       }
     ],
-
     fields: {},
     fieldsEditting: [],
     fieldsOriginal: {},
@@ -217,28 +207,34 @@ export default {
       customFields: state => state.customFields
     }),
     fieldsDisplayed() {
-      let fields = [];
+      let fields = []
       Object.keys(this.fields).forEach(key =>
         fields.push({ ...this.fields[key], objectKey: key })
-      );
-      return fields;
+      )
+      return fields
     },
     saveDisabled() {
-      return false;
+      return false
     }
   },
   methods: {
     cancel() {
-      this.$store.dispatch('toggleModalCatalogitemEditCustomFields');
-      this.reset();
+      this.$store.dispatch('toggleModalCatalogitemEditCustomFields')
+      this.reset()
     },
     addField() {
       //set unique key to track field
-      const newKey = Object.keys(this.fields).length < 1 ? 0 : parseInt(this.fieldsDisplayed[Object.keys(this.fields).length - 1].objectKey) + 1;
+      const newKey =
+        Object.keys(this.fields).length < 1
+          ? 0
+          : parseInt(
+              this.fieldsDisplayed[Object.keys(this.fields).length - 1]
+                .objectKey
+            ) + 1
       //add new field which will always be one more than last
-      this.$set(this.fields, newKey, {...this.fieldTemplate});
+      this.$set(this.fields, newKey, { ...this.fieldTemplate })
       //set new field to edit mode
-      this.editField(newKey);
+      this.editField(newKey)
     },
     createNewField() {
       this.$store.dispatch('modalCatalogCustomfield')
@@ -250,28 +246,28 @@ export default {
       //key = String(key);
       console.log(key)
       console.log(this.fields)
-      this.$delete(this.fields, key);
-      this.fieldsEditting.splice(this.fieldsEditting.indexOf(key), 1);
+      this.$delete(this.fields, key)
+      this.fieldsEditting.splice(this.fieldsEditting.indexOf(key), 1)
     },
     editField(key) {
-      key = String(key);
+      key = String(key)
       //check if field is in array, get key
-      const fieldKey = this.fieldsEditting.indexOf(key);
+      const fieldKey = this.fieldsEditting.indexOf(key)
       //if editting, remove to disable, else add to editting
       fieldKey < 0
         ? this.fieldsEditting.push(key)
-        : this.fieldsEditting.splice(fieldKey, 1);
+        : this.fieldsEditting.splice(fieldKey, 1)
     },
     isEditting(key) {
       //determine if "edit mode" is enabled for field from field.objectKey
-      key = String(key);
-      const fieldKey = this.fieldsEditting.indexOf(key);
-      return fieldKey > -1;
+      key = String(key)
+      const fieldKey = this.fieldsEditting.indexOf(key)
+      return fieldKey > -1
     },
     updateField(fieldKey, fields) {
       console.log(fieldKey)
       console.log(fields)
-      for(let key in fields) {
+      for (let key in fields) {
         if (key !== 'id') {
           // if (this.fields[fieldKey][key] !== undefined)
           this.$set(this.fields[fieldKey], key, fields[key])
@@ -279,46 +275,52 @@ export default {
       }
     },
     reset() {
-      this.$store.dispatch('catalogitemEdittingCustomfieldsSetEditting', []);
-      this.fieldsEditting = [];
-      this.loading = null;
+      this.$store.dispatch('catalogitemEdittingCustomfieldsSetEditting', [])
+      this.fieldsEditting = []
+      this.loading = null
     },
     saveFields() {
-      console.log('saveFields');
+      console.log('saveFields')
       if (Object.keys(this.fields).length < 1) {
-
-        console.log('no fields. if fields !== fields_original:');
-        console.log('confirm removing all fields, set new endpoint?');
-
+        console.log('no fields. if fields !== fields_original:')
+        console.log('confirm removing all fields, set new endpoint?')
       }
-      this.$store.dispatch('callApi', {endpoint: '/catalogitem_fields_edit', postData: {catalogItem: this.catalogItemEditting.id, fields: this.fields}}).then(resp => {
-        console.log(resp)
-      })
+      this.$store
+        .dispatch('callApi', {
+          endpoint: '/catalogitem_fields_edit',
+          postData: {
+            catalogItem: this.catalogItemEditting.id,
+            fields: this.fields
+          }
+        })
+        .then(resp => {
+          console.log(resp)
+        })
     }
   },
-  created() {
-    console.log('edit fields modal created___');
+  mounted() {
+    console.log('edit fields modal created___')
     //Form available for creating new fields in app or an exisiting castalog item
     //if editting an existing item check custom fields are present and set each to
     //fields object to initialize reactivity
+    //TODO: FIX BELOW, SET FUNCTION TO FORMAT DATA STRUCTURES PROPERLY
     if (
       this.catalogitemFieldsEditting &&
+      this.catalogItemEditting.customFields &&
       this.catalogItemEditting.customFields.length > 0
     ) {
       for (let key in this.catalogitemFieldsEditting) {
         this.$set(this.fields, key, {
           ...this.catalogitemFieldsEditting[key]
-        });
+        })
       }
     }
   }
-};
+}
 </script>
 
 <style scoped>
-
-
-.modalBody{
+.modalBody {
   height: 70vh;
   overflow-y: auto;
 }

@@ -26,7 +26,7 @@
         <v-spacer></v-spacer>
         <!-- <v-btn outlined color="primary" class="mr-4" @click="catalogItemAdd">
           <v-icon left>mdi-bookmark-plus-outline</v-icon>NEW
-        </v-btn> -->
+        </v-btn>-->
         <v-menu bottom right>
           <template v-slot:activator="{ on }">
             <v-btn icon color="primary" v-on="on">
@@ -86,7 +86,10 @@
         transition="dialog-transition"
       >
         <catalogItemEditFields
-          :key="`cifEdit${catalogitemFieldsEditting.length}`"
+          :key="`cifEdit${String(
+              catalogItemEditting && catalogItemEditting.id
+                ? catalogItemEditting.id
+                : 'none')}`"
         ></catalogItemEditFields>
       </v-dialog>
       <!-- Catalog Custom Fields Mgmtm Modal  -->
@@ -97,7 +100,10 @@
         transition="dialog-transition"
       >
         <catalogCustomfield
-          :key="`cifEdit${catalogitemFieldsEditting.length}`"
+          :key="`cinewfEdit${String(
+              catalogItemEditting && catalogItemEditting.id
+                ? catalogItemEditting.id
+                : 'none')}`"
         ></catalogCustomfield>
       </v-dialog>
     </v-col>
@@ -105,17 +111,18 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import catalog from '@/views/catalog/catalog';
-import catalogItemEdit from '@/components/catalog/catalogItemEdit';
-import catalogItemEditFields from '@/components/catalog/catalogItemEditFields';
-import categoryEdit from '@/components/catalog/categoryEdit';
-import category from '@/views/catalog/category';
-import overview from '@/views/catalog/overview';
+import { mapState } from 'vuex'
+import catalog from '@/views/catalog/catalog'
+import catalogItemEdit from '@/components/catalog/catalogItemEdit'
+import catalogItemEditFields from '@/components/catalog/catalogItemEditFields'
+import categoryEdit from '@/components/catalog/categoryEdit'
+import category from '@/views/catalog/category'
+import overview from '@/views/catalog/overview'
 export default {
   components: {
     catalog,
-    'catalogCustomfield': () => import('@/components/catalog/catalogCustomfieldManagement'),
+    catalogCustomfield: () =>
+      import('@/components/catalog/catalogCustomfieldManagement'),
     catalogItemEdit,
     catalogItemEditFields,
     category,
@@ -148,31 +155,31 @@ export default {
     }),
     view: {
       set(val) {
-        this.$store.commit('catalogView', val);
+        this.$store.commit('catalogView', val)
         localStorage.setItem('lastViewCatalog', val)
       },
       get() {
-        return this.catalogView;
+        return this.catalogView
       }
     }
   },
   methods: {
     catalogItemAdd() {
-      console.log('catalogItemAdd');
+      console.log('catalogItemAdd')
     },
     categoryAdd() {
-      this.editCategoryModal = true;
-      console.log('categoryAdd');
-      this.$store.dispatch('categoryEdit', null);
-      this.$store.dispatch('toggleModalEditCategory');
+      this.editCategoryModal = true
+      console.log('categoryAdd')
+      this.$store.dispatch('categoryEdit', null)
+      this.$store.dispatch('toggleModalEditCategory')
     }
   },
   created() {
     this.view = localStorage.getItem('lastViewCatalog')
       ? localStorage.getItem('lastViewCatalog')
-      : 'overview';
+      : 'overview'
   }
-};
+}
 </script>
 
 <style></style>

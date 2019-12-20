@@ -144,6 +144,7 @@ export default new Vuex.Store({
       commit('catalogitemEditting', data)
     },
     catalogitemEdittingCustomfieldsSetEditting({ commit }, data) {
+      console.log(data)
       commit('customfieldsSetEditting', data)
     },
     categoryDelete({ commit, dispatch, state }, data) {
