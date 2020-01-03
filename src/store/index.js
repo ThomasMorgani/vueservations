@@ -55,8 +55,17 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    catalogitemSetValue(state, data) {
+      //data : {key: value editting, data: value of item }
+      console.log(data)
+      state.catalogItems[data.index][data.key] = data.data
+    },
     catalogitemEditting(state, data) {
       state.catalogitemEditting = data
+    },
+    catalogitemEdittingSetValue(state, data) {
+      //data : {key: value editting, data: value of item }
+      state.catalogitemEditting[data.key] = data.data
     },
     catalogView(state, data) {
       state.catalogView = data
@@ -131,7 +140,7 @@ export default new Vuex.Store({
       })
     },
     callApi(context, data) {
-      console.log(data)
+      // console.log(data)
       return new Promise((resolve, reject) => {
         apiFunctions.callApi(data.endpoint, data.postData || null).then(
           response => {
@@ -143,18 +152,30 @@ export default new Vuex.Store({
         )
       })
     },
+    catalogitemSetValue({ commit, state }, data) {
+      //data : {id: id of cat item, item: key of value updating, data: value of item}
+      const ciIndex = state.catalogItems.findIndex(el => el.id === data.id)
+      console.log(ciIndex)
+      if (ciIndex > -1) {
+        commit('catalogitemSetValue', {...data, index: ciIndex})
+      } else {
+        return false
+      }
+    },
     catalogitemEditting({ commit }, data) {
       commit('catalogitemEditting', data)
     },
+    catalogitemEdittingSetValue({ commit }, data) {
+      //data : item editting int, fields obj
+      commit('catalogitemEdittingSetValue', data)
+    },
     catalogitemEdittingcustomfieldsSetEditting({ commit }, data) {
-      console.log(data)
       return new Promise(resolve => {
         commit('customfieldsSetEditting', data)
         resolve()
       })
     },
     categoryDelete({ commit, dispatch, state }, data) {
-      console.log(data)
       return new Promise((resolve, reject) => {
         dispatch('callApi', {
           endpoint: '/category_delete/' + data.id

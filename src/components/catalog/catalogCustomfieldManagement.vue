@@ -177,7 +177,7 @@ export default {
             name: this.name,
             internal: this.internal,
             type: this.type,
-            value: this.value
+            default_value: this.value
           }
         })
         .then(resp => {

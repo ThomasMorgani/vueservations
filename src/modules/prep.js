@@ -3,6 +3,7 @@
 const catalogItem = item => {
   return {
     abbreviation: item.abbreviation || 'EIPL',
+    category: item.category || null,
     categoryName: item.categoryName || 'MISC',
     customFields:
       item.custom_fields && item.custom_fields.length > 0

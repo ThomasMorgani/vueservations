@@ -29,10 +29,10 @@
           </v-col>
           <v-col cols="9">
             <v-select
-              v-model="categoryName"
+              v-model="category"
               :items="categories"
               item-text="name"
-              item-value="name"
+              item-value="id"
               label="Category"
             ></v-select>
           </v-col>
@@ -129,8 +129,8 @@
                   </v-btn>-->
                 </v-col>
               </v-row>
-              <template v-for="field in customFields">
-                <v-row :key="field + 'rw'" align="center">
+              <template v-for="field in customFieldsDisplayed">
+                <v-row :key="field.field_id + 'rw'" align="center">
                   <v-col class="subheadin primary--text font-weight-bold">
                     {{ field.name }}
                   </v-col>
@@ -211,6 +211,8 @@ import { mapState } from 'vuex'
 export default {
   name: 'catalogItemEdit',
   data: () => ({
+    abbreviation: null,
+    category: null,
     color: 'primary',
     customFields: [],
     defaultItem: {
@@ -240,6 +242,9 @@ export default {
     },
     abbreviationAvailable() {
       return null
+    },
+    customFieldsDisplayed() {
+      return this.catalogItemEditting.customFields
     },
     nameAvailable() {
       const nameMatches = this.catalogItems.find(
@@ -308,36 +313,40 @@ export default {
     },
     saveCategory() {
       this.loading = 'save'
-      this.$store
-        .dispatch('categoryEditSave', {
-          id: this.id,
-          name: this.name,
-          color: this.color,
-          isNew: this.id === null
-        })
-        .then(res => {
-          console.log(res)
-          if (res.status) {
-            if (res.status === 'success') {
-              //alert success
-              this.id = res.data
-              this.$store.dispatch('toggleModalEditCategory')
-            } else {
-              //display error message returned from backend
+      console.log(this)
+      const itemValues = ['abbreviation', 'category', 'color', 'id', 'description', 'name', 'note', 'status']
+      let postData = {}
+      itemValues.forEach(val => postData[val] = this[val])
+      this.$store.dispatch('callApi', {endpoint: '/catalogitem_update', postData: postData}).then(resp => {
+        console.log(resp)
+      }).catch(err=> console.log(err))
 
-              console.log('res.status!= success', res)
-            }
-            this.loading = null
-          }
-        })
-        .catch(err => {
-          console.log(err)
-          alert('ERROR: ' + err)
-        })
+
+      this.loading = null
+    //   this.$store
+    //     .dispatch('', {})
+    //     .then(res => {
+    //       console.log(res)
+    //       if (res.status) {
+    //         if (res.status === 'success') {
+    //           //
+    //         } else {
+    //           //display error message returned from backend
+    //           console.log('res.status!= success', res)
+    //         }
+    //         this.loading = null
+    //       }
+    //     })
+    //     .catch(err => {
+    //       console.log(err)
+    //       alert('ERROR: ' + err)
+    //     })
     }
   },
   created() {
     if (this.catalogItemEditting) {
+      console.log('catItemEdititing created')
+      console.log(this.catalogItemEditting)
       for (let item in this.catalogItemEditting) {
         this[item] = this.catalogItemEditting[item]
       }

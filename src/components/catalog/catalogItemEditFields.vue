@@ -4,6 +4,10 @@
       catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS'
     }}</v-card-title>
     <v-card-text class="modalBody">
+      <template  v-if="fieldsDisplayed.length < 1" >
+        <p class="mt-6 text-center">No custom fields set for this catalog item.</p>
+        <p class="text-center">Use the "ADD" button below to add new fields.</p>
+      </template>
       <template v-for="field in fieldsDisplayed">
         <v-card
           elevation="3"
@@ -328,6 +332,16 @@ export default {
         })
         .then(resp => {
           console.log(resp)
+          if (resp.status === 'success') {
+            //update editting item, actual item custom fields, close modal
+            // let custom_fields = []
+            // Object.key(this.f)
+            this.$store.dispatch('catalogitemEdittingSetValue', {key: 'customFields', data: resp.data})
+            this.$store.dispatch('catalogitemSetValue', {id: this.catalogItemEditting.id, key: 'custom_fields', data: resp.data})
+            this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
+
+
+          }
         })
     }
   },
