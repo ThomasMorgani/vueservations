@@ -1,6 +1,8 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text">{{ id ? 'EDIT ITEM' : 'ADD ITEM' }}</v-card-title>
+    <v-card-title class="justify-center title primary--text">{{
+      id ? 'EDIT ITEM' : 'ADD ITEM'
+    }}</v-card-title>
     <v-card-text class="modalBody">
       <form>
         <v-row align="center" justify="center" dense>
@@ -35,7 +37,11 @@
             ></v-select>
           </v-col>
           <v-col cols="12">
-            <v-select label="Status" :items="statusOptions" v-model="status"></v-select>
+            <v-select
+              label="Status"
+              :items="statusOptions"
+              v-model="status"
+            ></v-select>
           </v-col>
 
           <v-col cols="12">
@@ -44,23 +50,39 @@
                 <span>Color and Image</span>
               </v-col>
               <v-col cols="2" class="text-left">
-                <v-card text flat class="d-flex flex-column align-start justify-center pa-1">
+                <v-card
+                  text
+                  flat
+                  class="d-flex flex-column align-start justify-center pa-1"
+                >
                   <!-- <p class="mb-0">Color</p> -->
                   <div>
-                    <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
+                    <v-menu
+                      :close-on-content-click="false"
+                      :nudge-width="200"
+                      offset-x
+                    >
                       <template v-slot:activator="{ on }">
                         <v-avatar v-on="on" :color="color">
                           <v-icon color="white">mdi-palette</v-icon>
                         </v-avatar>
                       </template>
-                      <v-color-picker v-model="color" class="ma-2" hide-inputs></v-color-picker>
+                      <v-color-picker
+                        v-model="color"
+                        class="ma-2"
+                        hide-inputs
+                      ></v-color-picker>
                     </v-menu>
                   </div>
                 </v-card>
               </v-col>
               <v-spacer></v-spacer>
               <v-col cols="2" class="text-left">
-                <v-card text flat class="d-flex flex-column align-start justify-center pa-1">
+                <v-card
+                  text
+                  flat
+                  class="d-flex flex-column align-start justify-center pa-1"
+                >
                   <!-- <p class="mb-0"></p> -->
                   <v-img
                     src="https://www.eipl.org/newsite/static/images/generic/music_cd_art_not_found.png"
@@ -70,7 +92,11 @@
                 </v-card>
               </v-col>
               <v-col cols="8" class="d-flex align-self-end text-left">
-                <v-file-input prepend-inner-icon="mdi-image" prepend-icon label="Select Image"></v-file-input>
+                <v-file-input
+                  prepend-inner-icon="mdi-image"
+                  prepend-icon
+                  label="Select Image"
+                ></v-file-input>
               </v-col>
             </v-row>
           </v-col>
@@ -106,16 +132,12 @@
               <template v-for="field in customFields">
                 <v-row :key="field + 'rw'" align="center">
                   <v-col class="subheadin primary--text font-weight-bold">
-                    {{
-                    field.name
-                    }}
+                    {{ field.name }}
                   </v-col>
                   <v-col>{{ field.value }}</v-col>
                   <v-col>
                     <v-icon small>
-                      {{
-                      field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye'
-                      }}
+                      {{ field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye' }}
                     </v-icon>
                   </v-col>
                 </v-row>
@@ -124,23 +146,36 @@
           </v-col>
         </v-row>
       </form>
-      <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
+      <v-dialog
+        v-model="modalConfirmDelete"
+        max-width="500px"
+        transition="dialog-transition"
+      >
         <v-card>
-          <v-card-title class="justify-center title error--text">CONFIRM DELETE</v-card-title>
+          <v-card-title class="justify-center title error--text"
+            >CONFIRM DELETE</v-card-title
+          >
           <v-card-text>
             <v-row class="justify-center align-center">
               <v-col cols="12" class="align-center">
                 <p class="font-weight-bold text-center">
                   WARNING: You are about to delete the catalog item called "{{
-                  name
+                    name
                   }}".
                 </p>
-                <p class="text-center">All current reservations for this item will be removed."</p>
+                <p class="text-center">
+                  All current reservations for this item will be removed."
+                </p>
               </v-col>
             </v-row>
           </v-card-text>
           <v-card-actions class="d-flex justify-space-around">
-            <v-btn color="primary" text @click="modalConfirmDelete = !modalConfirmDelete">CANCEL</v-btn>
+            <v-btn
+              color="primary"
+              text
+              @click="modalConfirmDelete = !modalConfirmDelete"
+              >CANCEL</v-btn
+            >
             <v-btn color="error" text @click="deleteCategory">DELETE</v-btn>
           </v-card-actions>
         </v-card>
@@ -154,7 +189,8 @@
         :disabled="!id"
         :loading="loading === 'delete'"
         @click="modalConfirmDelete = !modalConfirmDelete"
-      >DELETE</v-btn>
+        >DELETE</v-btn
+      >
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="cancel">CANCEL</v-btn>
       <v-btn
@@ -164,7 +200,8 @@
         :disabled="saveDisabled"
         :loading="loading === 'save'"
         @click="saveCategory"
-      >SAVE</v-btn>
+        >SAVE</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>

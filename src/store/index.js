@@ -148,7 +148,10 @@ export default new Vuex.Store({
     },
     catalogitemEdittingcustomfieldsSetEditting({ commit }, data) {
       console.log(data)
-      commit('customfieldsSetEditting', data)
+      return new Promise(resolve => {
+        commit('customfieldsSetEditting', data)
+        resolve()
+      })
     },
     categoryDelete({ commit, dispatch, state }, data) {
       console.log(data)
@@ -204,7 +207,7 @@ export default new Vuex.Store({
           })
       })
     },
-    customfieldsAddField({commit}, data) {
+    customfieldsAddField({ commit }, data) {
       commit('customfieldsAddField', data)
     },
     toggleModalCatalogCustomfield({ commit, state }) {

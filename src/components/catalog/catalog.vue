@@ -67,16 +67,15 @@
         persistent
         max-width="500px"
         transition="dialog-transition"
+        :key="
+          `ciEdit${String(
+            catalogItemEditting && catalogItemEditting.id
+              ? catalogItemEditting.id
+              : 'none'
+          )}`
+        "
       >
-        <catalogItemEdit
-          :key="
-            `ciEdit${String(
-              catalogItemEditting && catalogItemEditting.id
-                ? catalogItemEditting.id
-                : 'none'
-            )}`
-          "
-        ></catalogItemEdit>
+        <catalogItemEdit></catalogItemEdit>
       </v-dialog>
       <!-- Edit Catalog Item Modal  -->
       <v-dialog
@@ -84,13 +83,15 @@
         persistent
         max-width="500px"
         transition="dialog-transition"
+        :key="
+          `cifEdit${String(
+            catalogItemEditting && catalogItemEditting.id
+              ? catalogItemEditting.id
+              : 'none'
+          )}`
+        "
       >
-        <catalogItemEditFields
-          :key="`cifEdit${String(
-              catalogItemEditting && catalogItemEditting.id
-                ? catalogItemEditting.id
-                : 'none')}`"
-        ></catalogItemEditFields>
+        <catalogItemEditFields></catalogItemEditFields>
       </v-dialog>
       <!-- Catalog Custom Fields Mgmtm Modal  -->
       <v-dialog
@@ -98,13 +99,15 @@
         persistent
         max-width="500px"
         transition="dialog-transition"
+        :key="
+          `cinewfEdit${String(
+            catalogItemEditting && catalogItemEditting.id
+              ? catalogItemEditting.id
+              : 'none'
+          )}`
+        "
       >
-        <catalogCustomfield
-          :key="`cinewfEdit${String(
-              catalogItemEditting && catalogItemEditting.id
-                ? catalogItemEditting.id
-                : 'none')}`"
-        ></catalogCustomfield>
+        <catalogCustomfield></catalogCustomfield>
       </v-dialog>
     </v-col>
   </v-row>

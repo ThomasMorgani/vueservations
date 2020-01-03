@@ -6,29 +6,46 @@
         <v-col cols="12">
           <v-row align="center" dense>
             <v-col cols="11">
-              <v-text-field v-model="name" label="Name" :messages="messagesName"></v-text-field>
+              <v-text-field
+                v-model="name"
+                label="Name"
+                :messages="messagesName"
+                name="Name"
+                type="text"
+              ></v-text-field>
             </v-col>
           </v-row>
           <v-row align="center" dense>
             <v-col cols="5">
-              <v-select v-model="type" :items="fieldTypes" label="Type"></v-select>
+              <v-select
+                v-model="type"
+                :items="fieldTypes"
+                label="Type"
+              ></v-select>
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="5">
-              <v-select v-model="internal" :items="visibilityTypes" label="Visibility"></v-select>
+              <v-select
+                v-model="internal"
+                :items="visibilityTypes"
+                label="Visibility"
+              ></v-select>
             </v-col>
             <v-col cols="12">
               <template v-if="type === 'bool'">
-                <v-select v-model="value" :items="boolTypes" label="Default Value" :key="type"></v-select>
+                <v-select
+                  v-model="value"
+                  :items="boolTypes"
+                  label="Default Value"
+                  :key="type"
+                ></v-select>
               </template>
               <template v-else>
                 <v-text-field
                   v-model="value"
                   outlined
                   label="Default Value"
-                  :type="
-                    type === 'int' ? 'number' : 'text'
-                  "
+                  :type="type === 'int' ? 'number' : 'text'"
                   :key="type"
                 ></v-text-field>
               </template>
@@ -42,7 +59,7 @@
                 dense
                 :value="alertVisible"
               >
-                {{alertText}}
+                {{ alertText }}
               </v-alert>
             </v-col>
           </v-row>
@@ -52,7 +69,9 @@
     <v-card-actions>
       <v-btn text small color="primary" @click="cancel">cancel</v-btn>
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" :disabled="isDisabled" @click="save">save</v-btn>
+      <v-btn text small color="primary" :disabled="isDisabled" @click="save"
+        >save</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>
@@ -147,34 +166,35 @@ export default {
   },
   methods: {
     cancel() {
-      this.$store.dispatch('modalCatalogCustomfield')
+      this.$store.dispatch('toggleModalCatalogCustomfield')
     },
 
     save() {
-      this.$store.dispatch('callApi', {
-        endpoint: '/customfield_new',
-        postData: {
-          name: this.name,
-          internal: this.internal,
-          type: this.type,
-          value: this.value
-        }
-      }).then(resp => {
-        console.log(resp)
-        if (resp.status === 'success') {
-          if (resp.data) {
-            this.$store.dispatch('customfieldsAddField', resp.data)
-            this.$store.dispatch('toggleModalCatalogCustomfield')
+      this.$store
+        .dispatch('callApi', {
+          endpoint: '/customfield_new',
+          postData: {
+            name: this.name,
+            internal: this.internal,
+            type: this.type,
+            value: this.value
           }
-        } else {
-          this.alertText = resp.message
-          this.alertVisible = true
-        }
-      })
+        })
+        .then(resp => {
+          console.log(resp)
+          if (resp.status === 'success') {
+            if (resp.data) {
+              this.$store.dispatch('customfieldsAddField', resp.data)
+              this.$store.dispatch('toggleModalCatalogCustomfield')
+            }
+          } else {
+            this.alertText = resp.message
+            this.alertVisible = true
+          }
+        })
     }
   }
 }
 </script>
 
-<style>
-</style>
+<style></style>

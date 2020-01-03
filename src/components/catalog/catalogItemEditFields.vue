@@ -1,16 +1,21 @@
 <template>
   <v-card>
-    <v-card-title
-      class="justify-center title primary--text outlined"
-    >{{ catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS' }}</v-card-title>
+    <v-card-title class="justify-center title primary--text outlined">{{
+      catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS'
+    }}</v-card-title>
     <v-card-text class="modalBody">
       <template v-for="field in fieldsDisplayed">
-        <v-card elevation="3" outlined :key="field.objectKey + 'row'" class="pa-3 mb-1">
+        <v-card
+          elevation="3"
+          outlined
+          :key="field.objectKey + 'row'"
+          class="pa-3 mb-1"
+        >
           <v-row dense align="center">
             <v-col cols="8" class="pt-0">
-              <p
-                class="title font-weight-bold primary--text mb-0"
-              >{{ fields[field.objectKey].name }}</p>
+              <p class="title font-weight-bold primary--text mb-0">
+                {{ fields[field.objectKey].name }}
+              </p>
             </v-col>
             <v-col cols="4" class="text-right pt-0">
               <v-btn
@@ -23,10 +28,17 @@
               >
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
-              <v-btn small icon color="warning" @click="editField(field.objectKey)">
+              <v-btn
+                small
+                icon
+                color="warning"
+                @click="editField(field.objectKey)"
+              >
                 <v-icon>
                   {{
-                  isEditting(field.objectKey) ? 'mdi-pencil-off' : 'mdi-pencil'
+                    isEditting(field.objectKey)
+                      ? 'mdi-pencil-off'
+                      : 'mdi-pencil'
                   }}
                 </v-icon>
               </v-btn>
@@ -35,7 +47,10 @@
           <v-row dense v-if="!isEditting(field.objectKey)">
             <v-col cols="12">
               <v-row align="center" dense>
-                <v-col class="subheading primary--text font-weight-bold d-flex shrink py-0">Value:</v-col>
+                <v-col
+                  class="subheading primary--text font-weight-bold d-flex shrink py-0"
+                  >Value:</v-col
+                >
                 <v-col>{{ fields[field.objectKey].value }}</v-col>
               </v-row>
               <!-- <v-row align="center" dense>
@@ -48,10 +63,13 @@
               <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                >Visibility:</v-col>
+                  >Visibility:</v-col
+                >
                 <v-col>
                   {{
-                  fields[field.objectKey].internal === '1' ? 'Internal' : 'Public'
+                    fields[field.objectKey].internal === '1'
+                      ? 'Internal'
+                      : 'Public'
                   }}
                 </v-col>
               </v-row>
@@ -65,6 +83,8 @@
                 :items="orderBy(customFields, 'name')"
                 item-text="name"
                 item-value="name"
+                name="Name"
+                autocomplete="off"
                 label="Name"
                 return-object
                 @change="updateField(field.objectKey, $event)"
@@ -96,10 +116,13 @@
               <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                >Visibility:</v-col>
+                  >Visibility:</v-col
+                >
                 <v-col>
                   {{
-                  fields[field.objectKey].internal === '1' ? 'Internal' : 'Public'
+                    fields[field.objectKey].internal === '1'
+                      ? 'Internal'
+                      : 'Public'
                   }}
                 </v-col>
               </v-row>
@@ -140,7 +163,8 @@
         :disabled="saveDisabled"
         :loading="loading === 'save'"
         @click="saveFields"
-      >SAVE</v-btn>
+        >SAVE</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>
@@ -235,6 +259,7 @@ export default {
       this.$set(this.fields, newKey, { ...this.fieldTemplate })
       //set new field to edit mode
       this.editField(newKey)
+      console.log(this.fields)
     },
     createNewField() {
       this.$store.dispatch('toggleModalCatalogCustomfield')
@@ -268,9 +293,17 @@ export default {
       console.log(fieldKey)
       console.log(fields)
       for (let key in fields) {
-        if (key !== 'id') {
+        if (key !== 'id' && key !== 'default_value') {
+          //SET VALUE TO DEFAULT VALUE ?
           // if (this.fields[fieldKey][key] !== undefined)
           this.$set(this.fields[fieldKey], key, fields[key])
+        } else {
+          if (key === 'id') {
+            this.$set(this.fields[fieldKey], 'field_id', fields[key])
+          }
+          if (key === 'default_value') {
+            this.$set(this.fields[fieldKey], 'value', fields[key])
+          }
         }
       }
     },
@@ -298,7 +331,7 @@ export default {
         })
     }
   },
-  mounted() {
+  created() {
     console.log('edit fields modal created___')
     //Form available for creating new fields in app or an exisiting castalog item
     //if editting an existing item check custom fields are present and set each to
