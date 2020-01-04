@@ -5,6 +5,7 @@ const catalogItem = item => {
     abbreviation: item.abbreviation || 'EIPL',
     category: item.category || null,
     categoryName: item.categoryName || 'MISC',
+    color: item.color || null,
     customFields:
       item.custom_fields && item.custom_fields.length > 0
         ? item.custom_fields
@@ -13,8 +14,8 @@ const catalogItem = item => {
     id: item.id,
     name: item.name || '',
     status: item.status || ''
-  };
-};
+  }
+}
 
 const hotspot = item => {
   return {
@@ -24,7 +25,7 @@ const hotspot = item => {
     id: item.id,
     name: item.name || '',
     status: item.status || ''
-  };
-};
+  }
+}
 
-export { catalogItem, hotspot };
+export { catalogItem, hotspot }

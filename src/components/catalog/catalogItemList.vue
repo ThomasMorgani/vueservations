@@ -26,12 +26,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import Vue2Filters from 'vue2-filters';
-import filters from '@/modules/filters';
-import * as prep from '@/modules/prep';
+import { mapState } from 'vuex'
+import Vue2Filters from 'vue2-filters'
+import filters from '@/modules/filters'
+import * as prep from '@/modules/prep'
 
-import catalogItem from '@/components/catalog/catalogItem';
+import catalogItem from '@/components/catalog/catalogItem'
 export default {
   name: 'catalogList',
   components: {
@@ -42,28 +42,39 @@ export default {
     panel: null,
     statusData: {
       available: {
-        color: 'primary',
+        color: 'success',
         icon: 'mdi-calendar-check',
+        popovertext: 'Item is available for reservation',
         text: 'AVAILABLE'
+      },
+      blocked: {
+        color: 'error',
+        icon: 'mdi-phone-cancel',
+        popovertext: "Item's service blocked",
+        text: 'BLOCKED'
       },
       enabled: {
         color: 'success',
         icon: 'mdi-check-circle',
+        popovertext: 'Item is enabled',
         text: 'ENABLED'
       },
       disabled: {
         color: 'error',
         icon: 'mdi-cancel',
+        popovertext: 'Item is disabled',
         text: 'DISABLED'
       },
       unavailable: {
         color: 'warning',
         icon: 'mdi-calendar-alert',
+        popovertext: 'Item is currently reserved',
         text: 'UNAVAILABLE'
       },
       unkown: {
         color: 'disabled',
         icon: 'mdi-help-circle',
+        popovertext: 'Item status unknown',
         text: 'STATUS UNK'
       }
     }
@@ -75,7 +86,7 @@ export default {
       filterCategorySelect: state => state.filterCategorySelect
     }),
     itemList() {
-      return this.$store.getters.catalogItemsDisplayed;
+      return this.$store.getters.catalogItemsDisplayed
     }
   },
   methods: {
@@ -85,18 +96,18 @@ export default {
         const category = filters.categoryById(
           catalogItem.category,
           this.categories
-        );
-        catalogItem.categoryName = category.name || 'MISC';
+        )
+        catalogItem.categoryName = category.name || 'MISC'
         // catalogItem.customFields = cata
 
-        return prep.catalogItem(catalogItem);
+        return prep.catalogItem(catalogItem)
       } else {
-        console.log('no cat');
-        return prep.catalogItem(catalogItem);
+        console.log('no cat')
+        return prep.catalogItem(catalogItem)
       }
     }
   }
-};
+}
 </script>
 
 <style></style>
