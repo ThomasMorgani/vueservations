@@ -157,13 +157,25 @@ export default new Vuex.Store({
       const ciIndex = state.catalogItems.findIndex(el => el.id === data.id)
       console.log(ciIndex)
       if (ciIndex > -1) {
-        commit('catalogitemSetValue', {...data, index: ciIndex})
+        commit('catalogitemSetValue', { ...data, index: ciIndex })
       } else {
         return false
       }
     },
     catalogitemEditting({ commit }, data) {
-      commit('catalogitemEditting', data)
+      if (data) {
+        commit('catalogitemEditting', data)
+      } else {
+        commit('catalogitemEditting', {
+          abbreviation: null,
+          categoryName: null,
+          customFields: [],
+          id: null,
+          description: null,
+          name: null,
+          status: null
+        })
+      }
     },
     catalogitemEdittingSetValue({ commit }, data) {
       //data : item editting int, fields obj

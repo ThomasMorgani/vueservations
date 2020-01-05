@@ -1,13 +1,13 @@
 <template>
-  <v-row fill-height align-start justify-start dense>
-    <v-col cols="12">
+  <v-row fill-height align-start justify-start dense no-gutters class="d-flex flex-column">
+    <v-col cols="12" class="flex-shrink-1">
       <!-- <v-sheet height="10vh"> -->
-      <v-toolbar flat color="white">
+      <v-toolbar flat color="background">
         <!-- <v-btn outlined class="mr-4" @click="setToday">Today</v-btn> -->
         <v-menu bottom right>
           <template v-slot:activator="{ on }">
-            <v-btn outlined color="primary" v-on="on">
-              <span>{{ viewLabels[view] }}</span>
+            <v-btn large text color="primary" v-on="on" class="px-0">
+              <span class="title font-weight-bold">{{ viewLabels[view] }}</span>
               <v-icon right>mdi-menu-down</v-icon>
             </v-btn>
           </template>
@@ -48,10 +48,10 @@
         </v-btn>
       </v-toolbar>
     </v-col>
-    <v-col cols="12">
+    <v-col cols="12" class="flex-grow-1">
       <component :is="view" :view="view"></component>
     </v-col>
-    <v-col cols="12">
+    <v-col cols="12" class="flex-shrink-1">
       <!-- Edit Category Modal  -->
       <v-dialog
         v-model="modalCategoryEdit"
@@ -169,6 +169,10 @@ export default {
   methods: {
     catalogItemAdd() {
       console.log('catalogItemAdd')
+      this.$store.dispatch('catalogitemEditting', null)
+      setTimeout(() => {
+        this.$store.dispatch('toggleModalCatalogitemEdit')
+      }, 500)
     },
     categoryAdd() {
       this.editCategoryModal = true

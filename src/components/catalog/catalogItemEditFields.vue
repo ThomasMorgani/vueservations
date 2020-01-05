@@ -1,25 +1,22 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text outlined">{{
+    <v-card-title class="justify-center title primary--text outlined">
+      {{
       catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS'
-    }}</v-card-title>
+      }}
+    </v-card-title>
     <v-card-text class="modalBody">
-      <template  v-if="fieldsDisplayed.length < 1" >
+      <template v-if="fieldsDisplayed.length < 1">
         <p class="mt-6 text-center">No custom fields set for this catalog item.</p>
         <p class="text-center">Use the "ADD" button below to add new fields.</p>
       </template>
       <template v-for="field in fieldsDisplayed">
-        <v-card
-          elevation="3"
-          outlined
-          :key="field.objectKey + 'row'"
-          class="pa-3 mb-1"
-        >
+        <v-card elevation="3" outlined :key="field.objectKey + 'row'" class="pa-3 mb-1">
           <v-row dense align="center">
             <v-col cols="8" class="pt-0">
-              <p class="title font-weight-bold primary--text mb-0">
-                {{ fields[field.objectKey].name }}
-              </p>
+              <p
+                class="title font-weight-bold primary--text mb-0"
+              >{{ fields[field.objectKey].name }}</p>
             </v-col>
             <v-col cols="4" class="text-right pt-0">
               <v-btn
@@ -32,17 +29,12 @@
               >
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
-              <v-btn
-                small
-                icon
-                color="warning"
-                @click="editField(field.objectKey)"
-              >
+              <v-btn small icon color="warning" @click="editField(field.objectKey)">
                 <v-icon>
                   {{
-                    isEditting(field.objectKey)
-                      ? 'mdi-pencil-off'
-                      : 'mdi-pencil'
+                  isEditting(field.objectKey)
+                  ? 'mdi-pencil-off'
+                  : 'mdi-pencil'
                   }}
                 </v-icon>
               </v-btn>
@@ -51,10 +43,7 @@
           <v-row dense v-if="!isEditting(field.objectKey)">
             <v-col cols="12">
               <v-row align="center" dense>
-                <v-col
-                  class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                  >Value:</v-col
-                >
+                <v-col class="subheading primary--text font-weight-bold d-flex shrink py-0">Value:</v-col>
                 <v-col>{{ fields[field.objectKey].value }}</v-col>
               </v-row>
               <!-- <v-row align="center" dense>
@@ -67,13 +56,12 @@
               <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                  >Visibility:</v-col
-                >
+                >Visibility:</v-col>
                 <v-col>
                   {{
-                    fields[field.objectKey].internal === '1'
-                      ? 'Internal'
-                      : 'Public'
+                  fields[field.objectKey].internal === '1'
+                  ? 'Internal'
+                  : 'Public'
                   }}
                 </v-col>
               </v-row>
@@ -120,13 +108,12 @@
               <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                  >Visibility:</v-col
-                >
+                >Visibility:</v-col>
                 <v-col>
                   {{
-                    fields[field.objectKey].internal === '1'
-                      ? 'Internal'
-                      : 'Public'
+                  fields[field.objectKey].internal === '1'
+                  ? 'Internal'
+                  : 'Public'
                   }}
                 </v-col>
               </v-row>
@@ -167,8 +154,7 @@
         :disabled="saveDisabled"
         :loading="loading === 'save'"
         @click="saveFields"
-        >SAVE</v-btn
-      >
+      >SAVE</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -322,27 +308,42 @@ export default {
         console.log('no fields. if fields !== fields_original:')
         console.log('confirm removing all fields, set new endpoint?')
       }
-      this.$store
-        .dispatch('callApi', {
-          endpoint: '/catalogitem_fields_edit',
-          postData: {
-            catalogItem: this.catalogItemEditting.id,
-            fields: this.fields
-          }
+      if (!this.catalogItemEditting.id) {
+        this.$store.dispatch('catalogitemEdittingSetValue', {
+          key: 'customFields',
+          data: this.fields
         })
-        .then(resp => {
-          console.log(resp)
-          if (resp.status === 'success') {
-            //update editting item, actual item custom fields, close modal
-            // let custom_fields = []
-            // Object.key(this.f)
-            this.$store.dispatch('catalogitemEdittingSetValue', {key: 'customFields', data: resp.data})
-            this.$store.dispatch('catalogitemSetValue', {id: this.catalogItemEditting.id, key: 'custom_fields', data: resp.data})
-            this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
-
-
-          }
-        })
+        this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
+        this.reset()
+      } else {
+        this.$store
+          .dispatch('callApi', {
+            endpoint: '/catalogitem_fields_edit',
+            postData: {
+              catalogItem: this.catalogItemEditting.id,
+              fields: this.fields
+            }
+          })
+          .then(resp => {
+            console.log(resp)
+            if (resp.status === 'success') {
+              //update editting item, actual item custom fields, close modal
+              // let custom_fields = []
+              // Object.key(this.f)
+              this.$store.dispatch('catalogitemEdittingSetValue', {
+                key: 'customFields',
+                data: resp.data
+              })
+              this.$store.dispatch('catalogitemSetValue', {
+                id: this.catalogItemEditting.id,
+                key: 'custom_fields',
+                data: resp.data
+              })
+              this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
+              this.reset()
+            }
+          })
+      }
     }
   },
   created() {

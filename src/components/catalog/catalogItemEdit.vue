@@ -95,12 +95,14 @@
                   <span class="title primary--text">ADDITIONAL DETAILS</span>
                 </v-col>
                 <v-col class="text-right">
-                  <v-btn text icon color="warning" @click="editCustomFields">
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                  <!-- <v-btn flat icon color="primary">
-                    <v-icon>mdi-plus</v-icon>
-                  </v-btn>-->
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                      <v-btn text icon color="warning" @click="editCustomFields" v-on="on">
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Edit details</span>
+                  </v-tooltip>
                 </v-col>
               </v-row>
               <template v-for="field in customFieldsDisplayed">
@@ -108,7 +110,15 @@
                   <v-col class="subheading primary--text font-weight-bold">{{ field.name }}</v-col>
                   <v-col>{{ field.value }}</v-col>
                   <v-col>
-                    <v-icon small>{{ field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
+                    <v-tooltip right>
+                      <template v-slot:activator="{ on }">
+                        <v-icon
+                          small
+                          v-on="on"
+                        >{{ field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
+                      </template>
+                      <span>{{ field.internal === '1' ? 'Internal use only' : 'Visible to public' }}</span>
+                    </v-tooltip>
                   </v-col>
                 </v-row>
               </template>
@@ -149,14 +159,22 @@
       <v-btn text small disabled>RESET</v-btn>
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="cancel">CLOSE</v-btn>
-      <v-btn
-        text
-        small
-        color="primary"
-        :disabled="saveDisabled"
-        :loading="loading === 'save'"
-        @click="saveCategory"
-      >SAVE</v-btn>
+
+      <v-tooltip top :disabled="!saveDisabled">
+        <template v-slot:activator="{ on }">
+          <div v-on="on">
+            <v-btn
+              text
+              small
+              color="primary"
+              :disabled="saveDisabled"
+              :loading="loading === 'save'"
+              @click="save"
+            >SAVE</v-btn>
+          </div>
+        </template>
+        <span>{{ saveDisabledText }}</span>
+      </v-tooltip>
     </v-card-actions>
   </v-card>
 </template>
@@ -172,7 +190,7 @@ export default {
     customFields: [],
     defaultItem: {
       abbreviation: null,
-      categoryName: null,
+      category: null,
       customFields: [],
       id: null,
       description: null,
@@ -201,6 +219,20 @@ export default {
     customFieldsDisplayed() {
       return this.catalogItemEditting.customFields
     },
+    fieldsRequired() {
+      let fields = []
+      Object.keys(this.defaultItem).forEach(field => {
+        if (
+          field !== 'id' &&
+          field !== 'customFields' &&
+          field !== 'description' &&
+          this[field] === this.defaultItem[field]
+        ) {
+          fields.push(field)
+        }
+      })
+      return fields
+    },
     nameAvailable() {
       const nameMatches = this.catalogItems.find(
         el =>
@@ -216,7 +248,26 @@ export default {
       return null
     },
     saveDisabled() {
-      return !this.dataChanged || this.nameAvailable !== null
+      return (
+        !this.dataChanged ||
+        this.nameAvailable !== null ||
+        this.fieldsRequired.length > 0
+      )
+    },
+    saveDisabledText() {
+      let text = 'Errors with form'
+      if (this.nameAvailable !== null) {
+        text = 'Name must be unique'
+      } else if (this.fieldsRequired.length > 0) {
+        text = 'The following fields are required:'
+        for (let i in this.fieldsRequired) {
+          text =
+            i == this.fieldsRequired.length - 1
+              ? `${text} ${this.fieldsRequired[i]}`
+              : `${text} ${this.fieldsRequired[i]},`
+        }
+      }
+      return text
     }
   },
   methods: {
@@ -266,7 +317,7 @@ export default {
           alert('ERROR: ' + err)
         })
     },
-    saveCategory() {
+    save() {
       this.loading = 'save'
       console.log(this)
       const itemValues = [
@@ -281,9 +332,16 @@ export default {
       ]
       let postData = {}
       itemValues.forEach(val => (postData[val] = this[val]))
+      postData.customFields = this.catalogItemEditting.customFields
+      //setup image data
+      postData.imageData = []
+      console.log(postData)
+      const endpoint = itemValues.id
+        ? '/catalogitem_update'
+        : '/catalogitem_create'
       this.$store
         .dispatch('callApi', {
-          endpoint: '/catalogitem_update',
+          endpoint: endpoint,
           postData: postData
         })
         .then(resp => {
@@ -302,37 +360,23 @@ export default {
         .catch(err => console.log(err))
 
       this.loading = null
-      //   this.$store
-      //     .dispatch('', {})
-      //     .then(res => {
-      //       console.log(res)
-      //       if (res.status) {
-      //         if (res.status === 'success') {
-      //           //
-      //         } else {
-      //           //display error message returned from backend
-      //           console.log('res.status!= success', res)
-      //         }
-      //         this.loading = null
-      //       }
-      //     })
-      //     .catch(err => {
-      //       console.log(err)
-      //       alert('ERROR: ' + err)
-      //     })
     }
   },
   created() {
     if (this.catalogItemEditting) {
-      console.log('catItemEdititing created')
-      console.log(this.catalogItemEditting)
+      // console.log('catItemEdititing created')
       for (let item in this.catalogItemEditting) {
+        // if (item === 'color' && this.catalogItemEditting[item] === 'primary') {
+        //   this[item] = this.$vuetify.themes.light.primary
+        // } else {
+        //   this[item] = this.catalogItemEditting[item]
+        // }
         this[item] = this.catalogItemEditting[item]
       }
     }
   },
   mounted() {
-    console.log('hh')
+    // console.log('hh')
   }
 }
 </script>
