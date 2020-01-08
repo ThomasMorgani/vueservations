@@ -1,7 +1,9 @@
 <template>
-  <v-card flat color="background">
-    <v-card-title class="pa-0">
-      <!-- <span class="headline font-weight-medium primary--text">CATALOG</span> -->
+  <!-- <v-card flat color="background"> -->
+  <v-card flat >
+    <v-card-title >
+    <!-- <v-card-title class="pa-0"> -->
+      <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
     </v-card-title>
     <v-card-text>
@@ -9,10 +11,10 @@
         popout
         v-model="panel"
         class="py-1"
-        style="height: 75vh; overflow-y: scroll;"
+        style="height: 65vh; overflow-y: scroll;"
       >
         <!-- <template v-for="(item, key) in limitBy(itemsDisplayed, itemDisplayLimit)"> -->
-        <template v-for="(item, key) in itemList">
+        <template v-for="(item, key) in orderBy(itemList, 'name')">
           <catalogItem
             :key="item.id ? item.id : key + 'ci'"
             :item="prepareCatalogItemData(item)"

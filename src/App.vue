@@ -12,6 +12,10 @@
       <!-- <v-btn icon>
         <v-icon>mdi-bookmark-plus-outline</v-icon>
       </v-btn>-->
+       <!-- <template v-slot:extension>
+          <v-toolbar-title>MENU</v-toolbar-title>
+      <v-spacer></v-spacer>
+       </template> -->
     </v-app-bar>
     <v-content>
       <component :is="view"></component>

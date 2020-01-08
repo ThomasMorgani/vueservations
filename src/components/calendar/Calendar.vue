@@ -2,12 +2,12 @@
   <v-row fill-height align-start justify-start dense>
     <v-col cols="12">
       <!-- <v-sheet height="10vh"> -->
-      <v-toolbar flat color="white">
+      <v-toolbar flat color="background">
         <!-- <v-btn outlined class="mr-4" @click="setToday">Today</v-btn> -->
         <v-menu bottom right>
           <template v-slot:activator="{ on }">
-            <v-btn outlined v-on="on" color="primary">
-              <span>{{ typeToLabel[type] }}</span>
+            <v-btn text v-on="on" color="primary">
+              <span class="title font-weight-bold">{{ typeToLabel[type] }}</span>
               <v-icon right>mdi-menu-down</v-icon>
             </v-btn>
           </template>
@@ -50,7 +50,7 @@
       <FilterDrawer :value="navDrawer"></FilterDrawer>
 
       <!-- <v-sheet height="calc(100vh - 64px)" style="overflow-y: scroll;"> -->
-      <v-sheet height="80vh" style="overflow-y: scroll">
+      <v-sheet height="75vh" style="overflow-y: scroll">
         <v-sheet :height="type === 'month' ? calendarMonthHeight : '100%'">
           <v-calendar
             ref="calendar"
@@ -121,7 +121,7 @@ export default {
     navDrawer: false,
     start: null,
     end: null,
-    calendarMonthHeight: 1000,
+    calendarMonthHeight: 2000,
     color: '#000066',
     currentlyEditing: null,
     selectedEvent: {},

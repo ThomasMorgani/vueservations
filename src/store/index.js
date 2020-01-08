@@ -55,10 +55,11 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    catalogitemSetValue(state, data) {
-      //data : {key: value editting, data: value of item }
-      console.log(data)
-      state.catalogItems[data.index][data.key] = data.data
+    catalogitemAdd(state, data) {
+      state.catalogItems.push(data)
+    },
+    catalogitemDelete(state, data) {
+      Vue.delete(state.catalogItems, data)
     },
     catalogitemEditting(state, data) {
       state.catalogitemEditting = data
@@ -66,6 +67,11 @@ export default new Vuex.Store({
     catalogitemEdittingSetValue(state, data) {
       //data : {key: value editting, data: value of item }
       state.catalogitemEditting[data.key] = data.data
+    },
+    catalogitemSetValue(state, data) {
+      //data : {key: value editting, data: value of item }
+      console.log(data)
+      state.catalogItems[data.index][data.key] = data.data
     },
     catalogView(state, data) {
       state.catalogView = data
@@ -150,6 +156,30 @@ export default new Vuex.Store({
             reject(error)
           }
         )
+      })
+    },
+    catalogitemAdd({ commit }, data) {
+      commit('catalogitemAdd', data)
+    },
+    catalogitemDelete({ commit, dispatch, state }, data) {
+      return new Promise((resolve, reject) => {
+        dispatch('callApi', {
+          endpoint: '/catalogItem_delete/' + data.id
+        })
+          .then(res => {
+            console.log(res)
+            if (res.status === 'success') {
+              commit(
+                'catalogitemDelete',
+                state.catalogItems.findIndex(el => el.id === data.id)
+              )
+            }
+            resolve(res)
+          })
+          .catch(err => {
+            console.log(err)
+            reject(err)
+          })
       })
     },
     catalogitemSetValue({ commit, state }, data) {

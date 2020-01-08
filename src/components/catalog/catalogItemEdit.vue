@@ -142,24 +142,37 @@
           </v-card-text>
           <v-card-actions class="d-flex justify-space-around">
             <v-btn color="primary" text @click="modalConfirmDelete = !modalConfirmDelete">CANCEL</v-btn>
-            <v-btn color="error" text @click="deleteCategory">DELETE</v-btn>
+            <v-btn color="error" text @click="deleteCatalogitem">DELETE</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </v-card-text>
     <v-card-actions>
-      <v-btn
-        text
-        small
-        color="primary"
-        :disabled="!id"
-        :loading="loading === 'delete'"
-        @click="modalConfirmDelete = !modalConfirmDelete"
-      >DELETE</v-btn>
-      <v-btn text small disabled>RESET</v-btn>
+       <v-tooltip top :disabled="!id">
+        <template v-slot:activator="{ on }">
+          <div v-on="on">
+            <v-btn
+              text
+              small
+              color="primary"
+              :disabled="!id"
+              :loading="loading === 'delete'"
+              @click="modalConfirmDelete = !modalConfirmDelete"
+            >DELETE</v-btn>
+          </div>
+        </template>
+        <span>Delete catalog item</span>
+      </v-tooltip>
+      <v-tooltip top >
+        <template v-slot:activator="{ on }">
+          <div v-on="on">
+        <v-btn text small :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
+          </div>
+        </template>
+        <span>Revert all unsaved changes</span>
+      </v-tooltip>
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="cancel">CLOSE</v-btn>
-
       <v-tooltip top :disabled="!saveDisabled">
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -197,9 +210,13 @@ export default {
       name: null,
       status: null
     },
+    description: null,
     id: null,
     loading: false,
     name: null,
+    originalValues: {
+
+    },
     modalConfirmDelete: false,
     status: null,
     statusOptions: ['blocked', 'enabled', 'disabled']
@@ -210,14 +227,20 @@ export default {
       catalogItemEditting: state => state.catalogitemEditting,
       categories: state => state.categories
     }),
-    dataChanged() {
-      return true
-    },
     abbreviationAvailable() {
       return null
     },
     customFieldsDisplayed() {
       return this.catalogItemEditting.customFields
+    },
+    isChanged() {
+      let isChanged = false
+      Object.keys(this.defaultItem).forEach(field => {
+        if (field !== 'customFields' && field !== 'categoryName' && this.originalValues[field] !== this[field]) {
+          isChanged = true
+        }
+      })
+      return isChanged
     },
     fieldsRequired() {
       let fields = []
@@ -249,14 +272,16 @@ export default {
     },
     saveDisabled() {
       return (
-        !this.dataChanged ||
+        !this.isChanged ||
         this.nameAvailable !== null ||
         this.fieldsRequired.length > 0
       )
     },
     saveDisabledText() {
       let text = 'Errors with form'
-      if (this.nameAvailable !== null) {
+      if (!this.isChanged) {
+        text = 'There are no unsaved changes'
+      } else if (this.nameAvailable !== null) {
         text = 'Name must be unique'
       } else if (this.fieldsRequired.length > 0) {
         text = 'The following fields are required:'
@@ -276,6 +301,19 @@ export default {
       this.loading = null
       this.$store.dispatch('toggleModalCatalogitemEdit')
     },
+    deleteCatalogitem() {
+      console.log('delete')
+      this.$store.dispatch('catalogitemDelete', {id: this.id}).then(resp => {
+        console.log(resp)
+        if (resp.status === 'success') {
+          this.modalConfirmDelete = !this.modalConfirmDelete
+          this.$store.dispatch('toggleModalCatalogitemEdit')
+          //TODO: SNACKBAR
+        }
+      }).catch(err => {
+        console.log('err: ' + err)
+      })
+    },
     editCustomFields() {
       const customFields = this.catalogItemEditting.customFields
         ? this.catalogItemEditting.customFields
@@ -287,35 +325,20 @@ export default {
           this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
         })
     },
+    resetChanges() {
+      let isChanged = false
+      Object.keys(this.originalValues).forEach(field => {
+        if (field !== 'customFields' && field !== 'categoryName' ) {
+          this.$set(this, field, this.originalValues[field])
+        }
+      })
+      return !isChanged
+    },
     resetForm() {
       this.color = this.$vuetify.theme.primary || 'primary'
       this.id = null
       this.loading = false
       this.name = null
-    },
-    deleteCategory() {
-      this.loading = 'delete'
-      this.modalConfirmDelete = false
-      this.$store
-        .dispatch('categoryDelete', {
-          id: this.id
-        })
-        .then(res => {
-          console.log(res)
-          if (res.status) {
-            if (res.status === 'success') {
-              this.$store.dispatch('toggleModalEditCategory')
-            } else {
-              //display error message returned from backend
-              console.log('res.status!= success', res)
-            }
-            this.loading = null
-          }
-        })
-        .catch(err => {
-          console.log(err)
-          alert('ERROR: ' + err)
-        })
     },
     save() {
       this.loading = 'save'
@@ -332,13 +355,19 @@ export default {
       ]
       let postData = {}
       itemValues.forEach(val => (postData[val] = this[val]))
-      postData.customFields = this.catalogItemEditting.customFields
-      //setup image data
-      postData.imageData = []
+      const isNew = !postData.id
+      if (isNew) {
+        //TODO: WE SHOULD BE ABLE TO WORK THIS INTO UPDATE FUNCTION ON SERVERSIDE
+        postData.customFields = this.catalogItemEditting.customFields
+        postData.imageData = []
+      }
       console.log(postData)
-      const endpoint = itemValues.id
-        ? '/catalogitem_update'
-        : '/catalogitem_create'
+      console.log(this.catalogItemEditting)
+      //setup image data
+      console.log(postData)
+      const endpoint = isNew
+        ? '/catalogitem_create'
+        : '/catalogitem_update'
       this.$store
         .dispatch('callApi', {
           endpoint: endpoint,
@@ -347,32 +376,45 @@ export default {
         .then(resp => {
           console.log(resp)
           if (resp.status === 'success') {
-            Object.keys(postData).forEach(key => {
-              this.$store.dispatch('catalogitemSetValue', {
-                id: this.id,
-                key: key,
-                data: postData[key]
+            if (isNew) {
+              //ADD ITEM TO LIST
+              this.$store.dispatch('catalogitemAdd', resp.data)
+              this.$store.dispatch('catalogitemEditting', resp.data)
+              this.setItemEdittingValues(resp.data)
+              //SET CATALOG ITEM EDITTING ID
+            } else {
+              Object.keys(postData).forEach(key => {
+                this.$store.dispatch('catalogitemSetValue', {
+                  id: this.id,
+                  key: key,
+                  data: postData[key]
+                })
               })
-            })
+            }
           }
           //set originalItem to item
         })
         .catch(err => console.log(err))
 
       this.loading = null
-    }
-  },
-  created() {
-    if (this.catalogItemEditting) {
-      // console.log('catItemEdititing created')
-      for (let item in this.catalogItemEditting) {
+    },
+    setItemEdittingValues(values) {
+      for (let item in values) {
         // if (item === 'color' && this.catalogItemEditting[item] === 'primary') {
         //   this[item] = this.$vuetify.themes.light.primary
         // } else {
         //   this[item] = this.catalogItemEditting[item]
         // }
-        this[item] = this.catalogItemEditting[item]
+        this[item] = values[item]
+        this.originalValues[item] = values[item]
       }
+
+    }
+  },
+  created() {
+    // console.log('catItemEdititing created')
+    if (this.catalogItemEditting) {
+      this.setItemEdittingValues(this.catalogItemEditting)
     }
   },
   mounted() {
