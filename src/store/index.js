@@ -129,7 +129,7 @@ export default new Vuex.Store({
           endpoint: `/initialize_page_data`
         })
           .then(data => {
-            console.log(data)
+            // console.log(data)
             if (data) {
               Object.keys(data).forEach(key => {
                 commit('setStateValue', { key: key, value: data[key] })
@@ -242,7 +242,7 @@ export default new Vuex.Store({
       commit('categoryEditting', data)
     },
     categoryEditSave({ commit, dispatch, state }, data) {
-      console.log('data', data)
+      // console.log('data', data)
       return new Promise((resolve, reject) => {
         dispatch('callApi', {
           endpoint: '/category_edit',

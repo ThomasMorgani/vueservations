@@ -64,10 +64,12 @@
                   <p>Image</p>
                   <!-- <p class="mb-0"></p> -->
                   <v-img
-                    src="https://www.eipl.org/newsite/static/images/generic/music_cd_art_not_found.png"
+                    :src="image"
                     height="48"
                     width="48"
                     hover
+                    @click="modalEditImage = !modalEditImage"
+
                   ></v-img>
                   <!-- <v-file-input prepend-inner-icon="mdi-image" prepend-icon label="Select Image"></v-file-input> -->
                 </v-card>
@@ -126,7 +128,11 @@
           </v-col>
         </v-row>
       </form>
+      <v-dialog v-model="modalEditImage" max-width="500px" transition="dialog-transition" :key="id + 'imgModal'">
+        <editImageModal :currentImage="image" @closeImageModal="modalEditImage = false"></editImageModal>
+      </v-dialog>
       <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
+        <!--TODO: Move to Component -->
         <v-card>
           <v-card-title class="justify-center title error--text">CONFIRM DELETE</v-card-title>
           <v-card-text>
@@ -194,8 +200,10 @@
 
 <script>
 import { mapState } from 'vuex'
+import editImageModal from '@/components/catalog/catalogItemEditImage'
 export default {
   name: 'catalogItemEdit',
+  components: {editImageModal},
   data: () => ({
     abbreviation: null,
     category: null,
@@ -212,12 +220,15 @@ export default {
     },
     description: null,
     id: null,
+    image: 'https://www.eipl.org/reservations/images/default/catalogitem.png',
+    imageData: {},
     loading: false,
     name: null,
     originalValues: {
 
     },
     modalConfirmDelete: false,
+    modalEditImage: false,
     status: null,
     statusOptions: ['blocked', 'enabled', 'disabled']
   }),
@@ -228,6 +239,17 @@ export default {
       categories: state => state.categories
     }),
     abbreviationAvailable() {
+      const abvMatches = this.catalogItems.find(
+        el =>
+          el.abbreviation.toLowerCase() === String(this.abbreviation).toLowerCase() &&
+          el.id !== this.id
+      )
+      if (!this.abbreviation) {
+        return 'Abbreviation Required'
+      }
+      if (abvMatches !== undefined) {
+        return 'Abbr. exists.'
+      }
       return null
     },
     customFieldsDisplayed() {
@@ -266,13 +288,14 @@ export default {
         return 'Name Required'
       }
       if (nameMatches !== undefined) {
-        return 'Category name already exists.'
+        return 'Item name already exists.'
       }
       return null
     },
     saveDisabled() {
       return (
         !this.isChanged ||
+        this.abbreviationAvailable !== null ||
         this.nameAvailable !== null ||
         this.fieldsRequired.length > 0
       )
@@ -283,6 +306,8 @@ export default {
         text = 'There are no unsaved changes'
       } else if (this.nameAvailable !== null) {
         text = 'Name must be unique'
+      } else if (this.abbreviationAvailable !== null) {
+        text = 'Abbreviation must be unique'
       } else if (this.fieldsRequired.length > 0) {
         text = 'The following fields are required:'
         for (let i in this.fieldsRequired) {
