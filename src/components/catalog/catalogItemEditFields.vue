@@ -317,7 +317,7 @@ export default {
         this.reset()
       } else {
         this.$store
-          .dispatch('callApi', {
+          .dispatch('apiCall', {
             endpoint: '/catalogitem_fields_edit',
             postData: {
               catalogItem: this.catalogItemEditting.id,

@@ -123,9 +123,35 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    apiCall(context, data) {
+      // console.log(data)
+      return new Promise((resolve, reject) => {
+        apiFunctions.callApi(data.endpoint, data.postData || null).then(
+          response => {
+            resolve(response)
+          },
+          error => {
+            reject(error)
+          }
+        )
+      })
+    },
+    apiPost(context, data) {
+      console.log(data)
+      return new Promise((resolve, reject) => {
+        apiFunctions.postApi(data.endpoint, data.postData).then(
+          response => {
+            resolve(response)
+          },
+          error => {
+            reject(error)
+          }
+        )
+      })
+    },
     initializeApp({ dispatch, commit }) {
       return new Promise((resolve, reject) => {
-        dispatch('callApi', {
+        dispatch('apiCall', {
           endpoint: `/initialize_page_data`
         })
           .then(data => {
@@ -145,25 +171,12 @@ export default new Vuex.Store({
           })
       })
     },
-    callApi(context, data) {
-      // console.log(data)
-      return new Promise((resolve, reject) => {
-        apiFunctions.callApi(data.endpoint, data.postData || null).then(
-          response => {
-            resolve(response)
-          },
-          error => {
-            reject(error)
-          }
-        )
-      })
-    },
     catalogitemAdd({ commit }, data) {
       commit('catalogitemAdd', data)
     },
     catalogitemDelete({ commit, dispatch, state }, data) {
       return new Promise((resolve, reject) => {
-        dispatch('callApi', {
+        dispatch('apiCall', {
           endpoint: '/catalogItem_delete/' + data.id
         })
           .then(res => {
@@ -219,7 +232,7 @@ export default new Vuex.Store({
     },
     categoryDelete({ commit, dispatch, state }, data) {
       return new Promise((resolve, reject) => {
-        dispatch('callApi', {
+        dispatch('apiCall', {
           endpoint: '/category_delete/' + data.id
         })
           .then(res => {
@@ -244,7 +257,7 @@ export default new Vuex.Store({
     categoryEditSave({ commit, dispatch, state }, data) {
       // console.log('data', data)
       return new Promise((resolve, reject) => {
-        dispatch('callApi', {
+        dispatch('apiCall', {
           endpoint: '/category_edit',
           postData: data
         })

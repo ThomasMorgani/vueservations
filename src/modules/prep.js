@@ -12,6 +12,7 @@ const catalogItem = item => {
         : null,
     description: item.description || '',
     id: item.id,
+    image_data: item.image_data || {},
     name: item.name || '',
     status: item.status || ''
   }

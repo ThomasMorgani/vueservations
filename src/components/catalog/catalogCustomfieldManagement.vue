@@ -171,7 +171,7 @@ export default {
 
     save() {
       this.$store
-        .dispatch('callApi', {
+        .dispatch('apiCall', {
           endpoint: '/customfield_new',
           postData: {
             name: this.name,

@@ -64,7 +64,7 @@
                   <p>Image</p>
                   <!-- <p class="mb-0"></p> -->
                   <v-img
-                    :src="image"
+                    :src="imageDisplayed"
                     height="48"
                     width="48"
                     hover
@@ -129,7 +129,7 @@
         </v-row>
       </form>
       <v-dialog v-model="modalEditImage" max-width="500px" transition="dialog-transition" :key="id + 'imgModal'">
-        <editImageModal :currentImage="image" @closeImageModal="modalEditImage = false"></editImageModal>
+        <editImageModal :currentImage="image" :isNew="Boolean(!id)" @closeImageModal="modalEditImage = false"></editImageModal>
       </v-dialog>
       <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
         <!--TODO: Move to Component -->
@@ -213,15 +213,16 @@ export default {
       abbreviation: null,
       category: null,
       customFields: [],
-      id: null,
       description: null,
+      id: null,
+      image_data: {},
       name: null,
       status: null
     },
     description: null,
     id: null,
-    image: 'https://www.eipl.org/reservations/images/default/catalogitem.png',
-    imageData: {},
+    image: null,
+    image_data: {},
     loading: false,
     name: null,
     originalValues: {
@@ -254,6 +255,14 @@ export default {
     },
     customFieldsDisplayed() {
       return this.catalogItemEditting.customFields
+    },
+    imageDisplayed() {
+      let img = 'https://www.eipl.org/reservations/images/default/catalogitem.png'
+      const path = 'https://www.eipl.org/reservations/images/uploads/'
+      if (this.image_data.file_name) {
+        img = path + this.image_data.file_name
+      }
+      return img
     },
     isChanged() {
       let isChanged = false
@@ -394,7 +403,7 @@ export default {
         ? '/catalogitem_create'
         : '/catalogitem_update'
       this.$store
-        .dispatch('callApi', {
+        .dispatch('apiCall', {
           endpoint: endpoint,
           postData: postData
         })
@@ -433,8 +442,8 @@ export default {
         this[item] = values[item]
         this.originalValues[item] = values[item]
       }
+    },
 
-    }
   },
   created() {
     // console.log('catItemEdititing created')

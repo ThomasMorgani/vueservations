@@ -1,5 +1,20 @@
 <template>
     <v-card>
+          <v-dialog
+      v-model="modalFullImagePreview"
+      transition="dialog-transition"
+
+
+    >
+    <v-card
+    max-height="90vh"
+    max-width="90vw"
+
+    >
+
+      <v-img  contain :src="imageUrl ? imageUrl : currentImage"   ></v-img>
+    </v-card>
+    </v-dialog>
     <v-card-title class="justify-center title primary--text">
       EDIT IMAGE
     </v-card-title>
@@ -9,7 +24,7 @@
             <p class="primary--text mb-4">
               Preview
             </p>
-             <v-img :src="imageUrl ? imageUrl : currentImage" max-width="150" ref="imagePreview"></v-img>
+             <v-img :src="imageUrl ? imageUrl : currentImage" max-width="150" ref="imagePreview" @click="modalFullImagePreview = !modalFullImagePreview"></v-img>
           </v-col>
           <v-col  cols="6" class="d-flex flex-column justify-start">
                 <p class="primary--text mb-4">
@@ -31,6 +46,7 @@
             <v-btn  cols="6" color="primary" dark :outlined="method !== 'upload'" @click="method = method === 'upload' ? null : 'upload'"><v-icon small left>mdi-file-upload</v-icon> UPLOAD NEW</v-btn>
             </v-col>
        </v-row>
+
     </v-card-text>
 
 
@@ -77,6 +93,10 @@ export default {
     currentImage: {
       type: String,
       required: true
+    },
+    isNew: {
+      type: Boolean,
+      required: true
     }
   },
   data:() => ({
@@ -85,8 +105,9 @@ export default {
     imageUrl: null,
     imageFile: null,
     isLoaded: false,
-    method: null,
     loading: false,
+    method: null,
+    modalFullImagePreview: false,
     saveDisabled: false,
     saveDisabledText: 'todo'
 
@@ -94,6 +115,7 @@ export default {
   computed: {
     imagePreviewProperties() {
       let loaded = this.isLoaded
+      let img = null
       let properties = {
         name: '',
         type: '',
@@ -101,16 +123,27 @@ export default {
         size: ''
       }
       if (loaded) {
-        let img = this.$refs.imagePreview.image || []
-        console.log(this.$refs)
-        console.log(img)
-        console.log(performance.getEntriesByName(img.src))
-        properties = {
-          name:  img.src ? img.src.replace(/^.*[\\/]/, '') : 'not found',
-          type: img.src ? img.src.substring(img.src.length -3).toUpperCase()  : 'not found',
-          dimensions: img.naturalWidth && img.naturalHeight ? `${img.naturalWidth}px X ${img.naturalHeight}px` : 'unk',
-          size: 'to be added'
-       }
+        if (this.imageFile) {
+          img = this.imageFile || {}
+          properties = {
+            name:  'TBD',
+            type: img.type ? img.type.substring(img.type.length -3).toUpperCase()  : 'TBD',
+            dimensions: 'TBD',
+            size: img.size ? `${Math.round(img.size / 1024)}KB` : 'TBD'
+          }
+        } else {
+            img = this.$refs.imagePreview.image || []
+            console.log(this.$refs)
+            console.log(img)
+            console.log(this.imageFile)
+            properties = {
+              name:  img.src ? img.src.replace(/^.*[\\/]/, '') : 'not found',
+              type: img.src ? img.src.substring(img.src.length -3).toUpperCase()  : 'not found',
+              // dimensions: img.naturalWidth && img.naturalHeight ? `${img.naturalWidth}px X ${img.naturalHeight}px` : 'unk',
+              dimensions: img.naturalWidth && img.naturalHeight ? `${img.naturalWidth}x${img.naturalHeight}` : 'unk',
+              size: 'to be added'
+            }
+        }
       }
       return properties
     }
@@ -136,6 +169,23 @@ export default {
     },
     saveImage() {
       console.log('saveimage')
+      if (this.method === 'select') {
+        //emit save image
+        this.$emit('updateImage')
+      } else {
+        let pData = new FormData();
+        console.log(this.imageFile)
+        pData.append("img", this.imageFile);
+        // for (let k of pData.entries()) {
+        //   console.log(k)
+        // }
+        //dispatch save image
+        this.$store.dispatch('apiPost', {endpoint: '/images_upload', postData: pData}).then((resp => {
+          console.log(resp)
+        // this.$emit('updateImage')
+        })).catch(err => {console.log('err:', err)})
+      }
+
 
     }
   },
