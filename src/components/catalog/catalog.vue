@@ -1,5 +1,12 @@
 <template>
-  <v-row fill-height align-start justify-start dense no-gutters class="d-flex flex-column">
+  <v-row
+    fill-height
+    align-start
+    justify-start
+    dense
+    no-gutters
+    class="d-flex flex-column"
+  >
     <v-col cols="12" class="flex-shrink-1">
       <!-- <v-sheet height="10vh"> -->
       <v-toolbar flat color="background">
@@ -51,65 +58,75 @@
     <v-col cols="12" class="flex-grow-1">
       <component :is="view" :view="view"></component>
     </v-col>
-    <v-col cols="12" class="flex-shrink-1">
-      <!-- Edit Category Modal  -->
-      <v-dialog
-        v-model="modalCategoryEdit"
-        persistent
-        max-width="500px"
-        transition="dialog-transition"
-      >
-        <categoryEdit :key="'cEdit' + String(categoryEditting)"></categoryEdit>
-      </v-dialog>
-      <!-- Edit Catalog Item Modal  -->
-      <v-dialog
-        v-model="modalCatalogitemEdit"
-        persistent
-        max-width="500px"
-        transition="dialog-transition"
-        :key="
-          `ciEdit${String(
-            catalogItemEditting && catalogItemEditting.id
-              ? catalogItemEditting.id
-              : 'none'
-          )}`
-        "
-      >
-        <catalogItemEdit></catalogItemEdit>
-      </v-dialog>
-      <!-- Edit Catalog Item Modal  -->
-      <v-dialog
-        v-model="modalEditCatalogItemFields"
-        persistent
-        max-width="500px"
-        transition="dialog-transition"
-        :key="
-          `cifEdit${String(
-            catalogItemEditting && catalogItemEditting.id
-              ? catalogItemEditting.id
-              : 'none'
-          )}`
-        "
-      >
-        <catalogItemEditFields></catalogItemEditFields>
-      </v-dialog>
-      <!-- Catalog Custom Fields Mgmtm Modal  -->
-      <v-dialog
-        v-model="modalCatalogCustomfield"
-        persistent
-        max-width="500px"
-        transition="dialog-transition"
-        :key="
-          `cinewfEdit${String(
-            catalogItemEditting && catalogItemEditting.id
-              ? catalogItemEditting.id
-              : 'none'
-          )}`
-        "
-      >
-        <catalogCustomfield></catalogCustomfield>
-      </v-dialog>
-    </v-col>
+    <!-- Edit Category Modal  -->
+    <v-dialog
+      v-model="modalCategoryEdit"
+      persistent
+      max-width="500px"
+      transition="dialog-transition"
+    >
+      <categoryEdit :key="'cEdit' + String(categoryEditting)"></categoryEdit>
+    </v-dialog>
+    <!-- Edit Catalog Item Modal  -->
+    <v-dialog
+      v-model="modalCatalogitemEdit"
+      persistent
+      max-width="500px"
+      transition="dialog-transition"
+      :key="
+        `ciEdit${String(
+          catalogItemEditting && catalogItemEditting.id
+            ? catalogItemEditting.id
+            : 'none'
+        )}`
+      "
+    >
+      <catalogItemEdit></catalogItemEdit>
+    </v-dialog>
+    <!-- Edit Catalog Item Modal  -->
+    <v-dialog
+      v-model="modalEditCatalogItemFields"
+      persistent
+      max-width="500px"
+      transition="dialog-transition"
+      :key="
+        `cifEdit${String(
+          catalogItemEditting && catalogItemEditting.id
+            ? catalogItemEditting.id
+            : 'none'
+        )}`
+      "
+    >
+      <catalogItemEditFields></catalogItemEditFields>
+    </v-dialog>
+    <!-- Catalog Custom Fields Mgmtm Modal  -->
+    <v-dialog
+      v-model="modalCatalogCustomfield"
+      persistent
+      max-width="500px"
+      transition="dialog-transition"
+      :key="
+        `cinewfEdit${String(
+          catalogItemEditting && catalogItemEditting.id
+            ? catalogItemEditting.id
+            : 'none'
+        )}`
+      "
+    >
+      <catalogCustomfield></catalogCustomfield>
+    </v-dialog>
+    <v-dialog
+      :value="modalImageFullPreview"
+      transition="dialog-transition"
+      :key="
+        `imgPrev${String(
+          imagePreviewData && imagePreviewData.id ? imagePreviewData.id : 'none'
+        )}`
+      "
+      @input="$store.dispatch('toggleModalImageFullPreview')"
+    >
+      <imagePreviewModal></imagePreviewModal>
+    </v-dialog>
   </v-row>
 </template>
 
@@ -120,6 +137,7 @@ import catalogItemEdit from '@/components/catalog/catalogItemEdit'
 import catalogItemEditFields from '@/components/catalog/catalogItemEditFields'
 import categoryEdit from '@/components/catalog/categoryEdit'
 import category from '@/views/catalog/category'
+import imagePreviewModal from '@/components/images/imagePreviewModal'
 import overview from '@/views/catalog/overview'
 export default {
   components: {
@@ -130,6 +148,7 @@ export default {
     catalogItemEditFields,
     category,
     categoryEdit,
+    imagePreviewModal,
     overview
   },
   data: () => ({
@@ -150,11 +169,13 @@ export default {
       catalogItemEditting: state => state.catalogitemEditting,
       catalogitemFieldsEditting: state => state.catalogitemFieldsEditting,
       categoryEditting: state => state.categoryEditting,
+      imagePreviewData: state => state.imagePreviewData,
       modalCatalogitemEdit: state => state.modalCatalogitemEdit,
       modalCatalogCustomfield: state => state.modalCatalogCustomfield,
       modalEditCatalogItemFields: state =>
         state.modalCatalogitemEditCustomfields,
-      modalCategoryEdit: state => state.modalCategoryEdit
+      modalCategoryEdit: state => state.modalCategoryEdit,
+      modalImageFullPreview: state => state.modalImageFullPreview
     }),
     view: {
       set(val) {

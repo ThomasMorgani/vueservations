@@ -17,7 +17,9 @@ export default new Vuex.Store({
     eventsFilterCategories: [],
     eventsFilterCategorySelect: [],
     eventsFilterDateRange: [],
+    imagePreviewData: {},
     modalCatalogCustomfield: false,
+    modalImageFullPreview: false,
     modalCatalogitemEdit: false,
     modalCatalogitemEditCustomfields: false,
     modalCategoryEdit: false
@@ -120,6 +122,9 @@ export default new Vuex.Store({
     },
     toggleModalEditCategory(state, data) {
       state.modalCategoryEdit = data
+    },
+    toggleModalImageFullPreview(state, data) {
+      state.modalImageFullPreview = data
     }
   },
   actions: {
@@ -286,6 +291,9 @@ export default new Vuex.Store({
     customfieldsAddField({ commit }, data) {
       commit('customfieldsAddField', data)
     },
+    setStateValue({commit}, data) {
+      commit('setStateValue', { key: data.key, value: data.value })
+    },
     toggleModalCatalogCustomfield({ commit, state }) {
       commit('toggleModalCatalogCustomfield', !state.modalCatalogCustomfield)
     },
@@ -300,6 +308,9 @@ export default new Vuex.Store({
     },
     toggleModalEditCategory({ commit, state }) {
       commit('toggleModalEditCategory', !state.modalCategoryEdit)
+    },
+    toggleModalImageFullPreview({ commit, state }) {
+      commit('toggleModalImageFullPreview', !state.modalImageFullPreview)
     }
   },
   modules: {}

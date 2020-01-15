@@ -1,7 +1,9 @@
 export { apiSettings, firebaseSettings }
 
 const apiSettings = {
-  baseUrl: 'https://eipl.org/reservations/dev/api'
+  appUrl: 'https://eipl.org/reservations',
+  baseUrl: 'https://eipl.org/reservations/dev/api',
+  fqdn: 'https://eipl.org'
   // baseUrl: 'https://eipl.org/reservations/api'
 }
 

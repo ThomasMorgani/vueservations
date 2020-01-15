@@ -128,8 +128,8 @@
           </v-col>
         </v-row>
       </form>
-      <v-dialog v-model="modalEditImage" max-width="500px" transition="dialog-transition" :key="id + 'imgModal'">
-        <editImageModal :currentImage="image" :isNew="Boolean(!id)" @closeImageModal="modalEditImage = false"></editImageModal>
+      <v-dialog v-model="modalEditImage" max-width="650px" transition="dialog-transition" :key="id + 'imgModal'">
+        <editImageModal :currentImageData="image_data" :isNew="Boolean(!id)" @closeImageModal="modalEditImage = false" @updateImage="updateImage"></editImageModal>
       </v-dialog>
       <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
         <!--TODO: Move to Component -->
@@ -258,9 +258,11 @@ export default {
     },
     imageDisplayed() {
       let img = 'https://www.eipl.org/reservations/images/default/catalogitem.png'
-      const path = 'https://www.eipl.org/reservations/images/uploads/'
+      const baseUrl = 'https://www.eipl.org'
+      // const path = 'https://www.eipl.org/reservations/images/uploads/'
       if (this.image_data.file_name) {
-        img = path + this.image_data.file_name
+        // img = path + this.image_data.file_name
+        img = baseUrl + this.image_data.file_path + this.image_data.file_name
       }
       return img
     },
@@ -389,11 +391,11 @@ export default {
       ]
       let postData = {}
       itemValues.forEach(val => (postData[val] = this[val]))
+      postData.image = this.image_data.id
       const isNew = !postData.id
       if (isNew) {
         //TODO: WE SHOULD BE ABLE TO WORK THIS INTO UPDATE FUNCTION ON SERVERSIDE
         postData.customFields = this.catalogItemEditting.customFields
-        postData.imageData = []
       }
       console.log(postData)
       console.log(this.catalogItemEditting)
@@ -443,7 +445,9 @@ export default {
         this.originalValues[item] = values[item]
       }
     },
-
+    updateImage(data) {
+      this.$set(this, 'image_data', data)
+    }
   },
   created() {
     // console.log('catItemEdititing created')

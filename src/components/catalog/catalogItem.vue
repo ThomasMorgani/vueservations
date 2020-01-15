@@ -2,13 +2,20 @@
   <v-expansion-panel>
     <v-expansion-panel-header class="pa-2">
       <v-row dense justify-start>
-        <v-col cols="2" align-self="center">
-          <v-img :src="thumbnailSrc ? thumbnailSrc : null" contain :max-height="thumbnailMaxHeight"></v-img>
+        <v-col
+          cols="2"
+          align-self="center"
+          justify-self="center"
+          class="text-center"
+        >
+          <v-img :src="thumbnailSrc" contain max-width="100"></v-img>
         </v-col>
         <v-col cols="10">
           <v-row dense class="display-flex align-center justify-start">
             <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
-            <span class="font-weight-medium title primary--text">{{item.name}}</span>
+            <span class="font-weight-medium title primary--text">{{
+              item.name
+            }}</span>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-chip
@@ -23,13 +30,15 @@
               <span>
                 <p>
                   <strong>Abbreviation:</strong>
-                  {{item.abbreviation}}
+                  {{ item.abbreviation }}
                 </p>
                 <p>
                   <strong>Color:</strong>
-                  {{item.color}}
+                  {{ item.color }}
                 </p>
-                <div :style="{height: '10px', 'background-color': item.color}"></div>
+                <div
+                  :style="{ height: '10px', 'background-color': item.color }"
+                ></div>
               </span>
             </v-tooltip>
           </v-row>
@@ -58,18 +67,19 @@
             <!-- STATUS -->
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card flat class="d-flex align-center text-left mr-3" v-on="on">
-                  <v-icon :color="status.color
-                " v-text="status.icon"></v-icon>
+                <v-card
+                  flat
+                  class="d-flex align-center text-left mr-3"
+                  v-on="on"
+                >
+                  <v-icon :color="status.color" v-text="status.icon"></v-icon>
                   <p
                     v-text="status.text"
-                    :class="
-                  ` ml-1 font-weight-bold ${status.color}--text`
-                "
+                    :class="` ml-1 font-weight-bold ${status.color}--text`"
                   ></p>
                 </v-card>
               </template>
-              <span>{{status.popovertext}}</span>
+              <span>{{ status.popovertext }}</span>
             </v-tooltip>
 
             <!-- CHECKOUT STATUS available, reserved, disabled-->
@@ -89,9 +99,16 @@
             <!-- LAST CHECKOUT date, never-->
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card flat class="d-flex align-center text-left mx-3" v-on="on">
+                <v-card
+                  flat
+                  class="d-flex align-center text-left mx-3"
+                  v-on="on"
+                >
                   <v-icon color="primary" v-text="'mdi-history'"></v-icon>
-                  <p v-text="'10/21/2019'" class="ml-1 font-weight-bold primary--text"></p>
+                  <p
+                    v-text="'10/21/2019'"
+                    class="ml-1 font-weight-bold primary--text"
+                  ></p>
                 </v-card>
               </template>
               <span>Last Reservation</span>
@@ -122,7 +139,9 @@
               </v-tooltip>
             </v-col>
             <v-col cols="12" text-center>
-              <template v-if="item.customFields && item.customFields.length > 0">
+              <template
+                v-if="item.customFields && item.customFields.length > 0"
+              >
                 <v-card flat class="d-flex flex-row">
                   <v-card flat class="flex-shrink-1">
                     <v-card
@@ -131,7 +150,9 @@
                       class="d-flex flex-row"
                       flat
                     >
-                      <p class="font-weight-bold primary--text">{{ field.name }}:</p>
+                      <p class="font-weight-bold primary--text">
+                        {{ field.name }}:
+                      </p>
                     </v-card>
                   </v-card>
                   <v-card flat class="flex-shrink-1 px-6">
@@ -144,13 +165,15 @@
                       <p class="text-left">{{ field.value }}</p>
                       <v-tooltip right>
                         <template v-slot:activator="{ on }">
-                          <v-icon
-                            small
-                            class="text-right ml-6"
-                            v-on="on"
-                          >{{ field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
+                          <v-icon small class="text-right ml-6" v-on="on">{{
+                            field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye'
+                          }}</v-icon>
                         </template>
-                        <span>{{ field.internal === '1' ? 'Internal use only' : 'Visible to public' }}</span>
+                        <span>{{
+                          field.internal === '1'
+                            ? 'Internal use only'
+                            : 'Visible to public'
+                        }}</span>
                       </v-tooltip>
                     </v-card>
                   </v-card>
@@ -212,27 +235,15 @@ export default {
       return data
     },
     thumbnailSrc() {
-      if (this.item.imageLinks) {
-        if (
-          this.item.imageLinks.thumbnail &&
-          typeof this.item.imageLinks.thumbnail === 'string'
-        ) {
-          return this.item.imageLinks.thumbnail
-        }
-        if (
-          this.item.imageLinks['0'] &&
-          typeof this.item.imageLinks['0'] === 'string'
-        ) {
-          return this.item.imageLinks['0']
-        }
-      }
-      return 'https://www.eipl.org/newsite/static/images/generic/music_cd_art_not_found.png'
+      return this.item.image_data.src
+      // return 'https://www.eipl.org/newsite/static/images/generic/music_cd_art_not_found.png'
     },
     thumbnailMaxHeight() {
-      return this.thumbnailSrc ===
-        'https://www.eipl.org/newsite/static/images/generic/music_cd_art_not_found.png'
-        ? 50
-        : 100
+      return 50
+      // return this.thumbnailSrc ===
+      //   'https://www.eipl.org/newsite/static/images/generic/music_cd_art_not_found.png'
+      //   ? 50
+      //   : 100
     }
   },
   methods: {
