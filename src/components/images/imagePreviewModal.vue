@@ -1,5 +1,5 @@
 <template>
-  <v-card class="d-flex align-center justify-center">
+  <v-card @click.left="onLeftClick" class="d-flex align-center justify-center">
     <img :src="image.src" class="image" />
     <!-- <v-img contain :src="image.src" max-height="500px"></v-img> -->
   </v-card>
@@ -12,6 +12,11 @@ export default {
     ...mapState({
       image: state => state.imagePreviewData
     })
+  },
+  methods: {
+    onLeftClick() {
+      this.$store.dispatch('toggleModalImageFullPreview')
+    }
   }
 }
 </script>

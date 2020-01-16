@@ -1,41 +1,23 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text">
-      EDIT IMAGE
-    </v-card-title>
-    <v-card-text class="modalBody">
-      <v-row class="display-flex">
-        <v-col cols="6" class="display-flex">
-          <p class="primary--text mb-4">
-            Preview
-          </p>
-          <v-img
-            :src="image"
-            max-width="150"
-            ref="imagePreview"
-            @click="showPreview"
-          ></v-img>
+    <v-card-title class="justify-center title primary--text">EDIT IMAGE</v-card-title>
+    <v-card-text class="modalBody pb-0">
+      <v-row class="d-flex align-center justify-center">
+        <v-col class="d-flex align-center justify-center flex-shrink-1">
+          <v-img :src="image" max-width="200" ref="imagePreview" @click="showPreview"></v-img>
         </v-col>
-        <v-col cols="6" class="d-flex flex-column justify-start">
+        <v-col class="d-flex flex-column justify-start flex-grow-1">
           <p class="primary--text mb-4">
             Details
             <!-- TODO: v-for -->
           </p>
-          <p
-            v-for="name in Object.keys(imagePreviewProperties)"
-            :key="name"
-            class="mb-2"
-          >
-            <span class="primary--text font-weight-bold"
-              >{{ name.toUpperCase() }}:
-            </span>
+          <p v-for="name in Object.keys(imagePreviewProperties)" :key="name" class="mb-2">
+            <span class="primary--text font-weight-bold">{{ name.toUpperCase() }}:</span>
             <span>{{ imagePreviewProperties[name] }}</span>
           </p>
         </v-col>
-        <v-col cols="12">
-          <p class="primary--text">
-            Change
-          </p>
+        <!-- <v-col cols="12">
+          <p class="primary--text">Change</p>
         </v-col>
         <v-col cols="12" class="options d-flex justify-space-around">
           <v-btn
@@ -44,37 +26,39 @@
             dark
             :outlined="method !== 'select'"
             @click="method = method === 'select' ? null : 'select'"
-            ><v-icon small left>mdi-image-multiple</v-icon> SELECT
-            EXISITING</v-btn
           >
+            <v-icon small left>mdi-image-multiple</v-icon>SELECT
+            EXISITING
+          </v-btn>
           <v-btn
             cols="6"
             color="primary"
             dark
             :outlined="method !== 'upload'"
             @click="method = method === 'upload' ? null : 'upload'"
-            ><v-icon small left>mdi-file-upload</v-icon> UPLOAD NEW</v-btn
           >
-        </v-col>
+            <v-icon small left>mdi-file-upload</v-icon>UPLOAD NEW
+          </v-btn>
+        </v-col>-->
       </v-row>
     </v-card-text>
     <v-expand-transition>
-      <v-card flat v-show="method !== null">
-        <v-card-text v-if="method === 'select'">
-          <imageGallery></imageGallery>
-        </v-card-text>
-        <v-card-text v-if="method === 'upload'">
-          <v-file-input
-            v-model="fileUpload"
-            accept="image/*"
-            label="Select Image"
-            ref="fileInput"
-            @change="fileInputChanged"
-          ></v-file-input>
+      <v-card flat v-show="method !== null" class="expansionCard">
+        <v-card-text v-if="method === 'select'" class="pt-0">
+          <imageGallery @imageClicked="selectImage" @newImageAdded="selectImage"></imageGallery>
         </v-card-text>
       </v-card>
     </v-expand-transition>
     <v-card-actions>
+      <v-btn
+        cols="6"
+        color="primary"
+        dark
+        :outlined="method !== 'select'"
+        @click="method = method === 'select' ? null : 'select'"
+      >
+        <v-icon small left>mdi-image-multiple</v-icon>CHANGE IMAGE
+      </v-btn>
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="close">CLOSE</v-btn>
       <v-tooltip top :disabled="!saveDisabled">
@@ -87,8 +71,7 @@
               :disabled="saveDisabled"
               :loading="loading === 'save'"
               @click="saveImage"
-              >SAVE</v-btn
-            >
+            >SAVE</v-btn>
           </div>
         </template>
         <span>{{ saveDisabledText }}</span>
@@ -104,7 +87,7 @@ export default {
   name: 'CIEditImage',
   components: { imageGallery },
   props: {
-    currentImageData: {
+    originalImageData: {
       type: Object,
       required: true
     },
@@ -114,9 +97,7 @@ export default {
     }
   },
   data: () => ({
-    fileUpload: null,
     imageDisplayed: null,
-    input: null,
     imageUrl: null,
     imageFile: null,
     isLoaded: false,
@@ -124,13 +105,21 @@ export default {
     method: null,
     modalFullImagePreview: false,
     saveDisabled: false,
-    saveDisabledText: 'todo'
+    saveDisabledText: 'todo',
+    selectedImageData: {}
   }),
   computed: {
+    currentImageData() {
+      console.log(this.selectedImageData)
+      return Object.keys(this.selectedImageData).length > 0
+        ? this.selectedImageData
+        : this.originalImageData
+    },
     image() {
       if (this.imageFile) {
         return this.imageUrl
       } else {
+        console.log(this.currentImageData)
         return `${this.$apiSettings.fqdn}${this.currentImageData.file_path}${this.currentImageData.file_name}`
       }
     },
@@ -185,23 +174,8 @@ export default {
     close() {
       this.$emit('closeImageModal')
     },
-    async fileInputChanged(e) {
-      console.log(e)
-      if (e) {
-        const fr = new FileReader()
-        fr.readAsDataURL(e)
-        await fr.addEventListener('load', () => {
-          this.imageUrl = fr.result
-          this.imageFile = e // this is an image file that can be sent to server...
-          console.log(this.$refs.imagePreview)
-        })
-      } else {
-        this.imageUrl = null
-        this.imageFile = null
-      }
-    },
+
     reset() {
-      this.fileUpload = null
       this.imageFile = null
       this.imageUrl = null
       this.loading = false
@@ -210,32 +184,15 @@ export default {
     saveImage() {
       this.loading = 'save'
       console.log('saveimage')
-      if (this.method === 'select') {
-        //emit save image
-        this.$emit('updateImage')
-      } else {
-        let pData = new FormData()
-        console.log(this.imageFile)
-        pData.append('img', this.imageFile)
-        // for (let k of pData.entries()) {
-        //   console.log(k)
-        // }
-        //dispatch save image
-        this.$store
-          .dispatch('apiPost', { endpoint: '/images_upload', postData: pData })
-          .then(resp => {
-            console.log(resp)
-            if (resp.status === 'success') {
-              this.$emit('updateImage', resp.data)
-              this.$emit('closeImageModal')
-              this.reset()
-            }
-            // this.$emit('updateImage')
-          })
-          .catch(err => {
-            console.log('err:', err)
-          })
-      }
+      //emit save image
+      this.$emit('updateImage', this.currentImageData)
+      this.reset()
+      this.close()
+      this.$store.dispatch('toggle')
+    },
+    selectImage(image) {
+      console.log(image)
+      this.selectedImageData = image
     },
     showPreview() {
       this.$store.dispatch('setStateValue', {
@@ -259,8 +216,14 @@ export default {
 p {
   margin-bottom: 0px !important;
 }
+
+.expansionCard {
+  height: 30vh;
+  overflow-y: auto;
+}
+
 .modalBody {
-  max-height: 90vh;
+  max-height: 85vh;
   overflow-y: auto;
 }
 

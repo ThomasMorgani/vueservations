@@ -1,12 +1,5 @@
 <template>
-  <v-row
-    fill-height
-    align-start
-    justify-start
-    dense
-    no-gutters
-    class="d-flex flex-column"
-  >
+  <v-row fill-height align-start justify-start dense no-gutters class="d-flex flex-column">
     <v-col cols="12" class="flex-shrink-1">
       <!-- <v-sheet height="10vh"> -->
       <v-toolbar flat color="background">

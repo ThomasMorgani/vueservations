@@ -69,7 +69,6 @@
                     width="48"
                     hover
                     @click="modalEditImage = !modalEditImage"
-
                   ></v-img>
                   <!-- <v-file-input prepend-inner-icon="mdi-image" prepend-icon label="Select Image"></v-file-input> -->
                 </v-card>
@@ -128,8 +127,18 @@
           </v-col>
         </v-row>
       </form>
-      <v-dialog v-model="modalEditImage" max-width="650px" transition="dialog-transition" :key="id + 'imgModal'">
-        <editImageModal :currentImageData="image_data" :isNew="Boolean(!id)" @closeImageModal="modalEditImage = false" @updateImage="updateImage"></editImageModal>
+      <v-dialog
+        v-model="modalEditImage"
+        max-width="650px"
+        transition="dialog-transition"
+        :key="id + 'imgModal'"
+      >
+        <editImageModal
+          :originalImageData="image_data"
+          :isNew="Boolean(!id)"
+          @closeImageModal="modalEditImage = false"
+          @updateImage="updateImage"
+        ></editImageModal>
       </v-dialog>
       <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
         <!--TODO: Move to Component -->
@@ -154,7 +163,7 @@
       </v-dialog>
     </v-card-text>
     <v-card-actions>
-       <v-tooltip top :disabled="!id">
+      <v-tooltip top :disabled="!id">
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
@@ -169,17 +178,17 @@
         </template>
         <span>Delete catalog item</span>
       </v-tooltip>
-      <v-tooltip top >
+      <v-tooltip top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
-        <v-btn text small :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
+            <v-btn text small :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
           </div>
         </template>
         <span>Revert all unsaved changes</span>
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="cancel">CLOSE</v-btn>
-      <v-tooltip top :disabled="!saveDisabled">
+      <v-tooltip top :disabled="!saveDisabled && !isChanged">
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
@@ -189,10 +198,17 @@
               :disabled="saveDisabled"
               :loading="loading === 'save'"
               @click="save"
-            >SAVE</v-btn>
+            >
+              <v-icon
+                small
+                color="warning"
+                class="mr-1"
+                v-if="isChanged && !saveDisabled"
+              >mdi-content-save-alert</v-icon>SAVE
+            </v-btn>
           </div>
         </template>
-        <span>{{ saveDisabledText }}</span>
+        <span>{{ saveTooltipText }}</span>
       </v-tooltip>
     </v-card-actions>
   </v-card>
@@ -203,7 +219,7 @@ import { mapState } from 'vuex'
 import editImageModal from '@/components/catalog/catalogItemEditImage'
 export default {
   name: 'catalogItemEdit',
-  components: {editImageModal},
+  components: { editImageModal },
   data: () => ({
     abbreviation: null,
     category: null,
@@ -225,9 +241,7 @@ export default {
     image_data: {},
     loading: false,
     name: null,
-    originalValues: {
-
-    },
+    originalValues: {},
     modalConfirmDelete: false,
     modalEditImage: false,
     status: null,
@@ -242,8 +256,8 @@ export default {
     abbreviationAvailable() {
       const abvMatches = this.catalogItems.find(
         el =>
-          el.abbreviation.toLowerCase() === String(this.abbreviation).toLowerCase() &&
-          el.id !== this.id
+          el.abbreviation.toLowerCase() ===
+            String(this.abbreviation).toLowerCase() && el.id !== this.id
       )
       if (!this.abbreviation) {
         return 'Abbreviation Required'
@@ -257,7 +271,8 @@ export default {
       return this.catalogItemEditting.customFields
     },
     imageDisplayed() {
-      let img = 'https://www.eipl.org/reservations/images/default/catalogitem.png'
+      let img =
+        'https://www.eipl.org/reservations/images/default/catalogitem.png'
       const baseUrl = 'https://www.eipl.org'
       // const path = 'https://www.eipl.org/reservations/images/uploads/'
       if (this.image_data.file_name) {
@@ -269,7 +284,11 @@ export default {
     isChanged() {
       let isChanged = false
       Object.keys(this.defaultItem).forEach(field => {
-        if (field !== 'customFields' && field !== 'categoryName' && this.originalValues[field] !== this[field]) {
+        if (
+          field !== 'customFields' &&
+          field !== 'categoryName' &&
+          this.originalValues[field] !== this[field]
+        ) {
           isChanged = true
         }
       })
@@ -311,7 +330,7 @@ export default {
         this.fieldsRequired.length > 0
       )
     },
-    saveDisabledText() {
+    saveTooltipText() {
       let text = 'Errors with form'
       if (!this.isChanged) {
         text = 'There are no unsaved changes'
@@ -327,6 +346,8 @@ export default {
               ? `${text} ${this.fieldsRequired[i]}`
               : `${text} ${this.fieldsRequired[i]},`
         }
+      } else if (this.isChanged) {
+        text = 'Save pending changes'
       }
       return text
     }
@@ -339,16 +360,19 @@ export default {
     },
     deleteCatalogitem() {
       console.log('delete')
-      this.$store.dispatch('catalogitemDelete', {id: this.id}).then(resp => {
-        console.log(resp)
-        if (resp.status === 'success') {
-          this.modalConfirmDelete = !this.modalConfirmDelete
-          this.$store.dispatch('toggleModalCatalogitemEdit')
-          //TODO: SNACKBAR
-        }
-      }).catch(err => {
-        console.log('err: ' + err)
-      })
+      this.$store
+        .dispatch('catalogitemDelete', { id: this.id })
+        .then(resp => {
+          console.log(resp)
+          if (resp.status === 'success') {
+            this.modalConfirmDelete = !this.modalConfirmDelete
+            this.$store.dispatch('toggleModalCatalogitemEdit')
+            //TODO: SNACKBAR
+          }
+        })
+        .catch(err => {
+          console.log('err: ' + err)
+        })
     },
     editCustomFields() {
       const customFields = this.catalogItemEditting.customFields
@@ -364,7 +388,7 @@ export default {
     resetChanges() {
       let isChanged = false
       Object.keys(this.originalValues).forEach(field => {
-        if (field !== 'customFields' && field !== 'categoryName' ) {
+        if (field !== 'customFields' && field !== 'categoryName') {
           this.$set(this, field, this.originalValues[field])
         }
       })
@@ -401,9 +425,7 @@ export default {
       console.log(this.catalogItemEditting)
       //setup image data
       console.log(postData)
-      const endpoint = isNew
-        ? '/catalogitem_create'
-        : '/catalogitem_update'
+      const endpoint = isNew ? '/catalogitem_create' : '/catalogitem_update'
       this.$store
         .dispatch('apiCall', {
           endpoint: endpoint,
@@ -445,8 +467,9 @@ export default {
         this.originalValues[item] = values[item]
       }
     },
-    updateImage(data) {
-      this.$set(this, 'image_data', data)
+    updateImage(imageData) {
+      console.log(imageData)
+      this.$set(this, 'image_data', imageData)
     }
   },
   created() {
@@ -466,7 +489,7 @@ p {
   margin-bottom: 4px !important;
 }
 .modalBody {
-  max-height: 90vh;
-  overflow-y: auto;
+  max-height: 65vh;
+  overflow-y: scroll;
 }
 </style>

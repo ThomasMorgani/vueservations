@@ -14,7 +14,7 @@
     "vue": "^2.6.10",
     "vue-axios": "^2.1.5",
     "vue2-filters": "^0.8.0",
-    "vuetify": "^2.1.0",
+    "vuetify": "^2.2.3",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
