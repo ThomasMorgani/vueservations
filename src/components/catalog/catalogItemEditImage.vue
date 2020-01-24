@@ -1,18 +1,31 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text">EDIT IMAGE</v-card-title>
+    <v-card-title class="justify-center title primary--text"
+      >EDIT IMAGE</v-card-title
+    >
     <v-card-text class="modalBody pb-0">
       <v-row class="d-flex align-center justify-center">
         <v-col class="d-flex align-center justify-center flex-shrink-1">
-          <v-img :src="image" max-width="200" ref="imagePreview" @click="showPreview"></v-img>
+          <v-img
+            :src="image"
+            max-width="200"
+            ref="imagePreview"
+            @click="showPreview"
+          ></v-img>
         </v-col>
         <v-col class="d-flex flex-column justify-start flex-grow-1">
           <p class="primary--text mb-4">
             Details
             <!-- TODO: v-for -->
           </p>
-          <p v-for="name in Object.keys(imagePreviewProperties)" :key="name" class="mb-2">
-            <span class="primary--text font-weight-bold">{{ name.toUpperCase() }}:</span>
+          <p
+            v-for="name in Object.keys(imagePreviewProperties)"
+            :key="name"
+            class="mb-2"
+          >
+            <span class="primary--text font-weight-bold"
+              >{{ name.toUpperCase() }}:</span
+            >
             <span>{{ imagePreviewProperties[name] }}</span>
           </p>
         </v-col>
@@ -45,7 +58,10 @@
     <v-expand-transition>
       <v-card flat v-show="method !== null" class="expansionCard">
         <v-card-text v-if="method === 'select'" class="pt-0">
-          <imageGallery @imageClicked="selectImage" @newImageAdded="selectImage"></imageGallery>
+          <imageGallery
+            @imageClicked="selectImage"
+            @newImageAdded="selectImage"
+          ></imageGallery>
         </v-card-text>
       </v-card>
     </v-expand-transition>
@@ -71,7 +87,8 @@
               :disabled="saveDisabled"
               :loading="loading === 'save'"
               @click="saveImage"
-            >SAVE</v-btn>
+              >SAVE</v-btn
+            >
           </div>
         </template>
         <span>{{ saveDisabledText }}</span>
@@ -110,7 +127,6 @@ export default {
   }),
   computed: {
     currentImageData() {
-      console.log(this.selectedImageData)
       return Object.keys(this.selectedImageData).length > 0
         ? this.selectedImageData
         : this.originalImageData
@@ -119,7 +135,6 @@ export default {
       if (this.imageFile) {
         return this.imageUrl
       } else {
-        console.log(this.currentImageData)
         return `${this.$apiSettings.fqdn}${this.currentImageData.file_path}${this.currentImageData.file_name}`
       }
     },
@@ -129,7 +144,6 @@ export default {
       if (loaded) {
         if (this.imageFile) {
           let imgRef = this.$refs.imagePreview.image
-          console.log(imgRef)
           properties = {
             name: this.imageFile.name || 'TBD',
             // type: img.type ? img.type.substring(img.type.length -3).toUpperCase()  : 'TBD',
@@ -143,7 +157,6 @@ export default {
               : 'TBD',
             path: 'TBD'
           }
-          console.log(properties)
         } else {
           properties = {
             name: this.currentImageData.file_name || 'not found',
@@ -188,10 +201,9 @@ export default {
       this.$emit('updateImage', this.currentImageData)
       this.reset()
       this.close()
-      this.$store.dispatch('toggle')
+      // this.$store.dispatch('toggle')
     },
     selectImage(image) {
-      console.log(image)
       this.selectedImageData = image
     },
     showPreview() {

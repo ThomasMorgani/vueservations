@@ -1,5 +1,12 @@
 <template>
-  <v-row fill-height align-start justify-start dense no-gutters class="d-flex flex-column">
+  <v-row
+    fill-height
+    align-start
+    justify-start
+    dense
+    no-gutters
+    class="d-flex flex-column"
+  >
     <v-col cols="12" class="flex-shrink-1">
       <!-- <v-sheet height="10vh"> -->
       <v-toolbar flat color="background">
@@ -93,7 +100,7 @@
       <catalogItemEditFields></catalogItemEditFields>
     </v-dialog>
     <!-- Catalog Custom Fields Mgmtm Modal  -->
-    <v-dialog
+    <!-- <v-dialog
       v-model="modalCatalogCustomfield"
       persistent
       max-width="500px"
@@ -107,7 +114,7 @@
       "
     >
       <catalogCustomfield></catalogCustomfield>
-    </v-dialog>
+    </v-dialog> -->
     <v-dialog
       :value="modalImageFullPreview"
       transition="dialog-transition"

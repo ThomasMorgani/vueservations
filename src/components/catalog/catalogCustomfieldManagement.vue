@@ -168,7 +168,14 @@ export default {
     cancel() {
       this.$store.dispatch('toggleModalCatalogCustomfield')
     },
-
+    resetFields() {
+      this.alertText = null
+      this.name = null
+      this.internal = true
+      this.type = null
+      this.value = null
+      this.loading = false
+    },
     save() {
       this.$store
         .dispatch('apiCall', {
@@ -186,6 +193,8 @@ export default {
             if (resp.data) {
               this.$store.dispatch('customfieldsAddField', resp.data)
               this.$store.dispatch('toggleModalCatalogCustomfield')
+              this.$emit('customFieldCreated', resp.data)
+              this.resetFields
             }
           } else {
             this.alertText = resp.message

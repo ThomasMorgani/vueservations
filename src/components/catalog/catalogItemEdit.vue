@@ -1,9 +1,7 @@
 <template>
   <v-card>
     <v-card-title class="justify-center title primary--text">
-      {{
-      id ? 'EDIT ITEM' : 'ADD ITEM'
-      }}
+      {{ id ? 'EDIT ITEM' : 'ADD ITEM' }}
     </v-card-title>
     <v-card-text class="modalBody">
       <form>
@@ -39,7 +37,11 @@
             ></v-select>
           </v-col>
           <v-col cols="12">
-            <v-select label="Status" :items="statusOptions" v-model="status"></v-select>
+            <v-select
+              label="Status"
+              :items="statusOptions"
+              v-model="status"
+            ></v-select>
           </v-col>
 
           <v-col cols="12">
@@ -48,13 +50,21 @@
                 <v-card outlined class="d-flex flex-column pa-2">
                   <p>Color</p>
                   <div>
-                    <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
+                    <v-menu
+                      :close-on-content-click="false"
+                      :nudge-width="200"
+                      offset-x
+                    >
                       <template v-slot:activator="{ on }">
                         <v-avatar tile v-on="on" :color="color" hover>
                           <v-icon color="white">mdi-palette</v-icon>
                         </v-avatar>
                       </template>
-                      <v-color-picker v-model="color" class="ma-2" hide-inputs></v-color-picker>
+                      <v-color-picker
+                        v-model="color"
+                        class="ma-2"
+                        hide-inputs
+                      ></v-color-picker>
                     </v-menu>
                   </div>
                 </v-card>
@@ -98,7 +108,13 @@
                 <v-col class="text-right">
                   <v-tooltip top>
                     <template v-slot:activator="{ on }">
-                      <v-btn text icon color="warning" @click="editCustomFields" v-on="on">
+                      <v-btn
+                        text
+                        icon
+                        color="warning"
+                        @click="editCustomFields"
+                        v-on="on"
+                      >
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn>
                     </template>
@@ -106,23 +122,11 @@
                   </v-tooltip>
                 </v-col>
               </v-row>
-              <template v-for="field in customFieldsDisplayed">
-                <v-row dense :key="field.field_id + 'rw'" align="center">
-                  <v-col class="subheading primary--text font-weight-bold">{{ field.name }}</v-col>
-                  <v-col>{{ field.value }}</v-col>
-                  <v-col>
-                    <v-tooltip right>
-                      <template v-slot:activator="{ on }">
-                        <v-icon
-                          small
-                          v-on="on"
-                        >{{ field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
-                      </template>
-                      <span>{{ field.internal === '1' ? 'Internal use only' : 'Visible to public' }}</span>
-                    </v-tooltip>
-                  </v-col>
-                </v-row>
-              </template>
+              <v-row>
+                <customFieldsList
+                  :items="customFieldsDisplayed"
+                ></customFieldsList>
+              </v-row>
             </v-card>
           </v-col>
         </v-row>
@@ -140,23 +144,36 @@
           @updateImage="updateImage"
         ></editImageModal>
       </v-dialog>
-      <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
+      <v-dialog
+        v-model="modalConfirmDelete"
+        max-width="500px"
+        transition="dialog-transition"
+      >
         <!--TODO: Move to Component -->
         <v-card>
-          <v-card-title class="justify-center title error--text">CONFIRM DELETE</v-card-title>
+          <v-card-title class="justify-center title error--text"
+            >CONFIRM DELETE</v-card-title
+          >
           <v-card-text>
             <v-row class="justify-center align-center">
               <v-col cols="12" class="align-center">
-                <p
-                  class="font-weight-bold text-center"
-                >WARNING: You are about to delete catalog item:</p>
-                <p class="font-weight-bold text-center">"{{name}}"</p>
-                <p class="text-center">All current reservations for this item will be removed.</p>
+                <p class="font-weight-bold text-center">
+                  WARNING: You are about to delete catalog item:
+                </p>
+                <p class="font-weight-bold text-center">"{{ name }}"</p>
+                <p class="text-center">
+                  All current reservations for this item will be removed.
+                </p>
               </v-col>
             </v-row>
           </v-card-text>
           <v-card-actions class="d-flex justify-space-around">
-            <v-btn color="primary" text @click="modalConfirmDelete = !modalConfirmDelete">CANCEL</v-btn>
+            <v-btn
+              color="primary"
+              text
+              @click="modalConfirmDelete = !modalConfirmDelete"
+              >CANCEL</v-btn
+            >
             <v-btn color="error" text @click="deleteCatalogitem">DELETE</v-btn>
           </v-card-actions>
         </v-card>
@@ -173,7 +190,8 @@
               :disabled="!id"
               :loading="loading === 'delete'"
               @click="modalConfirmDelete = !modalConfirmDelete"
-            >DELETE</v-btn>
+              >DELETE</v-btn
+            >
           </div>
         </template>
         <span>Delete catalog item</span>
@@ -181,7 +199,9 @@
       <v-tooltip top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
-            <v-btn text small :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
+            <v-btn text small :disabled="!isChanged" @click="resetChanges"
+              >RESET</v-btn
+            >
           </div>
         </template>
         <span>Revert all unsaved changes</span>
@@ -204,7 +224,8 @@
                 color="warning"
                 class="mr-1"
                 v-if="isChanged && !saveDisabled"
-              >mdi-content-save-alert</v-icon>SAVE
+                >mdi-content-save-alert</v-icon
+              >SAVE
             </v-btn>
           </div>
         </template>
@@ -216,10 +237,14 @@
 
 <script>
 import { mapState } from 'vuex'
-import editImageModal from '@/components/catalog/catalogItemEditImage'
+import customFieldsList from '@/components/catalog/catalogItemCustomFieldsList'
+
 export default {
   name: 'catalogItemEdit',
-  components: { editImageModal },
+  components: {
+    editImageModal: () => import('@/components/catalog/catalogItemEditImage'),
+    customFieldsList
+  },
   data: () => ({
     abbreviation: null,
     category: null,
@@ -228,6 +253,7 @@ export default {
     defaultItem: {
       abbreviation: null,
       category: null,
+      color: 'primary',
       customFields: [],
       description: null,
       id: null,
@@ -282,14 +308,25 @@ export default {
       return img
     },
     isChanged() {
+      //TODO: FIND WHY AFTER SAVING isChanged does not reset to false
       let isChanged = false
+      // let origStr = this.originalValues.toString()
+      // let loadingState = this.loading
       Object.keys(this.defaultItem).forEach(field => {
-        if (
-          field !== 'customFields' &&
-          field !== 'categoryName' &&
-          this.originalValues[field] !== this[field]
-        ) {
-          isChanged = true
+        if (field !== 'customFields' && field !== 'categoryName') {
+          if (field === 'image_data') {
+            if (
+              this[field] &&
+              this[field].id &&
+              this[field].id !== this.originalValues[field].id
+            ) {
+              isChanged = true
+            }
+          } else {
+            if (this.originalValues[field] !== this[field]) {
+              isChanged = true
+            }
+          }
         }
       })
       return isChanged
@@ -381,7 +418,6 @@ export default {
       this.$store
         .dispatch('catalogitemEdittingcustomfieldsSetEditting', customFields)
         .then(() => {
-          console.log('then')
           this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
         })
     },
@@ -402,7 +438,6 @@ export default {
     },
     save() {
       this.loading = 'save'
-      console.log(this)
       const itemValues = [
         'abbreviation',
         'category',
@@ -421,10 +456,6 @@ export default {
         //TODO: WE SHOULD BE ABLE TO WORK THIS INTO UPDATE FUNCTION ON SERVERSIDE
         postData.customFields = this.catalogItemEditting.customFields
       }
-      console.log(postData)
-      console.log(this.catalogItemEditting)
-      //setup image data
-      console.log(postData)
       const endpoint = isNew ? '/catalogitem_create' : '/catalogitem_update'
       this.$store
         .dispatch('apiCall', {
@@ -432,7 +463,6 @@ export default {
           postData: postData
         })
         .then(resp => {
-          console.log(resp)
           if (resp.status === 'success') {
             if (isNew) {
               //ADD ITEM TO LIST
@@ -447,6 +477,10 @@ export default {
                   key: key,
                   data: postData[key]
                 })
+              })
+              this.setItemEdittingValues({
+                ...postData,
+                image_data: this.image_data
               })
             }
           }
@@ -464,11 +498,10 @@ export default {
         //   this[item] = this.catalogItemEditting[item]
         // }
         this[item] = values[item]
-        this.originalValues[item] = values[item]
+        this.$set(this.originalValues, item, values[item])
       }
     },
     updateImage(imageData) {
-      console.log(imageData)
       this.$set(this, 'image_data', imageData)
     }
   },

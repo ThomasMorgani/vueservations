@@ -132,7 +132,7 @@
               <v-tooltip left>
                 <template v-slot:activator="{ on }">
                   <v-btn text icon color="warning" @click="edit" v-on="on">
-                    <v-icon color="warning">mdi-pencil</v-icon>
+                    <v-icon color="warning">mdi-square-edit-outline</v-icon>
                   </v-btn>
                 </template>
                 <span>Edit Item</span>
@@ -142,42 +142,7 @@
               <template
                 v-if="item.customFields && item.customFields.length > 0"
               >
-                <v-card flat class="d-flex flex-row">
-                  <v-card flat class="flex-shrink-1">
-                    <v-card
-                      v-for="field in item.customFields"
-                      :key="field.field_id"
-                      class="d-flex flex-row"
-                      flat
-                    >
-                      <p class="font-weight-bold primary--text">
-                        {{ field.name }}:
-                      </p>
-                    </v-card>
-                  </v-card>
-                  <v-card flat class="flex-shrink-1 px-6">
-                    <v-card
-                      v-for="field in item.customFields"
-                      :key="field.field_id + 'val'"
-                      class="d-flex flex-row justify-space-between align-center"
-                      flat
-                    >
-                      <p class="text-left">{{ field.value }}</p>
-                      <v-tooltip right>
-                        <template v-slot:activator="{ on }">
-                          <v-icon small class="text-right ml-6" v-on="on">{{
-                            field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye'
-                          }}</v-icon>
-                        </template>
-                        <span>{{
-                          field.internal === '1'
-                            ? 'Internal use only'
-                            : 'Visible to public'
-                        }}</span>
-                      </v-tooltip>
-                    </v-card>
-                  </v-card>
-                </v-card>
+                <customFieldsList :items="item.customFields"></customFieldsList>
               </template>
               <template v-else>
                 <p>No additional details.</p>
@@ -194,8 +159,12 @@
 <script>
 import { mapState } from 'vuex'
 
+import customFieldsList from '@/components/catalog/catalogItemCustomFieldsList'
 export default {
   name: 'catalogItem',
+  components: {
+    customFieldsList
+  },
   props: {
     item: {
       type: Object,

@@ -1,22 +1,38 @@
 <template>
   <v-card>
+    <v-dialog
+      v-model="modalCatalogCustomfield"
+      persistent
+      max-width="500px"
+      transition="dialog-transition"
+      :key="`cinewfEdit${String(fieldAddingNew ? fieldAddingNew : 'none')}`"
+    >
+      <catalogCustomfield
+        @customFieldCreated="updateField(fieldAddingNew, $event)"
+      ></catalogCustomfield>
+    </v-dialog>
     <v-card-title class="justify-center title primary--text outlined">
-      {{
-      catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS'
-      }}
+      {{ catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS' }}
     </v-card-title>
     <v-card-text class="modalBody">
       <template v-if="fieldsDisplayed.length < 1">
-        <p class="mt-6 text-center">No custom fields set for this catalog item.</p>
+        <p class="mt-6 text-center">
+          No custom fields set for this catalog item.
+        </p>
         <p class="text-center">Use the "ADD" button below to add new fields.</p>
       </template>
-      <template v-for="field in fieldsDisplayed">
-        <v-card elevation="3" outlined :key="field.objectKey + 'row'" class="pa-3 mb-1">
+      <template v-for="(field, index) in fieldsDisplayed">
+        <v-card
+          elevation="3"
+          outlined
+          :key="field.objectKey + 'row'"
+          class="pa-3 mb-1"
+        >
           <v-row dense align="center">
             <v-col cols="8" class="pt-0">
-              <p
-                class="title font-weight-bold primary--text mb-0"
-              >{{ fields[field.objectKey].name }}</p>
+              <p class="title font-weight-bold primary--text mb-0">
+                {{ fields[field.objectKey].name || 'New Field' }}
+              </p>
             </v-col>
             <v-col cols="4" class="text-right pt-0">
               <v-btn
@@ -29,12 +45,17 @@
               >
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
-              <v-btn small icon color="warning" @click="editField(field.objectKey)">
+              <v-btn
+                small
+                icon
+                color="warning"
+                @click="editField(field.objectKey)"
+              >
                 <v-icon>
                   {{
-                  isEditting(field.objectKey)
-                  ? 'mdi-pencil-off'
-                  : 'mdi-pencil'
+                    isEditting(field.objectKey)
+                      ? 'mdi-pencil-off'
+                      : 'mdi-pencil'
                   }}
                 </v-icon>
               </v-btn>
@@ -43,7 +64,10 @@
           <v-row dense v-if="!isEditting(field.objectKey)">
             <v-col cols="12">
               <v-row align="center" dense>
-                <v-col class="subheading primary--text font-weight-bold d-flex shrink py-0">Value:</v-col>
+                <v-col
+                  class="subheading primary--text font-weight-bold d-flex shrink py-0"
+                  >Value:</v-col
+                >
                 <v-col>{{ fields[field.objectKey].value }}</v-col>
               </v-row>
               <!-- <v-row align="center" dense>
@@ -56,12 +80,13 @@
               <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                >Visibility:</v-col>
+                  >Visibility:</v-col
+                >
                 <v-col>
                   {{
-                  fields[field.objectKey].internal === '1'
-                  ? 'Internal'
-                  : 'Public'
+                    fields[field.objectKey].internal === '1'
+                      ? 'Internal'
+                      : 'Public'
                   }}
                 </v-col>
               </v-row>
@@ -71,19 +96,42 @@
           <v-row dense align="center" v-else>
             <v-col cols="11">
               <v-autocomplete
-                v-model="fields[field.objectKey].name"
-                :items="orderBy(customFields, 'name')"
+                v-model="fields[field.objectKey]"
+                :items="
+                  orderBy(
+                    [...customFieldsAvailable, fields[field.objectKey]],
+                    'name'
+                  )
+                "
                 item-text="name"
                 item-value="name"
+                :error="!fields[field.objectKey].name"
                 name="Name"
                 autocomplete="off"
                 label="Name"
                 return-object
                 @change="updateField(field.objectKey, $event)"
               ></v-autocomplete>
+              <!-- <v-autocomplete
+                v-model="autocomplete[field.objectKey]"
+                :items="orderBy(customFieldsAvailable, 'name')"
+                item-text="name"
+                item-value="name"
+                name="Name"
+                return-object
+                autocomplete="off"
+                label="Name"
+                @change="updateField(field.objectKey, $event)"
+              ></v-autocomplete> -->
             </v-col>
             <v-col cols="1">
-              <v-btn large text icon color="primary" @click="createNewField">
+              <v-btn
+                large
+                text
+                icon
+                color="primary"
+                @click="createNewField(index)"
+              >
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
             </v-col>
@@ -108,12 +156,13 @@
               <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                >Visibility:</v-col>
+                  >Visibility:</v-col
+                >
                 <v-col>
                   {{
-                  fields[field.objectKey].internal === '1'
-                  ? 'Internal'
-                  : 'Public'
+                    fields[field.objectKey].internal === '1'
+                      ? 'Internal'
+                      : 'Public'
                   }}
                 </v-col>
               </v-row>
@@ -121,10 +170,11 @@
             <v-col cols="12">
               <template v-if="fields[field.objectKey].type === 'bool'">
                 <v-select
+                  :key="fields[field.objectKey].type"
+                  :error="!fields[field.objectKey].value"
                   v-model="fields[field.objectKey].value"
                   :items="boolTypes"
                   label="Value"
-                  :key="fields[field.objectKey].type"
                 ></v-select>
               </template>
               <template v-else>
@@ -136,6 +186,7 @@
                     fields[field.objectKey].type === 'int' ? 'number' : 'text'
                   "
                   :key="fields[field.objectKey].type"
+                  :error="!fields[field.objectKey].value"
                 ></v-text-field>
               </template>
             </v-col>
@@ -144,17 +195,49 @@
       </template>
     </v-card-text>
     <v-card-actions>
-      <v-btn text small color="primary" @click="addField">ADD</v-btn>
+      <v-tooltip top>
+        <template v-slot:activator="{ on }">
+          <v-btn text small color="primary" v-on="on" @click="addField"
+            >ADD</v-btn
+          >
+        </template>
+        <span>Add new custom field</span>
+      </v-tooltip>
+      <v-tooltip top>
+        <template v-slot:activator="{ on }">
+          <div v-on="on">
+            <v-btn text small :disabled="!isChanged" @click="restoreValues"
+              >RESET</v-btn
+            >
+          </div>
+        </template>
+        <span>Revert all unsaved changes</span>
+      </v-tooltip>
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="cancel">CANCEL</v-btn>
-      <v-btn
-        text
-        small
-        color="primary"
-        :disabled="saveDisabled"
-        :loading="loading === 'save'"
-        @click="saveFields"
-      >SAVE</v-btn>
+      <v-tooltip top :disabled="!saveDisabled && !isChanged">
+        <template v-slot:activator="{ on }">
+          <div v-on="on">
+            <v-btn
+              text
+              small
+              color="primary"
+              :disabled="saveDisabled"
+              :loading="loading === 'save'"
+              @click="saveFields"
+            >
+              <v-icon
+                small
+                color="warning"
+                class="mr-1"
+                v-if="isChanged && !saveDisabled"
+                >mdi-content-save-alert</v-icon
+              >SAVE
+            </v-btn>
+          </div>
+        </template>
+        <span>{{ saveTooltipText }}</span>
+      </v-tooltip>
     </v-card-actions>
   </v-card>
 </template>
@@ -166,8 +249,13 @@ import filters from '@/modules/filters'
 
 export default {
   name: 'catalogItemEditFields',
+  components: {
+    catalogCustomfield: () =>
+      import('@/components/catalog/catalogCustomfieldManagement')
+  },
   mixins: [Vue2Filters.mixin],
   data: () => ({
+    autocomplete: {},
     boolTypes: [
       {
         value: '0',
@@ -178,14 +266,14 @@ export default {
         text: 'True'
       }
     ],
+    fieldAddingNew: null,
     fields: {},
     fieldsEditting: [],
     fieldsOriginal: {},
     loading: null,
-    fieldsAvailable: ['Serial', 'Barcode', 'Brand'],
     fieldTemplate: {
       internal: null,
-      name: 'New Field',
+      name: null,
       type: null,
       value: null
     },
@@ -218,8 +306,26 @@ export default {
     ...mapState({
       catalogItemEditting: state => state.catalogitemEditting,
       catalogitemFieldsEditting: state => state.catalogitemFieldsEditting,
-      customFields: state => state.customFields
+      customFields: state => state.customFields,
+      modalCatalogCustomfield: state => state.modalCatalogCustomfield
     }),
+    customFieldsAvailable() {
+      let fields = []
+      let arrKey
+      this.customFields.forEach(customField => {
+        arrKey = this.fieldsDisplayed.findIndex(
+          el => customField.id === el.field_id
+        )
+
+        if (arrKey < 0) {
+          fields.push(customField)
+        }
+      })
+      return fields
+    },
+    customFieldsErrors() {
+      return null
+    },
     fieldsDisplayed() {
       let fields = []
       Object.keys(this.fields).forEach(key =>
@@ -227,8 +333,51 @@ export default {
       )
       return fields
     },
+    fieldsRequired() {
+      let required = []
+      this.fieldsDisplayed.forEach(el => {
+        if (!el.name || !el.value) {
+          required.push(el)
+        }
+      })
+      return required
+    },
+    isChanged() {
+      let changed = false
+      changed =
+        Object.keys(this.fields).length !==
+        Object.keys(this.fieldsOriginal).length
+      Object.keys(this.fields).forEach(key => {
+        if (this.fieldsOriginal[key]) {
+          changed =
+            this.fields[key].name !== this.fieldsOriginal[key].name ||
+            this.fields[key].value !== this.fieldsOriginal[key].value
+        } else {
+          changed = true
+        }
+      })
+      return changed
+    },
     saveDisabled() {
-      return false
+      return !this.isChanged || this.fieldsRequired.length > 0
+    },
+    saveTooltipText() {
+      let text = 'Errors with form'
+      if (!this.isChanged) {
+        text = 'There are no unsaved changes'
+      } else if (this.fieldsRequired.length > 0) {
+        text = 'Required fields missing'
+        // text = 'The following fields are required:'
+        // for (let i in this.fieldsRequired) {
+        //   text =
+        //     i == this.fieldsRequired.length - 1
+        //       ? `${text} ${this.fieldsRequired[i]}`
+        //       : `${text} ${this.fieldsRequired[i]},`
+        // }
+      } else if (this.isChanged) {
+        text = 'Save pending changes'
+      }
+      return text
     }
   },
   methods: {
@@ -251,7 +400,8 @@ export default {
       this.editField(newKey)
       console.log(this.fields)
     },
-    createNewField() {
+    createNewField(index) {
+      this.fieldAddingNew = index
       this.$store.dispatch('toggleModalCatalogCustomfield')
     },
     customFieldById(id) {
@@ -259,8 +409,6 @@ export default {
     },
     deleteField(key) {
       //key = String(key);
-      console.log(key)
-      console.log(this.fields)
       this.$delete(this.fields, key)
       this.fieldsEditting.splice(this.fieldsEditting.indexOf(key), 1)
     },
@@ -280,8 +428,6 @@ export default {
       return fieldKey > -1
     },
     updateField(fieldKey, fields) {
-      console.log(fieldKey)
-      console.log(fields)
       for (let key in fields) {
         if (key !== 'id' && key !== 'default_value') {
           //SET VALUE TO DEFAULT VALUE ?
@@ -301,6 +447,9 @@ export default {
       this.$store.dispatch('catalogitemEdittingcustomfieldsSetEditting', [])
       this.fieldsEditting = []
       this.loading = null
+    },
+    restoreValues() {
+      this.fields = { ...this.fieldsOriginal }
     },
     saveFields() {
       console.log('saveFields')
@@ -348,10 +497,11 @@ export default {
   },
   created() {
     console.log('edit fields modal created___')
-    //Form available for creating new fields in app or an exisiting castalog item
+    //Form available for creating new fields in app or an exisiting catalog item
     //if editting an existing item check custom fields are present and set each to
     //fields object to initialize reactivity
     //TODO: FIX BELOW, SET FUNCTION TO FORMAT DATA STRUCTURES PROPERLY
+    //WAY TOO HACKY??
     if (
       this.catalogitemFieldsEditting &&
       this.catalogItemEditting.customFields &&
@@ -361,6 +511,13 @@ export default {
         this.$set(this.fields, key, {
           ...this.catalogitemFieldsEditting[key]
         })
+        this.$set(this.fieldsOriginal, key, {
+          ...this.catalogitemFieldsEditting[key]
+        })
+        this.$set(this.autocomplete, key, {
+          ...this.catalogitemFieldsEditting[key]
+        })
+        this.$delete(this.autocomplete[key], 'field_id')
       }
     }
   }
