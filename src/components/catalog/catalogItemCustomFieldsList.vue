@@ -1,7 +1,18 @@
 <template>
   <v-card flat width="100%">
-    <template v-for="(field, key) in items">
-      <v-row dense :key="key + 'cfrow'" align="center">
+    <template v-if="!items">
+      <v-row class="flex-column" dense align="center">
+        <p>No additional details.</p>
+        <p>Click the "edit" icon above to modify custom fields.</p>
+      </v-row>
+    </template>
+    <template v-else>
+      <v-row
+        dense
+        v-for="(field, key) in items"
+        :key="key + 'cfrow'"
+        align="center"
+      >
         <v-col class="subheading primary--text font-weight-bold">{{
           field.name
         }}</v-col>
@@ -29,7 +40,8 @@ export default {
   props: {
     items: {
       type: Array,
-      required: true
+      required: false,
+      default: () => []
     }
   }
 }

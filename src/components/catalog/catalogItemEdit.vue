@@ -471,17 +471,21 @@ export default {
               this.setItemEdittingValues(resp.data)
               //SET CATALOG ITEM EDITTING ID
             } else {
-              Object.keys(postData).forEach(key => {
+              const itemData = { ...postData, image_data: this.image_data }
+              console.log(itemData)
+              Object.keys(itemData).forEach(key => {
                 this.$store.dispatch('catalogitemSetValue', {
                   id: this.id,
                   key: key,
-                  data: postData[key]
+                  data: itemData[key]
                 })
               })
-              this.setItemEdittingValues({
-                ...postData,
-                image_data: this.image_data
-              })
+              // this.$store.dispatch('catalogitemSetValue', {
+              //   id: this.id,
+              //   key: 'image_data',
+              //   data: this.image_data
+              // })
+              this.setItemEdittingValues(itemData)
             }
           }
           //set originalItem to item
@@ -502,6 +506,7 @@ export default {
       }
     },
     updateImage(imageData) {
+      console.log(imageData)
       this.$set(this, 'image_data', imageData)
     }
   },

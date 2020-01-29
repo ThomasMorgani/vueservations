@@ -198,7 +198,7 @@ export default {
       this.loading = 'save'
       console.log('saveimage')
       //emit save image
-      this.$emit('updateImage', this.currentImageData)
+      this.$emit('updateImage', { ...this.currentImageData, src: this.image })
       this.reset()
       this.close()
       // this.$store.dispatch('toggle')

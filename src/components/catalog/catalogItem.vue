@@ -139,15 +139,7 @@
               </v-tooltip>
             </v-col>
             <v-col cols="12" text-center>
-              <template
-                v-if="item.customFields && item.customFields.length > 0"
-              >
-                <customFieldsList :items="item.customFields"></customFieldsList>
-              </template>
-              <template v-else>
-                <p>No additional details.</p>
-                <p>Click the "edit" icon above to modify custom fields.</p>
-              </template>
+              <customFieldsList :items="item.customFields"></customFieldsList>
             </v-col>
           </v-row>
         </v-col>

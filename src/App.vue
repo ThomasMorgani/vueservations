@@ -12,7 +12,7 @@
       <!-- <v-btn icon>
         <v-icon>mdi-bookmark-plus-outline</v-icon>
       </v-btn>-->
-       <!-- <template v-slot:extension>
+      <!-- <template v-slot:extension>
           <v-toolbar-title>MENU</v-toolbar-title>
       <v-spacer></v-spacer>
        </template> -->
@@ -26,7 +26,7 @@
       <v-btn icon>
         <v-icon>mdi-help-circle-outline</v-icon>
       </v-btn>
-      <v-btn icon>
+      <v-btn icon @click="view = 'settings'">
         <v-icon>mdi-settings-outline</v-icon>
       </v-btn>
     </v-footer>
@@ -34,32 +34,32 @@
 </template>
 
 <script>
-import Calendar from '@/components/calendar/Calendar';
-import Catalog from '@/components/catalog/catalog';
+import Calendar from '@/components/calendar/Calendar'
+import Catalog from '@/components/catalog/catalog'
 
 export default {
   name: 'App',
   components: {
     Calendar,
-    Catalog
+    Catalog,
+    settings: () => import('@/views/settings')
   },
   data: () => ({
     title: 'EIPL RESERVATIONS',
-
     view: 'Calendar'
     //
   }),
   methods: {
     setView() {
-      this.view = this.view === 'Calendar' ? 'Catalog' : 'Calendar';
-      localStorage.setItem('lastView', this.view);
+      this.view = this.view === 'Calendar' ? 'Catalog' : 'Calendar'
+      localStorage.setItem('lastView', this.view)
     }
   },
   created() {
     this.view = localStorage.getItem('lastView')
       ? localStorage.getItem('lastView')
-      : 'Calendar';
-    this.$store.dispatch('initializeApp', this.$apiSettings);
+      : 'Calendar'
+    this.$store.dispatch('initializeApp', this.$apiSettings)
   }
-};
+}
 </script>

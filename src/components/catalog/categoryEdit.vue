@@ -91,8 +91,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import filters from '@/modules/filters';
+import { mapState } from 'vuex'
+import filters from '@/modules/filters'
 export default {
   name: 'categoryEdit',
   data: () => ({
@@ -109,67 +109,74 @@ export default {
       categories: state => state.categories,
       categoryEditting: state => state.categoryEditting
     }),
+    categoryEdittingData() {
+      return filters.categoryById(this.categoryEditting, this.categories)
+    },
     dataChanged() {
       return (
         this.name !== this.originalName || this.color !== this.originalColor
-      );
+      )
     },
     nameAvailable() {
       const nameMatches = this.categories.find(
         el =>
           el.name.toLowerCase() === String(this.name).toLowerCase() &&
           el.id !== this.id
-      );
+      )
       if (!this.name) {
-        return 'Name Required';
+        return 'Name Required'
       }
-      if (nameMatches !== undefined) {
-        return 'Category name already exists.';
+      if (
+        nameMatches !== undefined &&
+        this.categoryEdittingData &&
+          this.name !== this.categoryEdittingData.name
+      ) {
+        return 'Category name already exists.'
       }
-      return null;
+      return null
     },
     saveDisabled() {
-      return !this.dataChanged || this.nameAvailable !== null;
+      return !this.dataChanged || this.nameAvailable !== null
     }
   },
   methods: {
     cancel() {
       // this.resetForm();
-      this.loading = null;
-      this.$store.dispatch('toggleModalEditCategory');
+      this.loading = null
+      this.$store.dispatch('toggleModalEditCategory')
     },
     resetForm() {
-      this.color = this.$vuetify.theme.primary || 'primary';
-      this.id = null;
-      this.loading = false;
-      this.name = null;
+      this.color = this.$vuetify.theme.primary || 'primary'
+      this.id = null
+      this.loading = false
+      this.name = null
     },
     deleteCategory() {
-      this.loading = 'delete';
-      this.modalConfirmDelete = false;
+      this.loading = 'delete'
+      this.modalConfirmDelete = false
       this.$store
         .dispatch('categoryDelete', {
           id: this.id
         })
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.status) {
             if (res.status === 'success') {
-              this.$store.dispatch('toggleModalEditCategory');
+              this.$store.dispatch('toggleModalEditCategory')
             } else {
               //display error message returned from backend
-              console.log('res.status!= success', res);
+              console.log('res.status!= success', res)
             }
-            this.loading = null;
+            this.loading = null
           }
         })
         .catch(err => {
-          console.log(err);
-          alert('ERROR: ' + err);
-        });
+          console.log(err)
+          alert('ERROR: ' + err)
+        })
     },
     saveCategory() {
-      this.loading = 'save';
+      this.loading = 'save'
       this.$store
         .dispatch('categoryEditSave', {
           id: this.id,
@@ -178,39 +185,39 @@ export default {
           isNew: this.id === null
         })
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.status) {
             if (res.status === 'success') {
               //alert success
-              this.id = res.data;
-              this.$store.dispatch('toggleModalEditCategory');
+              this.id = res.data
+              this.$store.dispatch('toggleModalEditCategory')
             } else {
               //display error message returned from backend
 
-              console.log('res.status!= success', res);
+              console.log('res.status!= success', res)
             }
-            this.loading = null;
+            this.loading = null
           }
         })
         .catch(err => {
-          console.log(err);
-          alert('ERROR: ' + err);
-        });
+          console.log(err)
+          alert('ERROR: ' + err)
+        })
     }
   },
   created() {
     if (this.categoryEditting) {
-      const data = filters.categoryById(this.categoryEditting, this.categories);
-      this.color = data.color;
-      this.id = data.id;
-      this.name = data.name;
+      const data = filters.categoryById(this.categoryEditting, this.categories)
+      this.color = data.color
+      this.id = data.id
+      this.name = data.name
       //SET INITIAL VALUES TO KEEP TRACK OF
-      this.originalColor = data.color;
-      this.originalName = data.name;
+      this.originalColor = data.color
+      this.originalName = data.name
     }
   },
   mounted() {}
-};
+}
 </script>
 
 <style></style>

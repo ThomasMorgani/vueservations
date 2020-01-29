@@ -22,7 +22,8 @@ export default new Vuex.Store({
     modalImageFullPreview: false,
     modalCatalogitemEdit: false,
     modalCatalogitemEditCustomfields: false,
-    modalCategoryEdit: false
+    modalCategoryEdit: false,
+    settings: []
   },
   getters: {
     categoriesDisplayed(state) {
@@ -106,6 +107,10 @@ export default new Vuex.Store({
     },
     eventsFilterDateRange(state, val) {
       state.eventsFilterDateRange = val
+    },
+    pushStateValue(state, data) {
+      //data expects: {key: state key, value: state value}
+      state[data.key].push(data.value)
     },
     setStateValue(state, data) {
       //data expects: {key: state key, value: state value}
@@ -291,7 +296,27 @@ export default new Vuex.Store({
     customfieldsAddField({ commit }, data) {
       commit('customfieldsAddField', data)
     },
-    setStateValue({commit}, data) {
+    settingsNew({ commit, dispatch }, data) {
+      return new Promise((resolve, reject) => {
+        dispatch('apiCall', {
+          endpoint: '/settings_new',
+          postData: data
+        })
+          .then(res => {
+            console.log('res', res)
+            if (res.status === 'success') {
+              commit('pushStateValue', { key: 'settings', value: data })
+            }
+            console.log(res)
+            resolve(res)
+          })
+          .catch(err => {
+            console.log(err)
+            reject(err)
+          })
+      })
+    },
+    setStateValue({ commit }, data) {
       commit('setStateValue', { key: data.key, value: data.value })
     },
     toggleModalCatalogCustomfield({ commit, state }) {
