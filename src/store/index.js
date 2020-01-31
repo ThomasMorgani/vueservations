@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import apiFunctions from '@/modules/api'
+import filters from '@/modules/filters'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -29,7 +30,10 @@ export default new Vuex.Store({
     categoriesDisplayed(state) {
       //actual category ids mapped from select array
       let catsDisplayed = []
-      if (state.eventsFilterCategorySelect.length > 0) {
+      if (
+        state.eventsFilterCategorySelect &&
+        state.eventsFilterCategorySelect.length > 0
+      ) {
         state.eventsFilterCategorySelect.forEach(cat =>
           catsDisplayed.push(state.categories[cat].id)
         )
@@ -252,8 +256,24 @@ export default new Vuex.Store({
                 'categoryDelete',
                 state.categories.findIndex(el => el.id === data.id)
               )
+              //Update any CI with deleted category with default category
+              const defaultCat = filters.getObjectFromArray(
+                this.settings,
+                'name',
+                'Default_Category',
+                'setting'
+              )
+              state.catalogItems.forEach((ci, i) => {
+                if (ci.category === data.id) {
+                  commit('catalogitemSetValue', {
+                    index: i,
+                    key: 'category',
+                    data: defaultCat
+                  })
+                }
+              })
+              resolve(res)
             }
-            resolve(res)
           })
           .catch(err => {
             console.log(err)

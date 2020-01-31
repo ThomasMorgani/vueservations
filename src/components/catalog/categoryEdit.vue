@@ -48,7 +48,7 @@
                 </p>
                 <p class=" text-center">
                   All catalog items under this category will be set to the
-                  configured default category of "[default name]"
+                  configured default category of "{{ defaultCategory.name }}"
                 </p>
               </v-col>
             </v-row>
@@ -106,8 +106,10 @@ export default {
   }),
   computed: {
     ...mapState({
+      catalogItems: state => state.catalogItems,
       categories: state => state.categories,
-      categoryEditting: state => state.categoryEditting
+      categoryEditting: state => state.categoryEditting,
+      settings: state => state.settings
     }),
     categoryEdittingData() {
       return filters.categoryById(this.categoryEditting, this.categories)
@@ -116,6 +118,16 @@ export default {
       return (
         this.name !== this.originalName || this.color !== this.originalColor
       )
+    },
+    defaultCategory() {
+      const defaultCat = filters.getObjectFromArray(
+        this.settings,
+        'name',
+        'Default_Category',
+        'setting'
+      )
+      const cat = filters.getObjectFromArray(this.categories, 'id', defaultCat)
+      return cat
     },
     nameAvailable() {
       const nameMatches = this.categories.find(
@@ -129,7 +141,7 @@ export default {
       if (
         nameMatches !== undefined &&
         this.categoryEdittingData &&
-          this.name !== this.categoryEdittingData.name
+        this.name !== this.categoryEdittingData.name
       ) {
         return 'Category name already exists.'
       }
