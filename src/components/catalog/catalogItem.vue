@@ -58,12 +58,12 @@
               </v-tooltip>
             </v-col>
           </v-row>
-          <v-row dense class="display-flex align-start justify-start">
+          <v-row dense class="display-flex align-start justify-start my-2">
             <v-col class="text-xs-left">
               <p class="caption body-1 pa-2" v-html="item.description"></p>
             </v-col>
           </v-row>
-          <v-row dense align="center" justify="start">
+          <v-row dense align="center" justify="start" class="my-2">
             <!-- STATUS -->
             <v-tooltip top>
               <template v-slot:activator="{ on }">
@@ -79,7 +79,7 @@
                   ></p>
                 </v-card>
               </template>
-              <span>{{ status.popovertext }}</span>
+              <span v-html="status.popovertext"></span>
             </v-tooltip>
 
             <!-- CHECKOUT STATUS available, reserved, disabled-->
@@ -118,7 +118,7 @@
       </v-row>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <v-row dense justify-start>
+      <v-row dense justify-start class="mt-6">
         <v-col cols="2" align-self="center"></v-col>
         <v-col cols="10" align-self="center">
           <v-divider></v-divider>
@@ -172,18 +172,31 @@ export default {
     ...mapState({
       categories: state => state.categories
     }),
+    isReserved() {
+      let reserved = false
+      if (this.item.lastReservation) {
+        const now = new Date()
+        const endDate = new Date(this.item.lastReservation.end_date)
+        if (endDate < now) {
+          reserved = this.isReservedText()
+        }
+      }
+      return reserved
+    },
     status() {
-      const available = true //temp value until implemented
       let data = this.statusData.enabled
       switch (this.item.status) {
         case 'blocked':
           data = this.statusData.blocked
           break
         case 'enabled':
-          if (available) {
+          if (!this.isReserved) {
             data = this.statusData.available
           } else {
-            data = this.statusData.available
+            data = {
+              ...this.statusData.unavailable,
+              popovertext: this.isReserved
+            }
           }
           break
         case 'disabled':
@@ -214,6 +227,20 @@ export default {
       setTimeout(() => {
         this.$store.dispatch('toggleModalCatalogitemEdit')
       }, 500)
+    },
+    isReservedText() {
+      const resData = this.item.lastReservation
+      const now = new Date()
+      const year = now.getFullYear()
+      console.log(year)
+
+      let text = `<p class="mb-1"><strong>${resData.patron_last}, ${
+        resData.patron_first
+      }</strong></p><p class="mb-1">${resData.start_date.replace(
+        year + '-',
+        ''
+      )} - ${resData.end_date.replace(year + '-', '')}</p>`
+      return text
     }
   }
 }

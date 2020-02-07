@@ -427,6 +427,20 @@ export default {
       const fieldKey = this.fieldsEditting.indexOf(key)
       return fieldKey > -1
     },
+    formatFields() {
+      //FORMATE BEFORE SAVING
+      let fields = []
+      Object.values(this.fields).forEach(field => {
+        fields.push({
+          field_id: field.field_id,
+          internal: field.internal,
+          normal: field.normal,
+          type: field.type,
+          value: field.value
+        })
+      })
+      return fields
+    },
     updateField(fieldKey, fields) {
       for (let key in fields) {
         if (key !== 'id' && key !== 'default_value') {
@@ -453,6 +467,7 @@ export default {
     },
     saveFields() {
       console.log('saveFields')
+      // console.log(this.fields)
       if (Object.keys(this.fields).length < 1) {
         console.log('no fields. if fields !== fields_original:')
         console.log('confirm removing all fields, set new endpoint?')
@@ -460,7 +475,7 @@ export default {
       if (!this.catalogItemEditting.id) {
         this.$store.dispatch('catalogitemEdittingSetValue', {
           key: 'customFields',
-          data: this.fields
+          data: this.formatFields()
         })
         this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
         this.reset()
@@ -470,7 +485,7 @@ export default {
             endpoint: '/catalogitem_fields_edit',
             postData: {
               catalogItem: this.catalogItemEditting.id,
-              fields: this.fields
+              fields: this.formatFields()
             }
           })
           .then(resp => {

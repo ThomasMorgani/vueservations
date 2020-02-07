@@ -17,6 +17,9 @@
             v-text="mode === 'delete' ? 'mdi-delete-off' : 'mdi-trash-can'"
           ></v-icon>
         </v-btn> -->
+        <v-btn text icon color="primary" @click="categoryAdd">
+          <v-icon left v-text="'mdi-plus-thick'"></v-icon>
+        </v-btn>
         <v-btn text icon color="warning" @click="setMode('edit')">
           <v-icon
             v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"
@@ -59,7 +62,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'vuex'
 export default {
   data: () => ({
     mode: 'search',
@@ -88,15 +91,15 @@ export default {
       filterCategorySelect: state => state.eventsFilterCategorySelect
     }),
     categoryList() {
-      let list = this.categories;
-      return list.sort((a, b) => a.name.localeCompare(b.name));
+      let list = this.categories
+      return list.sort((a, b) => a.name.localeCompare(b.name))
     },
     categorySelect: {
       get() {
-        return this.filterCategorySelect;
+        return this.filterCategorySelect
       },
       set(val) {
-        this.$store.commit('eventsFilterCategorySelect', val);
+        this.$store.commit('eventsFilterCategorySelect', val)
       }
     }
   },
@@ -104,41 +107,47 @@ export default {
     action(action, id) {
       switch (action) {
         case 'details':
-          this.details(id);
-          break;
+          this.details(id)
+          break
         case 'edit':
-          this.edit(id);
-          break;
+          this.edit(id)
+          break
         default:
-          break;
+          break
       }
     },
+    categoryAdd() {
+      this.editCategoryModal = true
+      console.log('categoryAdd')
+      this.$store.dispatch('categoryEdit', null)
+      this.$store.dispatch('toggleModalEditCategory')
+    },
     details(id) {
-      console.log('details', id);
+      console.log('details', id)
     },
     edit(id) {
-      console.log('edit', id);
-      this.$store.dispatch('categoryEdit', id);
-      this.$store.dispatch('toggleModalEditCategory');
+      console.log('edit', id)
+      this.$store.dispatch('categoryEdit', id)
+      this.$store.dispatch('toggleModalEditCategory')
     },
     selectAll() {
-      this.categorySelect = [...this.categories.keys()];
+      this.categorySelect = [...this.categories.keys()]
     },
     selectNone() {
-      this.categorySelect = [];
+      this.categorySelect = []
     },
     setMode(mode) {
-      this.mode = this.mode === mode ? 'search' : mode;
+      this.mode = this.mode === mode ? 'search' : mode
     }
   },
   created() {
-    console.log('category list created');
+    console.log('category list created')
     //set category filter back to array if overview to statisfy multiselect requirement
     if (!Array.isArray(this.categorySelect)) {
-      this.categorySelect = [];
+      this.categorySelect = []
     }
   }
-};
+}
 </script>
 
 <style></style>

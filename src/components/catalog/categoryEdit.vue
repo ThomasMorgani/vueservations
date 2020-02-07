@@ -1,7 +1,14 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text">
-      {{ id ? 'EDIT CATEGORY' : 'ADD CATEGORY' }}
+    <v-card-title class="justify-center  primary--text">
+      <h5 class="title">{{ id ? 'EDIT CATEGORY' : 'ADD CATEGORY' }}</h5>
+      <v-spacer></v-spacer>
+      <v-tooltip top v-if="id == defaultCategory.id">
+        <template v-slot:activator="{ on }">
+          <v-icon v-on="on" class="align-end">mdi-star-box</v-icon>
+        </template>
+        <span>This is the default category.</span>
+      </v-tooltip>
     </v-card-title>
     <v-card-text>
       <form>
@@ -48,7 +55,8 @@
                 </p>
                 <p class=" text-center">
                   All catalog items under this category will be set to the
-                  configured default category of "{{ defaultCategory.name }}"
+                  configured default category of
+                  <strong>"{{ defaultCategory.name }}"</strong>
                 </p>
               </v-col>
             </v-row>

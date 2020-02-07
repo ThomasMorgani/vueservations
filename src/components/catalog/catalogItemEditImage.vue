@@ -114,6 +114,11 @@ export default {
     }
   },
   data: () => ({
+    defaultImageData: {
+      file_path: '/reservations/images/default/',
+      file_name: 'catalogitem.png',
+      file_type: 'PNG'
+    },
     imageDisplayed: null,
     imageUrl: null,
     imageFile: null,
@@ -135,7 +140,9 @@ export default {
       if (this.imageFile) {
         return this.imageUrl
       } else {
-        return `${this.$apiSettings.fqdn}${this.currentImageData.file_path}${this.currentImageData.file_name}`
+        return `${this.$apiSettings.fqdn}${this.currentImageData.file_path ||
+          this.defaultImageData.file_path}${this.currentImageData.file_name ||
+          this.defaultImageData.file_name}`
       }
     },
     imagePreviewProperties() {
@@ -159,17 +166,17 @@ export default {
           }
         } else {
           properties = {
-            name: this.currentImageData.file_name || 'not found',
-            type: this.currentImageData.file_type || 'not found',
+            name: this.currentImageData.file_name || ' -',
+            type: this.currentImageData.file_type || ' -',
             // dimensions: this.currentImageData.naturalWidth && this.currentImageData.naturalHeight ? `${this.currentImageData.naturalWidth}px X ${this.currentImageData.naturalHeight}px` : 'unk',
             dimensions:
               this.currentImageData.height && this.currentImageData.width
                 ? `${this.currentImageData.width}x${this.currentImageData.height}`
-                : 'unk',
+                : ' unk',
             size: this.currentImageData.file_size
               ? `${this.currentImageData.file_size}KB`
-              : 'unk',
-            path: this.currentImageData.file_path || 'unk'
+              : ' -',
+            path: this.currentImageData.file_path || ' -'
           }
           // properties = {
           //   name:  img.src ? img.src.replace(/^.*[\\/]/, '') : 'not found',

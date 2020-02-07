@@ -13,6 +13,10 @@ const catalogItem = item => {
     description: item.description || '',
     id: item.id,
     image_data: item.image_data || {},
+    lastReservation:
+      item.lastReservation && item.lastReservation['0']
+        ? item.lastReservation['0']
+        : null,
     name: item.name || '',
     status: item.status || ''
   }

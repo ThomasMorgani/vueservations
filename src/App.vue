@@ -30,19 +30,22 @@
         <v-icon>mdi-settings-outline</v-icon>
       </v-btn>
     </v-footer>
+    <Snackbar></Snackbar>
   </v-app>
 </template>
 
 <script>
 import Calendar from '@/components/calendar/Calendar'
 import Catalog from '@/components/catalog/catalog'
+import Snackbar from '@/components/global/snackbar'
 
 export default {
   name: 'App',
   components: {
     Calendar,
     Catalog,
-    settings: () => import('@/views/settings')
+    settings: () => import('@/views/settings'),
+    Snackbar
   },
   data: () => ({
     title: 'EIPL RESERVATIONS',

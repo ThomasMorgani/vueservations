@@ -24,7 +24,16 @@ export default new Vuex.Store({
     modalCatalogitemEdit: false,
     modalCatalogitemEditCustomfields: false,
     modalCategoryEdit: false,
-    settings: []
+    settings: [],
+    snackbarData: {},
+    snackbarSettings: {
+      defaultColor: 'primary',
+      'multi-line': true,
+      position: 'bottom',
+      timeout: 5000,
+      vertical: true
+    },
+    snackbarState: false
   },
   getters: {
     categoriesDisplayed(state) {
@@ -228,6 +237,20 @@ export default new Vuex.Store({
           categoryName: null,
           customFields: [],
           id: null,
+          image_data: {
+            id: '2',
+            file_name: '458d8cab268259a7e676eadc42ec2c6d.gif',
+            file_name_orig: 'eil2.gif',
+            file_ext: '.gif',
+            file_type: 'image/gif',
+            file_size: '94.93',
+            file_path: '/reservations/images/uploads/',
+            height: '768',
+            width: '844',
+            date_added: '2020-01-14 12:03:35',
+            src:
+              'https://www.eipl.org/reservations/images/uploads/458d8cab268259a7e676eadc42ec2c6d.gif'
+          },
           description: null,
           name: null,
           status: null
@@ -258,7 +281,7 @@ export default new Vuex.Store({
               )
               //Update any CI with deleted category with default category
               const defaultCat = filters.getObjectFromArray(
-                this.settings,
+                state.settings,
                 'name',
                 'Default_Category',
                 'setting'
@@ -272,8 +295,10 @@ export default new Vuex.Store({
                   })
                 }
               })
-              resolve(res)
             }
+            commit('setStateValue', { key: 'snackbarData', value: res })
+            commit('setStateValue', { key: 'snackbarState', value: true })
+            resolve(res)
           })
           .catch(err => {
             console.log(err)

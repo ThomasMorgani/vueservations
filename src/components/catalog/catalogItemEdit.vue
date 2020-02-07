@@ -312,6 +312,7 @@ export default {
       let isChanged = false
       // let origStr = this.originalValues.toString()
       // let loadingState = this.loading
+      console.log(this.originalValues)
       Object.keys(this.defaultItem).forEach(field => {
         if (field !== 'customFields' && field !== 'categoryName') {
           if (field === 'image_data') {
