@@ -1,14 +1,15 @@
 <template>
-  <v-expansion-panel>
+  <v-expansion-panel ref="panel">
     <v-expansion-panel-header class="pa-2">
-      <v-row dense justify-start>
-        <v-col
-          cols="2"
-          align-self="center"
-          justify-self="center"
-          class="text-center"
-        >
-          <v-img :src="thumbnailSrc" contain max-width="100"></v-img>
+      <v-row dense align="center" justify="center">
+        <v-col cols="2" align-self="center" class="d-flex justify-center">
+          <v-img
+            contain
+            :src="thumbnailSrc"
+            max-width="100"
+            max-height="100"
+            class="pa-0"
+          ></v-img>
         </v-col>
         <v-col cols="10">
           <v-row dense class="display-flex align-center justify-start">
@@ -106,42 +107,66 @@
                 >
                   <v-icon color="primary" v-text="'mdi-history'"></v-icon>
                   <p
-                    v-text="'10/21/2019'"
+                    v-text="
+                      item.lastReservation
+                        ? formatDate(
+                            item.lastReservation.start_date,
+                            true,
+                            false
+                          )
+                        : 'N/A'
+                    "
                     class="ml-1 font-weight-bold primary--text"
                   ></p>
                 </v-card>
               </template>
-              <span>Last Reservation</span>
+              <span v-html="lastReservedText()"></span>
             </v-tooltip>
           </v-row>
         </v-col>
       </v-row>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <v-row dense justify-start class="mt-6">
-        <v-col cols="2" align-self="center"></v-col>
-        <v-col cols="10" align-self="center">
+      <v-row dense justify="end">
+        <v-col class="flex-grow-1 flex-shrink-0"> </v-col>
+        <v-col class="text-right flex-grow-0 flex-shrink-1">
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn text icon color="primary" @click="edit" v-on="on">
+                <v-icon color="primary">mdi-note-text-outline</v-icon>
+              </v-btn>
+            </template>
+            <span>Notes</span>
+          </v-tooltip>
+        </v-col>
+        <v-col class="text-right flex-grow-0 flex-shrink-1">
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn text icon @click="showReservations" v-on="on">
+                <v-icon color="primary">mdi-calendar-clock</v-icon>
+              </v-btn>
+            </template>
+            <span>View Reservations</span>
+          </v-tooltip>
+        </v-col>
+        <v-col class="text-right flex-grow-0 flex-shrink-1">
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn text icon color="warning" @click="edit" v-on="on">
+                <v-icon color="warning">mdi-square-edit-outline</v-icon>
+              </v-btn>
+            </template>
+            <span>Edit Item</span>
+          </v-tooltip>
+        </v-col>
+      </v-row>
+      <v-row justify="end">
+        <v-col cols="10">
           <v-divider></v-divider>
-
-          <v-row justify-space-between>
-            <v-col>
-              <p class="title font-weight-bold primary--text">DETAILS</p>
-            </v-col>
-
-            <v-col class="text-right">
-              <v-tooltip left>
-                <template v-slot:activator="{ on }">
-                  <v-btn text icon color="warning" @click="edit" v-on="on">
-                    <v-icon color="warning">mdi-square-edit-outline</v-icon>
-                  </v-btn>
-                </template>
-                <span>Edit Item</span>
-              </v-tooltip>
-            </v-col>
-            <v-col cols="12" text-center>
-              <customFieldsList :items="item.customFields"></customFieldsList>
-            </v-col>
-          </v-row>
+          <p class="title font-weight-bold primary--text">DETAILS</p>
+        </v-col>
+        <v-col cols="10" text-center>
+          <customFieldsList :items="item.customFields"></customFieldsList>
         </v-col>
       </v-row>
     </v-expansion-panel-content>
@@ -150,6 +175,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { timestampHuman } from '@/modules/formats.js'
 
 import customFieldsList from '@/components/catalog/catalogItemCustomFieldsList'
 export default {
@@ -229,18 +255,26 @@ export default {
       }, 500)
     },
     isReservedText() {
+      //merge this with last reservaiton method?
       const resData = this.item.lastReservation
-      const now = new Date()
-      const year = now.getFullYear()
-      console.log(year)
-
-      let text = `<p class="mb-1"><strong>${resData.patron_last}, ${
-        resData.patron_first
-      }</strong></p><p class="mb-1">${resData.start_date.replace(
-        year + '-',
-        ''
-      )} - ${resData.end_date.replace(year + '-', '')}</p>`
+      let wYear =
+        resData.start_date.substring(0, 4) !== resData.end_date.substring(0, 4)
+      let dateStart = this.formatDate(resData.start_date, wYear, true)
+      let dateEnd = this.formatDate(resData.end_date, wYear, true)
+      let text = `<p class="mb-1"><strong>${resData.patron_last}, ${resData.patron_first}</strong></p><p class="mb-1">${dateStart} - ${dateEnd}</p>`
       return text
+    },
+    formatDate(timestamp, withYear, withTime) {
+      return timestampHuman(timestamp, withYear, withTime)
+    },
+    lastReservedText() {
+      //merge this with last reservaiton method?
+      return this.item.lastReservation
+        ? this.isReservedText()
+        : '<p class="mb-1"><strong>Last Reservation:</strong></p><p class="mb-1">None</p>'
+    },
+    showReservations() {
+      console.log('showReservations')
     }
   }
 }

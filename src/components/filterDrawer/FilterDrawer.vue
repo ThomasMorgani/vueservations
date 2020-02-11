@@ -1,5 +1,12 @@
 <template>
-  <v-navigation-drawer app clipped right :value="value" @input="$emit('input')" width="350">
+  <v-navigation-drawer
+    app
+    clipped
+    right
+    :value="value"
+    @input="$emit('input')"
+    width="350"
+  >
     <v-card class="d-flex flex-column pa-5 justify-start" height="100%">
       <span class="title align-center primary--text">FILTERS</span>
       <v-text-field
@@ -7,7 +14,7 @@
         rounded
         single-line
         clearable
-        prepend-inner-icon="mdi-magnify"
+        formatsend-inner-icon="mdi-magnify"
         placeholder="Search"
         color="primary"
         class="mt-4 flex-grow-0 flex-shrink-1"
@@ -41,7 +48,7 @@
       <v-text-field
         v-model="dateRangeText"
         no-label
-        prepend-icon="mdi-calendar-range"
+        formatsend-icon="mdi-calendar-range"
         readonly
       ></v-text-field>
       <v-card flat class="d-flex flex-grow-1 align-end justify-center ma-3">
@@ -72,7 +79,9 @@ export default {
       }
     },
     dateRangeText() {
-      return this.dateRange.length === 2 ? this.dateRange.join(' ~ ') : 'select range above'
+      return this.dateRange.length === 2
+        ? this.dateRange.join(' ~ ')
+        : 'select range above'
     },
     dateRange: {
       get() {

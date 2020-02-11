@@ -33,4 +33,39 @@ const hotspot = item => {
   }
 }
 
-export { catalogItem, hotspot }
+const timestampHuman = (timestamp, withYear = true, withTime = true) => {
+  const asDate = new Date(timestamp)
+  let human = ''
+  let D = asDate.getDate()
+  if (D < 10) {
+    D = D.toString().padStart(2, '0')
+  }
+  let M = asDate.getMonth() + 1
+  if (M < 10) {
+    M = M.toString().padStart(2, '0')
+  }
+  human = `${M}/${D}`
+  if (withYear) {
+    human = human + '/' + asDate.getFullYear()
+  }
+  if (withTime) {
+    let h = asDate.getHours()
+    let m = asDate.getMinutes()
+    let ampm = 'AM'
+    if (h === 0) {
+      h = 12
+    }
+    if (h > 12) {
+      h = h - 12
+      ampm = 'PM'
+    }
+    if (m < 10) {
+      m = m.toString().padStart(2, '0')
+    }
+    human = human + `  ${h}:${m} ${ampm}`
+  }
+  return human
+  // return timestamp`
+}
+
+export { catalogItem, hotspot, timestampHuman }

@@ -1,10 +1,12 @@
 <template>
   <!-- <v-card flat color="background"> -->
-  <v-card flat >
-    <v-card-title >
-    <!-- <v-card-title class="pa-0"> -->
+  <v-card flat>
+    <v-card-title class="d-flex space-between align-center">
+      <!-- <v-card-title class="pa-0"> -->
       <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
+      <v-icon left color="primary">mdi-filter</v-icon
+      >{{ `${itemList.length} of ${catalogItems.length}` }}
     </v-card-title>
     <v-card-text>
       <v-expansion-panels
@@ -17,7 +19,7 @@
         <template v-for="(item, key) in orderBy(itemList, 'name')">
           <catalogItem
             :key="item.id ? item.id : key + 'ci'"
-            :item="prepareCatalogItemData(item)"
+            :item="formatsareCatalogItemData(item)"
             :statusData="statusData"
           ></catalogItem>
           <!-- <catalogItem :key="item.id" :item="item" :isActivePanel="key === panel"></catalogItem> -->
@@ -31,7 +33,7 @@
 import { mapState } from 'vuex'
 import Vue2Filters from 'vue2-filters'
 import filters from '@/modules/filters'
-import * as prep from '@/modules/prep'
+import * as formats from '@/modules/formats'
 
 import catalogItem from '@/components/catalog/catalogItem'
 export default {
@@ -92,7 +94,7 @@ export default {
     }
   },
   methods: {
-    prepareCatalogItemData(catalogItem) {
+    formatsareCatalogItemData(catalogItem) {
       //format data to be passed to list item
       if (catalogItem && catalogItem.name) {
         const category = filters.categoryById(
@@ -102,10 +104,10 @@ export default {
         catalogItem.categoryName = category.name || 'MISC'
         // catalogItem.customFields = cata
 
-        return prep.catalogItem(catalogItem)
+        return formats.catalogItem(catalogItem)
       } else {
         console.log('no cat')
-        return prep.catalogItem(catalogItem)
+        return formats.catalogItem(catalogItem)
       }
     }
   },

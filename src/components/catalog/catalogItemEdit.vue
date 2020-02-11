@@ -80,7 +80,7 @@
                     hover
                     @click="modalEditImage = !modalEditImage"
                   ></v-img>
-                  <!-- <v-file-input prepend-inner-icon="mdi-image" prepend-icon label="Select Image"></v-file-input> -->
+                  <!-- <v-file-input formatsend-inner-icon="mdi-image" formatsend-icon label="Select Image"></v-file-input> -->
                 </v-card>
               </v-col>
             </v-row>
@@ -99,11 +99,10 @@
           </v-col>
 
           <v-col cols="12">
-            <v-divider></v-divider>
             <v-card flat class="pa-2">
               <v-row justify="space-between" no-gutters>
                 <v-col cols="8">
-                  <span class="title primary--text">ADDITIONAL DETAILS</span>
+                  <span class="title primary--text">DETAILS</span>
                 </v-col>
                 <v-col class="text-right">
                   <v-tooltip top>
@@ -121,11 +120,12 @@
                     <span>Edit details</span>
                   </v-tooltip>
                 </v-col>
-              </v-row>
-              <v-row>
-                <customFieldsList
-                  :items="customFieldsDisplayed"
-                ></customFieldsList>
+                <v-col cols="12">
+                  <v-divider></v-divider>
+                  <customFieldsList
+                    :items="customFieldsDisplayed"
+                  ></customFieldsList>
+                </v-col>
               </v-row>
             </v-card>
           </v-col>
@@ -338,7 +338,6 @@ export default {
         if (
           field !== 'id' &&
           field !== 'customFields' &&
-          field !== 'description' &&
           this[field] === this.defaultItem[field]
         ) {
           fields.push(field)

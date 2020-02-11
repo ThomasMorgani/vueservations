@@ -12,19 +12,24 @@
         </v-btn>
       </template>
       <template v-else>
-        <!-- <v-btn text icon color="error" @click="setMode('delete')" class="mr-4">
-          <v-icon
-            v-text="mode === 'delete' ? 'mdi-delete-off' : 'mdi-trash-can'"
-          ></v-icon>
-        </v-btn> -->
-        <v-btn text icon color="primary" @click="categoryAdd">
-          <v-icon left v-text="'mdi-plus-thick'"></v-icon>
-        </v-btn>
-        <v-btn text icon color="warning" @click="setMode('edit')">
-          <v-icon
-            v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"
-          ></v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn text icon color="primary" v-on="on" @click="categoryAdd">
+              <v-icon left v-text="'mdi-plus-thick'"></v-icon>
+            </v-btn>
+          </template>
+          <span>Add New Category</span>
+        </v-tooltip>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn text icon color="warning" v-on="on" @click="setMode('edit')">
+              <v-icon
+                v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"
+              ></v-icon>
+            </v-btn>
+          </template>
+          <span>Toggle Edit Mode</span>
+        </v-tooltip>
       </template>
     </v-card-title>
     <v-card-text>
@@ -43,7 +48,7 @@
                 class="headline text-capitalize primary--text"
               ></v-list-item-title>
             </v-list-item-content>
-            <v-list-item-action v-if="catalogView !== 'overview'">
+            <v-list-item-action>
               <v-btn
                 text
                 icon
@@ -53,6 +58,26 @@
               >
                 <v-icon v-text="modeIcons[mode].icon"></v-icon>
               </v-btn>
+              <div v-else>
+                <v-tooltip top v-if="category.id == defaultCategory.id">
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on" class="align-end">mdi-star-box</v-icon>
+                  </template>
+                  <span>This is the default category.</span>
+                </v-tooltip>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" class="mb-0 title">
+                      ({{ categoryCounts[category.id] || 0 }})
+                    </span>
+                  </template>
+                  <span
+                    v-text="
+                      countText(categoryCounts[category.id] || 0, category.name)
+                    "
+                  ></span>
+                </v-tooltip>
+              </div>
             </v-list-item-action>
           </v-list-item>
         </v-list-item-group>
@@ -63,9 +88,11 @@
 
 <script>
 import { mapState } from 'vuex'
+import filters from '@/modules/filters'
+
 export default {
   data: () => ({
-    mode: 'search',
+    mode: null,
     modeIcons: {
       delete: {
         action: 'delete',
@@ -86,13 +113,26 @@ export default {
   }),
   computed: {
     ...mapState({
+      catalogItems: state => state.catalogItems,
       catalogView: state => state.catalogView,
       categories: state => state.categories,
-      filterCategorySelect: state => state.eventsFilterCategorySelect
+      filterCategorySelect: state => state.eventsFilterCategorySelect,
+      settings: state => state.settings
     }),
     categoryList() {
       let list = this.categories
       return list.sort((a, b) => a.name.localeCompare(b.name))
+    },
+    categoryCounts() {
+      let counts = {}
+      if (this.catalogItems) {
+        this.catalogItems.forEach(item => {
+          counts[item.category] = counts[item.category]
+            ? counts[item.category] + 1
+            : 1
+        })
+      }
+      return counts
     },
     categorySelect: {
       get() {
@@ -101,6 +141,16 @@ export default {
       set(val) {
         this.$store.commit('eventsFilterCategorySelect', val)
       }
+    },
+    defaultCategory() {
+      const defaultCat = filters.getObjectFromArray(
+        this.settings,
+        'name',
+        'Default_Category',
+        'setting'
+      )
+      const cat = filters.getObjectFromArray(this.categories, 'id', defaultCat)
+      return cat
     }
   },
   methods: {
@@ -122,6 +172,15 @@ export default {
       this.$store.dispatch('categoryEdit', null)
       this.$store.dispatch('toggleModalEditCategory')
     },
+    countText(count, category) {
+      if (count === 1) {
+        return 'There is 1 item under ' + category
+      } else if (count === 0) {
+        return 'There are no items under ' + category
+      } else {
+        return 'There are ' + count + ' items under ' + category
+      }
+    },
     details(id) {
       console.log('details', id)
     },
@@ -137,7 +196,7 @@ export default {
       this.categorySelect = []
     },
     setMode(mode) {
-      this.mode = this.mode === mode ? 'search' : mode
+      this.mode = this.mode === mode ? null : mode
     }
   },
   created() {

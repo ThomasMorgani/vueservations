@@ -347,11 +347,15 @@ export default {
       changed =
         Object.keys(this.fields).length !==
         Object.keys(this.fieldsOriginal).length
+      console.log(changed)
       Object.keys(this.fields).forEach(key => {
         if (this.fieldsOriginal[key]) {
-          changed =
+          if (
             this.fields[key].name !== this.fieldsOriginal[key].name ||
             this.fields[key].value !== this.fieldsOriginal[key].value
+          ) {
+            changed = true
+          }
         } else {
           changed = true
         }
@@ -434,7 +438,7 @@ export default {
         fields.push({
           field_id: field.field_id,
           internal: field.internal,
-          normal: field.normal,
+          name: field.name,
           type: field.type,
           value: field.value
         })

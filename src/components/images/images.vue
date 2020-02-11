@@ -1,7 +1,10 @@
 <template>
   <v-card text>
     <v-card-text class="d-flex flex-wrap align-center justify-start pt-0">
-      <v-progress-circular indeterminate v-if="loading && images.length > 0"></v-progress-circular>
+      <v-progress-circular
+        indeterminate
+        v-if="loading && images.length > 0"
+      ></v-progress-circular>
       <template v-else>
         <v-col cols="3">
           <v-tooltip top>
@@ -35,7 +38,7 @@
               absolute
               small
               color="primary"
-              @click="showPreview(image)"
+              @click.stop="showPreview(image)"
               class="previewIcon"
             >
               <v-icon small>mdi-eye</v-icon>
@@ -52,7 +55,10 @@
       max-width="500px"
       transition="dialog-transition"
     >
-      <uploadForm @closeUploadModal="modalUploadForm = false" @uploadSuccess="addNewImage"></uploadForm>
+      <uploadForm
+        @closeUploadModal="modalUploadForm = false"
+        @uploadSuccess="addNewImage"
+      ></uploadForm>
     </v-dialog>
   </v-card>
 </template>
