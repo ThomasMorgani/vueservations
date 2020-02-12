@@ -4,9 +4,11 @@
       <v-toolbar-title>{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon @click="setView">
-        <v-icon>{{
+        <v-icon>
+          {{
           view === 'Calendar' ? 'mdi-format-list-bulleted-type' : 'mdi-calendar'
-        }}</v-icon>
+          }}
+        </v-icon>
       </v-btn>
 
       <!-- <v-btn icon>
@@ -15,10 +17,10 @@
       <!-- <template v-slot:extension>
           <v-toolbar-title>MENU</v-toolbar-title>
       <v-spacer></v-spacer>
-       </template> -->
+      </template>-->
     </v-app-bar>
-    <v-content>
-      <component :is="view"></component>
+    <v-content ref="content">
+      <component :is="view" v-if="isLoaded"></component>
       <!-- <Calendar></Calendar> -->
     </v-content>
     <v-footer color="primary" app dark clipped-right>
@@ -48,11 +50,27 @@ export default {
     Snackbar
   },
   data: () => ({
+    isLoaded: false,
     title: 'EIPL RESERVATIONS',
     view: 'Calendar'
     //
   }),
   methods: {
+    setDimmensions() {
+    console.log(this.$refs.content.$el)
+    console.log(this.$store.state)
+    let contentLocal = this.$refs.content.$el.offsetHeight
+    let contentState = this.$store.state.content
+    contentState.main.x = this.$refs.content.$el.offsetWidth
+    contentState.main.y = this.$refs.content.$el.offsetHeight
+    console.log(contentLocal)
+    console.log(contentState)
+    // console.log(content.offsetHeight)
+    // console.log(content.offsetWidth)
+    this.$store.dispatch('setStateValue', {key: 'content', value: contentState })
+    this.isLoaded = true
+
+    },
     setView() {
       this.view = this.view === 'Calendar' ? 'Catalog' : 'Calendar'
       localStorage.setItem('lastView', this.view)
@@ -63,6 +81,25 @@ export default {
       ? localStorage.getItem('lastView')
       : 'Calendar'
     this.$store.dispatch('initializeApp', this.$apiSettings)
+  },
+  mounted() {
+    setTimeout(() => {
+      this.setDimmensions()
+    }, 1500);
+
   }
 }
 </script>
+<style>
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #623fa7;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(102, 102, 102, 0.26);
+}
+</style>

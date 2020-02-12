@@ -1,15 +1,17 @@
 <template>
-  <v-row fill-height align-start justify-start dense>
+  <v-row fill-height align-start justify-start dense no-gutters>
     <v-col cols="12">
       <!-- <v-sheet height="10vh"> -->
-      <v-toolbar flat color="background">
+      <v-toolbar height="40" flat color="background">
         <!-- <v-btn outlined class="mr-4" @click="setToday">Today</v-btn> -->
         <v-menu bottom right>
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on" color="primary">
-              <span class="title font-weight-bold">{{
+              <span class="title font-weight-bold">
+                {{
                 typeToLabel[type]
-              }}</span>
+                }}
+              </span>
               <v-icon right>mdi-menu-down</v-icon>
             </v-btn>
           </template>
@@ -38,14 +40,16 @@
         <v-spacer></v-spacer>
         <!-- <v-btn outlined color="primary" class="mr-4" @click="eventAdd">
           <v-icon left>mdi-bookmark-plus-outline</v-icon>NEW
-        </v-btn> -->
+        </v-btn>-->
         <v-btn icon @click="eventAdd">
           <v-icon color="primary">mdi-calendar-plus</v-icon>
         </v-btn>
         <v-btn icon @click="navDrawer = !navDrawer">
-          <v-icon color="primary">{{
+          <v-icon color="primary">
+            {{
             navDrawer ? 'mdi-filter-remove' : 'mdi-filter'
-          }}</v-icon>
+            }}
+          </v-icon>
         </v-btn>
       </v-toolbar>
       <!-- </v-sheet> -->
@@ -54,7 +58,7 @@
       <FilterDrawer :value="navDrawer"></FilterDrawer>
 
       <!-- <v-sheet height="calc(100vh - 64px)" style="overflow-y: scroll;"> -->
-      <v-sheet height="75vh" style="overflow-y: scroll">
+      <v-sheet class="px-2" :style="styleCal">
         <v-sheet :height="type === 'month' ? calendarMonthHeight : '100%'">
           <v-calendar
             ref="calendar"
@@ -78,7 +82,7 @@
               <v-sheet :color="color" class="white--text pa-1">{{
                 conLog(day)
               }}</v-sheet>
-            </template> -->
+            </template>-->
           </v-calendar>
           <v-menu
             v-model="selectedOpen"
@@ -176,6 +180,16 @@ export default {
         timeZone: 'UTC',
         month: 'long'
       })
+    },
+    styleCal() {
+      let height = this.$store.state.content.main.y || null
+      if (height) {
+        height = height - 160
+      }
+      return {
+        height: `${height}px`,
+        'overflow-y': 'auto'
+      }
     }
   },
   methods: {

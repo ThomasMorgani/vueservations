@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card flat>
     <v-card-title>
       <span class="headline font-weight-medium primary--text">CATEGORIES</span>
       <v-spacer></v-spacer>
@@ -23,9 +23,7 @@
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <v-btn text icon color="warning" v-on="on" @click="setMode('edit')">
-              <v-icon
-                v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"
-              ></v-icon>
+              <v-icon v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"></v-icon>
             </v-btn>
           </template>
           <span>Toggle Edit Mode</span>
@@ -39,9 +37,10 @@
           :multiple="catalogView === 'overview'"
           color="primary"
           :key="'ig' + catalogView"
+          :style="styleCategoryList"
         >
           <v-list-item v-for="(category, i) in categoryList" :key="i">
-            <v-list-item-avatar :color="category.color"> </v-list-item-avatar>
+            <v-list-item-avatar :color="category.color"></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title
                 v-text="category.name"
@@ -67,9 +66,7 @@
                 </v-tooltip>
                 <v-tooltip top>
                   <template v-slot:activator="{ on }">
-                    <span v-on="on" class="mb-0 title">
-                      ({{ categoryCounts[category.id] || 0 }})
-                    </span>
+                    <span v-on="on" class="mb-0 title">({{ categoryCounts[category.id] || 0 }})</span>
                   </template>
                   <span
                     v-text="
@@ -151,6 +148,16 @@ export default {
       )
       const cat = filters.getObjectFromArray(this.categories, 'id', defaultCat)
       return cat
+    },
+    styleCategoryList() {
+      let height = this.$store.state.content.main.y || null
+      if (height) {
+        height = height - 260
+      }
+      return {
+        height: `${height}px`,
+        'overflow-y': 'auto'
+      }
     }
   },
   methods: {
@@ -209,4 +216,5 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+</style>

@@ -2,14 +2,14 @@
   <v-row
     fill-height
     align-start
-    justify-start
+    justify="space-between"
     dense
     no-gutters
     class="d-flex flex-column"
   >
-    <v-col cols="12" class="flex-shrink-1">
+    <v-col cols="12" class="pa-0 flex-shrink-1">
       <!-- <v-sheet height="10vh"> -->
-      <v-toolbar flat color="background">
+      <v-toolbar height="40" flat color="background">
         <!-- <v-btn outlined class="mr-4" @click="setToday">Today</v-btn> -->
         <v-menu bottom right>
           <template v-slot:activator="{ on }">
@@ -55,7 +55,7 @@
         </v-btn>
       </v-toolbar>
     </v-col>
-    <v-col cols="12" class="flex-grow-1">
+    <v-col cols="12" class="pa-0 flex-grow-1">
       <component :is="view" :view="view"></component>
     </v-col>
     <!-- Edit Category Modal  -->
@@ -97,9 +97,7 @@
         )}`
       "
     >
-      <catalogItemEditFields
-        :key="modalEditCatalogItemFields + ''"
-      ></catalogItemEditFields>
+      <catalogItemEditFields :key="modalEditCatalogItemFields + ''"></catalogItemEditFields>
     </v-dialog>
     <!-- Catalog Custom Fields Mgmtm Modal  -->
     <!-- <v-dialog
@@ -116,7 +114,7 @@
       "
     >
       <catalogCustomfield></catalogCustomfield>
-    </v-dialog> -->
+    </v-dialog>-->
     <v-dialog
       :value="modalImageFullPreview"
       transition="dialog-transition"

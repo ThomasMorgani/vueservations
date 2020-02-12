@@ -5,16 +5,11 @@
       <!-- <v-card-title class="pa-0"> -->
       <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
-      <v-icon left color="primary">mdi-filter</v-icon
-      >{{ `${itemList.length} of ${catalogItems.length}` }}
+      <v-icon left color="primary">mdi-filter</v-icon>
+      {{ `${itemList.length} of ${catalogItems.length}` }}
     </v-card-title>
     <v-card-text>
-      <v-expansion-panels
-        popout
-        v-model="panel"
-        class="py-1"
-        style="height: 65vh; overflow-y: scroll;"
-      >
+      <v-expansion-panels popout v-model="panel" class="py-1" :style="styleCiList">
         <!-- <template v-for="(item, key) in limitBy(itemsDisplayed, itemDisplayLimit)"> -->
         <template v-for="(item, key) in orderBy(itemList, 'name')">
           <catalogItem
@@ -91,6 +86,16 @@ export default {
     }),
     itemList() {
       return this.$store.getters.catalogItemsDisplayed
+    },
+    styleCiList() {
+      let height = this.$store.state.content.main.y || null
+      if (height) {
+        height = height - 250
+      }
+      return {
+        height: `${height}px`,
+        'overflow-y': 'auto'
+      }
     }
   },
   methods: {

@@ -12,6 +12,13 @@ export default new Vuex.Store({
     catalogView: 'overview',
     categories: [],
     categoryEditting: null, //category id ? set id,
+    content: {
+      main: {
+        height: 0,
+        width: 0
+      },
+      test: 2
+    },
     customFields: [],
     events: [],
     eventsFilterSearchbox: null,
@@ -127,6 +134,7 @@ export default new Vuex.Store({
     },
     setStateValue(state, data) {
       //data expects: {key: state key, value: state value}
+      console.log(data)
       state[data.key] = data.value
     },
     toggleModalCatalogCustomfield(state, data) {

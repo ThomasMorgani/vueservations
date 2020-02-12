@@ -1,9 +1,9 @@
 <template>
-  <v-row justify="center">
-    <v-col cols="4">
+  <v-row class="d-flex flex-row">
+    <v-col class="pt-0 pa-0 flex-grow-0 flex-shrink-1">
       <categoryList></categoryList>
     </v-col>
-    <v-col cols="7">
+    <v-col class="pt-0 pa-0 flex-grow-1 flex-shrink-0">
       <catalogItemList></catalogItemList>
     </v-col>
   </v-row>
