@@ -15,15 +15,17 @@
       <template v-for="(details, detail) in event.details">
         <span :key="detail">
           <p class="mb-0">
-            <strong>{{detail}}:</strong>
-            {{details}}
+            <strong>{{ detail }}:</strong>
+            {{ details }}
           </p>
         </span>
       </template>
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn text :color="event.class.color" @click="$emit('closeDetails')">CLOSE</v-btn>
+      <v-btn text :color="event.class.color" @click="$emit('closeDetails')"
+        >CLOSE</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>
@@ -40,7 +42,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-
-</style>
+<style scoped></style>

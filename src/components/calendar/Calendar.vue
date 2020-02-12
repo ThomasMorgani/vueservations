@@ -7,7 +7,9 @@
         <v-menu bottom right>
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on" color="primary">
-              <span class="title font-weight-bold">{{ typeToLabel[type] }}</span>
+              <span class="title font-weight-bold">{{
+                typeToLabel[type]
+              }}</span>
               <v-icon right>mdi-menu-down</v-icon>
             </v-btn>
           </template>
@@ -41,7 +43,9 @@
           <v-icon color="primary">mdi-calendar-plus</v-icon>
         </v-btn>
         <v-btn icon @click="navDrawer = !navDrawer">
-          <v-icon color="primary">{{ navDrawer ? 'mdi-filter-remove' : 'mdi-filter' }}</v-icon>
+          <v-icon color="primary">{{
+            navDrawer ? 'mdi-filter-remove' : 'mdi-filter'
+          }}</v-icon>
         </v-btn>
       </v-toolbar>
       <!-- </v-sheet> -->
@@ -57,11 +61,11 @@
             v-model="focus"
             color="primary"
             :events="eventsList"
-            :event-color="getColor"
+            :event-color="eventColor"
             :event-margin-bottom="2"
-            event-name="title"
-            event-start="startDate"
-            event-end="endDate"
+            :event-name="eventLabel"
+            event-start="start_date"
+            event-end="end_date"
             :now="today"
             :type="type"
             @click:event="showEvent"
@@ -71,14 +75,16 @@
             @contextmenu:day="contextDay"
           >
             <!-- <template v-slot:day="day">
-              <v-sheet :color="color" class="white--text pa-1">{{day}}</v-sheet>
-            </template>-->
+              <v-sheet :color="color" class="white--text pa-1">{{
+                conLog(day)
+              }}</v-sheet>
+            </template> -->
           </v-calendar>
           <v-menu
             v-model="selectedOpen"
             :close-on-content-click="false"
             :activator="selectedElement"
-            offset-x
+            max-width="350"
           >
             <eventDetailsCard
               :event="selectedEvent"
@@ -95,6 +101,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import filters from '@/modules/filters.js'
 import eventDetailsCard from '@/components/calendar/eventDetailCard'
 import FilterDrawer from '@/components/filterDrawer/FilterDrawer'
 import Vue2Filters from 'vue2-filters'
@@ -132,7 +139,8 @@ export default {
   computed: {
     ...mapState({
       filter: state => state.filter,
-      events: state => state.events
+      events: state => state.events,
+      catalogItems: state => state.catalogItems
     }),
     eventsList() {
       return this.events
@@ -171,6 +179,17 @@ export default {
     }
   },
   methods: {
+    eventColor(e) {
+      let item = filters.getObjectFromArray(this.catalogItems, 'id', e.item_id)
+      return item.color
+    },
+    eventLabel(v) {
+      return '<strong>' + v.input.device + '</strong>'
+    },
+    conLog(v) {
+      console.log(v)
+      return v.month
+    },
     initializeApp() {
       console.log('get events method')
       this.axios
@@ -178,7 +197,7 @@ export default {
         .then(response => {
           console.log(response)
           if (response.data && response.data.reservations) {
-            // response.data.reservations.forEach(res => this.events.push({...res, name: res.title, start: res.startDate, end: res.endDate}))
+            // response.data.reservations.forEach(res => this.events.push({...res, name: res.title, start: res.startDate, end: res.end_date}))
             this.events = response.data.reservations
           }
           // if (response.data) {
@@ -211,8 +230,6 @@ export default {
     },
     eventEdit(eid) {
       //expects event id
-      console.log(eid)
-      console.log(this.getEventById(eid))
       let event = this.getEventById(eid)
       if (event) {
         console.log('event found open modal')
@@ -240,8 +257,8 @@ export default {
               'First Name': event.patronInfo.first,
               'Last Name': event.patronInfo.last,
               Barcode: event.patronInfo.barcode,
-              'Start Date': event.startDate,
-              'End Date': event.endDate,
+              'Start Date': event.start_date,
+              'End Date': event.end_date,
               Notes: event.Notes
             }
           }
@@ -260,19 +277,12 @@ export default {
           return formattedEvent
       }
     },
-    getColor(e) {
-      return e.classes
-    },
-
     getEventById(eid) {
       const eventKey = this.events.findIndex(event => event.id === eid)
       return eventKey > -1 ? this.events[eventKey] : null
     },
     getEventKeyById(eid) {
       return this.events.findIndex(event => event.id === eid)
-    },
-    getEventColor(event) {
-      return event.color
     },
     setToday() {
       this.focus = this.today

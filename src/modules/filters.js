@@ -19,7 +19,7 @@ export default {
       return false
     } else {
       const result = arr.find(el => el[key] === val)
-      console.log(result)
+      // console.log(result)
       return returnVal ? result[returnVal] : result
     }
   }
