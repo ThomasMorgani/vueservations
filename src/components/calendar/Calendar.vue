@@ -1,16 +1,13 @@
 <template>
   <v-row fill-height align-start justify-start dense no-gutters>
     <v-col cols="12">
-      <!-- <v-sheet height="10vh"> -->
       <v-toolbar height="40" flat color="background">
         <!-- <v-btn outlined class="mr-4" @click="setToday">Today</v-btn> -->
         <v-menu bottom right>
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on" color="primary">
               <span class="title font-weight-bold">
-                {{
-                typeToLabel[type]
-                }}
+                {{ typeToLabel[type] }}
               </span>
               <v-icon right>mdi-menu-down</v-icon>
             </v-btn>
@@ -41,14 +38,43 @@
         <!-- <v-btn outlined color="primary" class="mr-4" @click="eventAdd">
           <v-icon left>mdi-bookmark-plus-outline</v-icon>NEW
         </v-btn>-->
+        <v-menu
+          v-model="menuHeightSlider"
+          :close-on-content-click="false"
+          :nudge-width="200"
+          bottom
+          offset-y
+        >
+          <template v-slot:activator="{ on }">
+            <v-btn icon v-on="on">
+              <v-icon color="primary">mdi-arrow-split-horizontal</v-icon>
+            </v-btn>
+          </template>
+
+          <v-card>
+            <v-card-title class="title primary--text">
+              Calendar Height
+            </v-card-title>
+            <v-card-text>
+              <v-slider
+                v-model="calendarMonthHeight"
+                :color="color"
+                track-color="grey"
+                hide-details=""
+                min="1000"
+                max="3000"
+              >
+              </v-slider>
+            </v-card-text>
+          </v-card>
+        </v-menu>
+
         <v-btn icon @click="eventAdd">
           <v-icon color="primary">mdi-calendar-plus</v-icon>
         </v-btn>
         <v-btn icon @click="navDrawer = !navDrawer">
           <v-icon color="primary">
-            {{
-            navDrawer ? 'mdi-filter-remove' : 'mdi-filter'
-            }}
+            {{ navDrawer ? 'mdi-filter-remove' : 'mdi-filter' }}
           </v-icon>
         </v-btn>
       </v-toolbar>
@@ -84,19 +110,31 @@
           <v-menu
             v-model="selectedOpen"
             :close-on-content-click="false"
+            :close-on-click="!modalDetailsShow"
             :activator="selectedElement"
             max-width="350"
           >
-            <eventDetailsCard
+            <eventMenu
               :event="selectedEvent"
               @closeDetails="selectedOpen = false"
               @deleteEvent="eventDelete"
               @editEvent="eventEdit"
-            ></eventDetailsCard>
+              @showDetails="showDetails"
+            ></eventMenu>
           </v-menu>
           <v-tooltip top v-model="tooltipEvent" v-bind="toptipPosition">
             <span>HELLO</span>
           </v-tooltip>
+          <v-dialog
+            v-model="modalDetailsShow"
+            max-width="500px"
+            transition="dialog-transition"
+          >
+            <component
+              :is="modalDetailsComp"
+              @close="modalDetailsShow = false"
+            ></component>
+          </v-dialog>
         </v-sheet>
       </v-sheet>
     </v-col>
@@ -107,15 +145,18 @@
 import { mapState } from 'vuex'
 import filters from '@/modules/filters.js'
 import { timestampHuman } from '@/modules/formats.js'
-import eventDetailsCard from '@/components/calendar/eventDetailCard'
+import eventMenu from '@/components/calendar/eventOverview'
 import FilterDrawer from '@/components/filterDrawer/FilterDrawer'
 import Vue2Filters from 'vue2-filters'
 
 export default {
   name: 'Calendar',
   components: {
-    eventDetailsCard,
-    FilterDrawer
+    eventMenu,
+    FilterDrawer,
+    ciDetails: () => import('@/components/catalog/catalogItemDetails'),
+    eventDetails: () => import('@/components/calendar/eventDetails'),
+    patronDetails: () => import('@/components/patron/patronDetails')
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({
@@ -129,11 +170,13 @@ export default {
       '4day': '4 Days'
     },
     name: null,
-    details: null,
     navDrawer: false,
     start: null,
     end: null,
     calendarMonthHeight: 2000,
+    menuHeightSlider: false,
+    modalDetailsComp: null,
+    modalDetailsShow: false,
     color: '#000066',
     currentlyEditing: null,
     selectedEvent: {},
@@ -141,7 +184,7 @@ export default {
     selectedOpen: false,
     dialog: false,
     tooltipEvent: false,
-    toptipPosition: {'position-x': 0, 'position-y': 0}
+    toptipPosition: { 'position-x': 0, 'position-y': 0 }
   }),
   computed: {
     ...mapState({
@@ -230,6 +273,7 @@ export default {
       console.log(eid)
     },
     eventEdit(eid) {
+      console.log(eid)
       //expects event id
       let event = this.getEventById(eid)
       if (event) {
@@ -243,23 +287,25 @@ export default {
       console.log(e)
     },
     formatEventPreview(e) {
+      //TODO: move to module
       //this will format each reservation until we do so in backend
-        console.log(e)
       const data = {
         item: filters.getObjectFromArray(this.catalogItems, 'id', e.item_id),
         details: {
-          'color': this.eventColor(e)
+          color: this.eventColor(e),
+          id: e.id
         },
         fields: {
-          'First': e.patron_first || '',
-          'Last': e.patron_last || '-',
-          'Start': e.start_date || '-',
-          'End': e.end_date || '-',
-          'Length': 'TBD?',
-          'Note': e.notes[0] || null
+          First: e.patron_first || '',
+          Last: e.patron_last || '-',
+          Start: e.start_date || '-',
+          End: e.end_date || '-',
+          Length: 'TBD?',
+          Note: e.notes[0] || null
         }
       }
       data.details.title = data.item.name || 'Event Details'
+      //TODO: add full user details when implemented
       return data
     },
     getEventById(eid) {
@@ -278,13 +324,34 @@ export default {
     next() {
       this.$refs.calendar.next()
     },
+    showDetails(e) {
+      console.log(e)
+      switch (e.type) {
+        case 'event':
+          console.log('is vent')
+          this.modalDetailsComp = 'eventDetails'
+          break
+        case 'ci':
+          this.modalDetailsComp = 'ciDetails'
+          break
+        case 'patron':
+          this.modalDetailsComp = 'patronDetails'
+          break
+        default:
+          console.log('err: no match')
+          this.modalDetailsComp = null
+          //TODO: maybe set no match for generic error
+          break
+      }
+      if (this.modalDetailsComp) {
+        setTimeout(() => (this.modalDetailsShow = true), 19)
+      }
+    },
     showEvent({ nativeEvent, event }) {
       const open = () => {
         this.selectedEvent = this.formatEventPreview(event)
         this.selectedElement = nativeEvent.target
         setTimeout(() => (this.selectedOpen = true), 10)
-      console.log(this.selectedEvent)
-      console.log(this.selectedElement)
       }
       if (this.selectedOpen) {
         this.selectedOpen = false
@@ -320,6 +387,8 @@ export default {
   },
   mounted() {
     // this.initializeApp()
+    // this.$vuetify.theme.isDark = true
+    // console.log(this.$vuetify)
   }
 }
 </script>
