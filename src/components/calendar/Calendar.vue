@@ -60,6 +60,9 @@
       <!-- <v-sheet height="calc(100vh - 64px)" style="overflow-y: scroll;"> -->
       <v-sheet class="px-2" :style="styleCal">
         <v-sheet :height="type === 'month' ? calendarMonthHeight : '100%'">
+          <!-- TOOL TIP ON MOUSE ENTER/LEAVE.. PROBABLY WILL REMOVE -->
+          <!-- @mouseenter:event="showTooltip($event, true)" -->
+          <!-- @mouseleave:event="showTooltip($event, false)"<v-calendar -->
           <v-calendar
             ref="calendar"
             v-model="focus"
@@ -77,13 +80,7 @@
             @click:date="viewDay"
             @change="updateRange"
             @contextmenu:day="contextDay"
-          >
-            <!-- <template v-slot:day="day">
-              <v-sheet :color="color" class="white--text pa-1">{{
-                conLog(day)
-              }}</v-sheet>
-            </template>-->
-          </v-calendar>
+          ></v-calendar>
           <v-menu
             v-model="selectedOpen"
             :close-on-content-click="false"
@@ -97,6 +94,9 @@
               @editEvent="eventEdit"
             ></eventDetailsCard>
           </v-menu>
+          <v-tooltip top v-model="tooltipEvent" v-bind="toptipPosition">
+            <span>HELLO</span>
+          </v-tooltip>
         </v-sheet>
       </v-sheet>
     </v-col>
@@ -106,6 +106,7 @@
 <script>
 import { mapState } from 'vuex'
 import filters from '@/modules/filters.js'
+import { timestampHuman } from '@/modules/formats.js'
 import eventDetailsCard from '@/components/calendar/eventDetailCard'
 import FilterDrawer from '@/components/filterDrawer/FilterDrawer'
 import Vue2Filters from 'vue2-filters'
@@ -138,7 +139,9 @@ export default {
     selectedEvent: {},
     selectedElement: null,
     selectedOpen: false,
-    dialog: false
+    dialog: false,
+    tooltipEvent: false,
+    toptipPosition: {'position-x': 0, 'position-y': 0}
   }),
   computed: {
     ...mapState({
@@ -198,11 +201,11 @@ export default {
       return item.color
     },
     eventLabel(v) {
-      return '<strong>' + v.input.device + '</strong>'
-    },
-    conLog(v) {
-      console.log(v)
-      return v.month
+      let start = timestampHuman(v.input.start_date, false, false)
+      let end = timestampHuman(v.input.end_date, false, false)
+      let label = `<span class="mx-2 subtitle-2"><strong>${v.input.device}</strong>  ${v.input.patron_last} ${start} - ${end}</span>`
+
+      return label
     },
     initializeApp() {
       console.log('get events method')
@@ -214,22 +217,6 @@ export default {
             // response.data.reservations.forEach(res => this.events.push({...res, name: res.title, start: res.startDate, end: res.end_date}))
             this.events = response.data.reservations
           }
-          // if (response.data) {
-          //   this.device = [];
-          //   this.events = [];
-          //   this.eventsShown = [];
-          //   this.devicesFilter = [];
-          //   this.devices = response.data.devices;
-          //   this.events = response.data.reservations;
-          //   for (let device in this.devices) {
-          //     this.dropDownList.push({
-          //       text: "Hot Spot" + this.devices[device]["id"],
-          //       value: this.devices[device]["device"]
-          //     });
-          //     this.devicesFilter.push(device);
-          //   }
-          //   filterDevices();
-          // }
         })
         .catch(e => {
           console.log(e)
@@ -252,44 +239,28 @@ export default {
       }
     },
     contextDay(e) {
+      //right click day
       console.log(e)
     },
-    formatEventPreview(event) {
+    formatEventPreview(e) {
       //this will format each reservation until we do so in backend
-      let formattedEvent = {}
-      console.log(event)
-      switch (parseInt(event.itemCategory)) {
-        case 1:
-          formattedEvent = {
-            title: event.title,
-            id: event.id,
-            class: {
-              color: event.classes
-            },
-            details: {
-              Item: event.device,
-              'First Name': event.patronInfo.first,
-              'Last Name': event.patronInfo.last,
-              Barcode: event.patronInfo.barcode,
-              'Start Date': event.start_date,
-              'End Date': event.end_date,
-              Notes: event.Notes
-            }
-          }
-          return formattedEvent
-        default:
-          formattedEvent = {
-            title: event.title || '',
-            id: event.id || null,
-            class: {
-              color: event.classes || 'primary'
-            },
-            details: {
-              Details: 'Unknown Device Category. '
-            }
-          }
-          return formattedEvent
+        console.log(e)
+      const data = {
+        item: filters.getObjectFromArray(this.catalogItems, 'id', e.item_id),
+        details: {
+          'color': this.eventColor(e)
+        },
+        fields: {
+          'First': e.patron_first || '',
+          'Last': e.patron_last || '-',
+          'Start': e.start_date || '-',
+          'End': e.end_date || '-',
+          'Length': 'TBD?',
+          'Note': e.notes[0] || null
+        }
       }
+      data.details.title = data.item.name || 'Event Details'
+      return data
     },
     getEventById(eid) {
       const eventKey = this.events.findIndex(event => event.id === eid)
@@ -312,6 +283,8 @@ export default {
         this.selectedEvent = this.formatEventPreview(event)
         this.selectedElement = nativeEvent.target
         setTimeout(() => (this.selectedOpen = true), 10)
+      console.log(this.selectedEvent)
+      console.log(this.selectedElement)
       }
       if (this.selectedOpen) {
         this.selectedOpen = false
@@ -323,6 +296,13 @@ export default {
       }
       nativeEvent.stopPropagation()
     },
+    // showTooltip({nativeEvent}, show) {
+    //   let adjX = nativeEvent.screenX + 50
+    //   let adjY = nativeEvent.screenY - 120
+    //   this.toptipPosition = {'position-x': adjX,  'position-y': adjY}
+    //   this.tooltipEvent = show
+
+    // },
     updateRange({ start, end }) {
       // You could load events from an outside source (like database) now that we have the start and end dates on the calendar
       this.start = start
