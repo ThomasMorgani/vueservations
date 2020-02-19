@@ -21,6 +21,7 @@ export default new Vuex.Store({
     },
     customFields: [],
     events: [],
+    eventEditting: null,
     eventsFilterSearchbox: null,
     eventsFilterCategories: [],
     eventsFilterCategorySelect: [],

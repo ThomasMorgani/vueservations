@@ -93,7 +93,7 @@
             ref="calendar"
             v-model="focus"
             color="primary"
-            :events="eventsList"
+            :events="orderBy(eventsList, 'name')"
             :event-color="eventColor"
             :event-margin-bottom="2"
             :event-name="eventLabel"
@@ -127,10 +127,11 @@
           </v-tooltip>
           <v-dialog
             v-model="modalDetailsShow"
-            max-width="500px"
+            max-width="800px"
             transition="dialog-transition"
           >
             <component
+              :key="modalDetailsShow + modalDetailsComp"
               :is="modalDetailsComp"
               @close="modalDetailsShow = false"
             ></component>
@@ -155,6 +156,7 @@ export default {
     eventMenu,
     FilterDrawer,
     ciDetails: () => import('@/components/catalog/catalogItemDetails'),
+    eventEdit: () => import('@/components/calendar/eventEdit'),
     eventDetails: () => import('@/components/calendar/eventDetails'),
     patronDetails: () => import('@/components/patron/patronDetails')
   },
@@ -267,6 +269,7 @@ export default {
     },
     eventAdd() {
       console.log('eventAdd')
+      this.showDetails({ type: 'edit' })
     },
     eventDelete(eid) {
       //expects event id
@@ -327,12 +330,16 @@ export default {
     showDetails(e) {
       console.log(e)
       switch (e.type) {
+        case 'ci':
+          this.modalDetailsComp = 'ciDetails'
+          break
+        case 'edit':
+          console.log('is vent')
+          this.modalDetailsComp = 'eventEdit'
+          break
         case 'event':
           console.log('is vent')
           this.modalDetailsComp = 'eventDetails'
-          break
-        case 'ci':
-          this.modalDetailsComp = 'ciDetails'
           break
         case 'patron':
           this.modalDetailsComp = 'patronDetails'
