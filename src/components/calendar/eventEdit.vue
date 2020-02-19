@@ -1,8 +1,6 @@
 <template>
   <v-card>
-    <v-card-title primary-title class="headline primary--text justify-center"
-      >ADD NEW RESERVATION</v-card-title
-    >
+    <v-card-title primary-title class="headline primary--text justify-center">ADD NEW RESERVATION</v-card-title>
     <v-card-text style="max-width: 1000px; max-height: 600px;">
       <v-form ref="form" v-model="valid">
         <v-row align="center" justify="center">
@@ -24,10 +22,7 @@
                     <img :src="data.item.image" />
                   </v-list-item-avatar>
                   <v-list-item-content>
-                    <v-list-item-title
-                      v-text="data.item.name"
-                      class="font-weight-bold"
-                    ></v-list-item-title>
+                    <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
                     <v-list-item-subtitle
                       class="text--primary"
                       v-text="
@@ -48,10 +43,7 @@
                   <img :src="data.item.image" />
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title
-                    v-text="data.item.name"
-                    class="font-weight-bold"
-                  ></v-list-item-title>
+                  <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
                   <v-list-item-subtitle
                     class="text--primary"
                     v-text="`${data.item.abbreviation}: ${data.item.category}`"
@@ -83,21 +75,10 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker
-                v-model="startDate"
-                scrollable
-                :allowed-dates="allowedStart"
-              >
+              <v-date-picker v-model="startDate" scrollable :allowed-dates="allowedStart">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartDate = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.startDateDialog.save(startDate)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalStartDate = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.startDateDialog.save(startDate)">OK</v-btn>
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -120,21 +101,14 @@
               </template>
               <v-time-picker v-if="modalStartTime" v-model="startTime">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartTime = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.startTimeDialog.save(startTime)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalStartTime = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.startTimeDialog.save(startTime)">OK</v-btn>
               </v-time-picker>
             </v-dialog>
           </v-col>
           <v-col cols="5">
             <v-dialog
-              ref="dialog"
+              ref="modalEndDateDialog"
               v-model="modalEndDate"
               :return-value.sync="endDate"
               persistent
@@ -147,16 +121,14 @@
                   prepend-icon="mdi-calendar"
                   readonly
                   v-on="on"
+                  :rules="endDateRules"
+                  :error-messages="formErrors.endDate"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="endDate" scrollable>
+              <v-date-picker v-model="endDate" scrollable :allowed-dates="allowedEnd">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndDate = false"
-                  >Cancel</v-btn
-                >
-                <v-btn text color="primary" @click="$refs.dialog.save(endDate)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalEndDate = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.modalEndDateDialog.save(endDate)">OK</v-btn>
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -179,12 +151,8 @@
               </template>
               <v-time-picker v-if="modalEndTime" v-model="endTime" full-width>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndTime = false"
-                  >Cancel</v-btn
-                >
-                <v-btn text color="primary" @click="$refs.dialog.save(endTime)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalEndTime = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.dialog.save(endTime)">OK</v-btn>
               </v-time-picker>
             </v-dialog>
           </v-col>
@@ -197,13 +165,7 @@
             ></v-text-field>
           </v-col>
           <v-col cols="7">
-            <v-textarea
-              label="Notes"
-              prepend-icon="mdi-note"
-              rows="1"
-              v-model="notes"
-              class="mt-3"
-            ></v-textarea>
+            <v-textarea label="Notes" prepend-icon="mdi-note" rows="1" v-model="notes" class="mt-3"></v-textarea>
           </v-col>
         </v-row>
       </v-form>
@@ -216,8 +178,7 @@
         text
         @click.native="modalAction('submit')"
         :disabled="!valid || device === ''"
-        >SUBMIT</v-btn
-      >
+      >SUBMIT</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -292,6 +253,27 @@ export default {
       eventEditting: state => state.eventEditting,
       filter: state => state.filter
     }),
+    endDateFormatted: {
+      get() {
+        if (!this.endDate) return null
+
+        const [year, month, day] = this.endDate.split('-')
+        return `${month}/${day}/${year}`
+        },
+      set(v) {
+        this.endDate = v
+
+      }
+    },
+    formErrors() {
+      let errors = {}
+      let end = new Date(this.endDate)
+      let start = new Date(this.startDate)
+      if (end < start) {
+        errors.endDate = ['End date must come after start.']
+      }
+      return errors
+    },
     itemList() {
       let list = []
       for (let item of this.catalogItems) {
@@ -343,10 +325,15 @@ export default {
             return true
           }
         })
-        return events.length < this.events.length
+        return events.length >= this.events.length
       } else {
         return true
       }
+    },
+    allowedEnd(val) {
+      let cDate = new Date(val)
+      let startDate = new Date(this.startDate)
+      return cDate > startDate
     },
     customFilter(item, queryText) {
       const name = item.name.toLowerCase()
