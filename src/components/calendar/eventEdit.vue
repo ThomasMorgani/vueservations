@@ -1,10 +1,15 @@
 <template>
   <v-card>
-    <v-card-title primary-title class="headline primary--text justify-center">ADD NEW RESERVATION</v-card-title>
+    <v-card-title primary-title class="headline primary--text justify-center"
+      >ADD NEW RESERVATION</v-card-title
+    >
     <v-card-text style="max-width: 1000px; max-height: 600px;">
       <v-form ref="form" v-model="valid">
         <v-row align="center" justify="center">
-          <v-col cols="8" class="text-xs-center pt-4">
+          <v-col cols="8" class=" pt-4 pb-0">
+            <!--
+              CATALOG ITEM MENU
+              -->
             <v-autocomplete
               v-model="ciSelected"
               :items="orderBy(itemList, 'name', 1)"
@@ -12,7 +17,9 @@
               item-text="name"
               item-value="name"
               item-disabled="isDisabled"
+              outlined
               clearable
+              prepend-icon="mdi-format-list-bulleted-type"
               return-object
               :filter="customFilter"
             >
@@ -22,7 +29,10 @@
                     <img :src="data.item.image" />
                   </v-list-item-avatar>
                   <v-list-item-content>
-                    <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
+                    <v-list-item-title
+                      v-text="data.item.name"
+                      class="font-weight-bold"
+                    ></v-list-item-title>
                     <v-list-item-subtitle
                       class="text--primary"
                       v-text="
@@ -43,9 +53,14 @@
                   <img :src="data.item.image" />
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
+                  <v-list-item-title
+                    v-text="data.item.name"
+                    class="font-weight-bold"
+                  ></v-list-item-title>
                   <v-list-item-subtitle
-                    class="text--primary"
+                    :class="
+                      data.item.isDisabled ? 'text--disabled' : 'text--primary'
+                    "
                     v-text="`${data.item.abbreviation}: ${data.item.category}`"
                   ></v-list-item-subtitle>
                 </v-list-item-content>
@@ -58,7 +73,69 @@
               </template>
             </v-autocomplete>
           </v-col>
+          <v-col cols="8" class="text-xs-right py-0 mt-0">
+            <!--
+              PATRONMENU
+              -->
+            <v-autocomplete
+              label="Patron"
+              prepend-icon="mdi-account"
+              v-model="patronSelected"
+              outlined
+              clearable
+              :items="orderBy(patronList, 'last_name', 1)"
+              item-text="last_name"
+              item-value="id"
+              return-object
+            >
+              <template v-slot:append>
+                <v-tooltip top v-if="!patronSelected">
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      text
+                      icon
+                      small
+                      color="primary"
+                      @click="modalPatronEdit = true"
+                      v-on="on"
+                      ><v-icon color="primary">mdi-account-plus</v-icon></v-btn
+                    >
+                  </template>
+                  <span>Add New Patron</span>
+                </v-tooltip>
+              </template>
+              <template v-slot:selection="data">
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title
+                      v-text="`${data.item.last_name}, ${data.item.first_name}`"
+                      class="font-weight-bold"
+                    ></v-list-item-title>
+                    <v-list-item-subtitle
+                      class="text--primary"
+                      v-text="`Barcode`"
+                    ></v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+              <template v-slot:item="data">
+                <v-list-item-content>
+                  <v-list-item-title
+                    v-text="`${data.item.last_name}, ${data.item.first_name}`"
+                    class="font-weight-bold"
+                  ></v-list-item-title>
+                  <v-list-item-subtitle
+                    class="text--primary"
+                    v-text="`Barcode`"
+                  ></v-list-item-subtitle>
+                </v-list-item-content>
+              </template>
+            </v-autocomplete>
+          </v-col>
           <v-col cols="5">
+            <!--
+              START DATE ++ TIME
+              -->
             <v-dialog
               ref="startDateDialog"
               v-model="modalStartDate"
@@ -75,10 +152,21 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="startDate" scrollable :allowed-dates="allowedStart">
+              <v-date-picker
+                v-model="startDate"
+                scrollable
+                :allowed-dates="allowedStart"
+              >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartDate = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.startDateDialog.save(startDate)">OK</v-btn>
+                <v-btn text color="primary" @click="modalStartDate = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.startDateDialog.save(startDate)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -97,16 +185,27 @@
                   prepend-icon="mdi-clock"
                   readonly
                   v-on="on"
+                  disabled
                 ></v-text-field>
               </template>
               <v-time-picker v-if="modalStartTime" v-model="startTime">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartTime = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.startTimeDialog.save(startTime)">OK</v-btn>
+                <v-btn text color="primary" @click="modalStartTime = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.startTimeDialog.save(startTime)"
+                  >OK</v-btn
+                >
               </v-time-picker>
             </v-dialog>
           </v-col>
           <v-col cols="5">
+            <!--
+              END DATE ++ TIME
+              -->
             <v-dialog
               ref="modalEndDateDialog"
               v-model="modalEndDate"
@@ -125,10 +224,21 @@
                   :error-messages="formErrors.endDate"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="endDate" scrollable :allowed-dates="allowedEnd">
+              <v-date-picker
+                v-model="endDate"
+                scrollable
+                :allowed-dates="allowedEnd"
+              >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndDate = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.modalEndDateDialog.save(endDate)">OK</v-btn>
+                <v-btn text color="primary" @click="modalEndDate = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.modalEndDateDialog.save(endDate)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -147,25 +257,32 @@
                   prepend-icon="mdi-clock"
                   readonly
                   v-on="on"
+                  disabled
                 ></v-text-field>
               </template>
               <v-time-picker v-if="modalEndTime" v-model="endTime" full-width>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndTime = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.dialog.save(endTime)">OK</v-btn>
+                <v-btn text color="primary" @click="modalEndTime = false"
+                  >Cancel</v-btn
+                >
+                <v-btn text color="primary" @click="$refs.dialog.save(endTime)"
+                  >OK</v-btn
+                >
               </v-time-picker>
             </v-dialog>
           </v-col>
+
           <v-col cols="7">
-            <v-text-field
-              label="Patron"
-              prepend-icon="mdi-account"
-              v-model="nameFirst"
+            <!--
+              NOTES
+              -->
+            <v-textarea
+              label="Notes"
+              prepend-icon="mdi-note"
+              rows="1"
+              v-model="notes"
               class="mt-3"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="7">
-            <v-textarea label="Notes" prepend-icon="mdi-note" rows="1" v-model="notes" class="mt-3"></v-textarea>
+            ></v-textarea>
           </v-col>
         </v-row>
       </v-form>
@@ -178,8 +295,20 @@
         text
         @click.native="modalAction('submit')"
         :disabled="!valid || device === ''"
-      >SUBMIT</v-btn>
+        >SUBMIT</v-btn
+      >
     </v-card-actions>
+    <v-dialog
+      v-model="modalPatronEdit"
+      transition="dialog-transition"
+      max-width="800"
+    >
+      <patronEdit
+        :key="modalPatronEdit"
+        @close="modalPatronEdit = false"
+        @patronAdded="onPatronAdd"
+      ></patronEdit>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -194,6 +323,7 @@ export default {
   name: 'eventEdit',
   components: {
     // ciListMenu: () => import('@/components/global/listTiles')
+    patronEdit: () => import('@/components/patron/patronDetails')
   },
   props: [],
   mixins: [Vue2Filters.mixin],
@@ -202,6 +332,8 @@ export default {
       ciSelected: null,
       endDate: null,
       endTime: null,
+      modalPatronEdit: false,
+      patronSelected: null,
       startDate: null,
       startTime: null,
       statusData: {
@@ -251,7 +383,8 @@ export default {
       categories: state => state.categories,
       events: state => state.events,
       eventEditting: state => state.eventEditting,
-      filter: state => state.filter
+      filter: state => state.filter,
+      patrons: state => state.patrons
     }),
     endDateFormatted: {
       get() {
@@ -259,10 +392,9 @@ export default {
 
         const [year, month, day] = this.endDate.split('-')
         return `${month}/${day}/${year}`
-        },
+      },
       set(v) {
         this.endDate = v
-
       }
     },
     formErrors() {
@@ -311,6 +443,10 @@ export default {
         list.push(ci)
       }
       return list
+    },
+    patronList() {
+      //TODO: add fillters
+      return this.patrons
     }
   },
   methods: {
@@ -375,6 +511,10 @@ export default {
         }
       }
       this.$emit('addEventModalAction', data)
+    },
+    onPatronAdd(e) {
+      this.patronSelected = e
+      this.modalPatronEdit = false
     },
     setAvailableDevicesList() {
       this.availableDeviceList = []
@@ -471,7 +611,7 @@ export default {
     }
   },
   created() {
-    //
+    console.log
   },
   watch: {
     addReservationModalVisible() {

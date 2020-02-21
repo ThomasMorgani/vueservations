@@ -32,6 +32,7 @@ export default new Vuex.Store({
     modalCatalogitemEdit: false,
     modalCatalogitemEditCustomfields: false,
     modalCategoryEdit: false,
+    patrons: [],
     settings: [],
     snackbarData: {},
     snackbarSettings: {
@@ -371,7 +372,13 @@ export default new Vuex.Store({
       })
     },
     setStateValue({ commit }, data) {
-      commit('setStateValue', { key: data.key, value: data.value })
+      console.log(data)
+      if (data.isPush) {
+        console.log('is push')
+        commit('pushStateValue', { key: data.key, value: data.value })
+      } else {
+        commit('setStateValue', { key: data.key, value: data.value })
+      }
     },
     toggleModalCatalogCustomfield({ commit, state }) {
       commit('toggleModalCatalogCustomfield', !state.modalCatalogCustomfield)
