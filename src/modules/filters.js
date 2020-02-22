@@ -7,6 +7,10 @@ export default {
     let cat = categories.find(cat => cat.id === id)
     return cat
   },
+  customfieldByCustomValue(key, value, customFields) {
+    let field = customFields.find(field => field[key] === value)
+    return field
+  },
   customfieldById(id, customFields) {
     let field = customFields.find(field => field.id === id)
     return field

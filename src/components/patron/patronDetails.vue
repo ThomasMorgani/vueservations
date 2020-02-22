@@ -12,24 +12,27 @@
               label="First Name"
               required
               prepend-icon="mdi-account"
+              hint="(required)"
+              persistent-hint
             ></v-text-field
           ></v-col>
           <v-col cols="5"
             ><v-text-field
               v-model="last_name"
-              label="First Name"
+              label="Last Name"
               required
               prepend-icon="mdi-account"
+              hint="(required)"
+              persistent-hint
             ></v-text-field
           ></v-col>
           <v-col cols="5"
             ><v-text-field
-              v-model="barcode"
-              label="Barcode"
+              v-model="email"
+              label="Email"
               required
-              prepend-icon="mdi-barcode"
-              hint="(optional)"
-              persistent-hint
+              prepend-icon="mdi-email"
+          
             ></v-text-field
           ></v-col>
           <v-col cols="5"
@@ -39,9 +42,25 @@
               required
               prepend-icon="mdi-phone"
               mask="###-###-####"
-              hint="(optional)"
-              persistent-hint
             ></v-text-field
+          ></v-col>
+          <v-col cols="5"
+            ><v-text-field
+              v-model="barcode"
+              label="Barcode"
+              required
+              prepend-icon="mdi-barcode"
+            ></v-text-field
+          ></v-col>
+          <v-col cols="5"
+            ><v-textarea
+              v-model="notes"
+              label="Notes"
+              dense
+              rows="2"
+              clearable
+              prepend-icon="mdi-note"
+            ></v-textarea
           ></v-col>
         </v-row>
       </v-form>
@@ -62,8 +81,10 @@ export default {
   name: 'patronDetails',
   data: () => ({
     barcode: null,
+    email: null, 
     first_name: null,
     last_name: null,
+    notes: null,
     phone: null
   }),
   computed: {

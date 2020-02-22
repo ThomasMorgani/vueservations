@@ -22,9 +22,10 @@
               prepend-icon="mdi-format-list-bulleted-type"
               return-object
               :filter="customFilter"
+              :error-messages="formErrors.ciSelected"
             >
               <template v-slot:selection="data">
-                <v-list-item>
+                <v-list-item >
                   <v-list-item-avatar size="45">
                     <img :src="data.item.image" />
                   </v-list-item-avatar>
@@ -87,6 +88,8 @@
               item-text="last_name"
               item-value="id"
               return-object
+
+              :error-messages="formErrors.patronSelected"
             >
               <template v-slot:append>
                 <v-tooltip top v-if="!patronSelected">
@@ -150,6 +153,8 @@
                   prepend-icon="mdi-calendar"
                   readonly
                   v-on="on"
+
+              :error-messages="formErrors.startDate"
                 ></v-text-field>
               </template>
               <v-date-picker
@@ -277,10 +282,11 @@
               NOTES
               -->
             <v-textarea
+              v-model="notes"
               label="Notes"
               prepend-icon="mdi-note"
-              rows="1"
-              v-model="notes"
+              rows="2"
+              clearable
               class="mt-3"
             ></v-textarea>
           </v-col>
@@ -294,7 +300,7 @@
         color="primary"
         text
         @click.native="modalAction('submit')"
-        :disabled="!valid || device === ''"
+        :disabled="!valid || Object.keys(formErrors).length > 0"
         >SUBMIT</v-btn
       >
     </v-card-actions>
@@ -399,11 +405,21 @@ export default {
     },
     formErrors() {
       let errors = {}
+      const requireds = ['patronSelected', 'ciSelected', 'startDate', 'endDate', 'patronSelected']
+      requireds.forEach(key => { 
+        if (!this[key]) {
+          errors[key] = ['Required']
+        }
+      })
       let end = new Date(this.endDate)
       let start = new Date(this.startDate)
       if (end < start) {
         errors.endDate = ['End date must come after start.']
       }
+      if (this.ciSelectedStatus !== 'enabled' && !errors.ciSelected) {
+        errors.ciSelected = ['Item invalid status']
+      }
+      
       return errors
     },
     itemList() {
@@ -447,6 +463,15 @@ export default {
     patronList() {
       //TODO: add fillters
       return this.patrons
+    },
+    ciSelectedStatus() {
+      if (!this.ciSelected) {
+        return null
+      } else {
+        const id = this.ciSelected.id
+        const item =  filters.customfieldById(id, this.itemList)
+        return item.status
+      }
     }
   },
   methods: {
@@ -516,78 +541,6 @@ export default {
       this.patronSelected = e
       this.modalPatronEdit = false
     },
-    setAvailableDevicesList() {
-      this.availableDeviceList = []
-      let disabledDevice = {}
-      if (this.startDate && this.endDate) {
-        for (let device in this.devices) {
-          if (
-            this.devices[device]['status'] === 'blocked' ||
-            this.devices[device]['status'] === 'disabled'
-          ) {
-            disabledDevice = {}
-            disabledDevice['text'] =
-              'Hot Spot' +
-              this.devices[device]['id'] +
-              ' (' +
-              this.devices[device]['status'].toUpperCase() +
-              ')'
-            disabledDevice['value'] = this.devices[device]['device']
-            disabledDevice['disabled'] = true
-            this.availableDeviceList.push(disabledDevice)
-          } else {
-            this.availableDeviceList.push({
-              text: 'Hot Spot' + this.devices[device]['id'],
-              value: this.devices[device]['device']
-            })
-          }
-        }
-        let searchStartDate = new Date(this.startDate)
-        let searchEndDate = new Date(this.endDate)
-        searchStartDate.setDate(searchStartDate.getDate() - 1)
-        searchEndDate.setDate(searchEndDate.getDate() + 2)
-        let eventRange = ''
-        let searchRange = ''
-        let eventStartDate = ''
-        let eventEndDate = ''
-        searchRange = moment.range(searchStartDate, searchEndDate)
-        // for (let device in this.devices) {
-        //   this.searchAvailability[device] = {}
-        //   this.searchAvailability[device]['available'] = true
-        // }
-        for (let event in this.events) {
-          eventStartDate = new Date(this.events[event]['startDate'])
-          eventEndDate = new Date(this.events[event]['endDate'])
-          eventRange = moment.range(eventStartDate, eventEndDate)
-          if (eventRange.overlaps(searchRange, { adjacent: true })) {
-            for (let item in this.availableDeviceList) {
-              // this.availableDeviceList[item]['disabled'] = ''
-              // console.log(this.availableDeviceList[item]['disabled'])
-              if (
-                this.events[event]['device'] ===
-                this.availableDeviceList[item]['value']
-              ) {
-                if (!this.availableDeviceList[item]['disabled']) {
-                  this.$set(
-                    this.availableDeviceList[item],
-                    'text',
-                    this.availableDeviceList[item]['text'] + ' (NOT AVAILABLE)'
-                  )
-                  this.$set(this.availableDeviceList[item], 'disabled', true)
-                }
-                this.$set(this.availableDeviceList[item], 'disabled', true)
-                if (this.device === this.availableDeviceList[item]['value']) {
-                  this.device = ''
-                }
-              } else {
-                // this.$set(this.availableDeviceList[item], 'text',  this.availableDeviceList[item]['text'])
-                // this.$set(this.availableDeviceList[item], 'disabled',  false)
-              }
-            }
-          }
-        }
-      }
-    },
     testRangeOverlap(startDate1, endDate1, startDate2, endDate2) {
       let searchStartDate1 = new Date(startDate1)
       let searchEndDate1 = new Date(endDate1)
@@ -609,76 +562,8 @@ export default {
     if (this.eventEditting) {
       console.log('ci editting:', this.eventEditting)
     }
-  },
-  created() {
-    console.log
-  },
-  watch: {
-    addReservationModalVisible() {
-      if (this.addReservationModalVisible) {
-        for (var device in this.devices) {
-          // console.log(device)
-          this.availableDeviceList.push({
-            text: 'Hot Spot' + this.devices[device]['id'],
-            value: this.devices[device]['device']
-          })
-        }
-        if (this.selectedDevice) {
-          // console.log('selectedDevice')
-          this.device = this.selectedDevice
-        }
-        if (this.newEventStartDate) {
-          // console.log('newEventStartDate')
-          this.startDate = this.newEventStartDate
-        }
-        if (this.newEventEndDate) {
-          // console.log('newEventEndDate')
-          this.endDate = this.newEventEndDate
-        }
-      }
-
-      if (!this.addReservationModalVisible) {
-        this.availableDeviceList = []
-        this.device = ''
-        this.startDate = ''
-        this.endDate = ''
-        this.nameFirst = ''
-        this.nameLast = ''
-        this.barcode = ''
-        this.notes = ''
-        this.device = ''
-      }
-    },
-    startDate() {
-      if (this.startDate && !this.endDate) {
-        let startdate = new Date(this.startDate)
-        let endDate = startdate
-        // console.log(startdate)
-        // console.log(endDate)
-        endDate.setDate(endDate.getDate() + 14)
-        // console.log(startdate)
-        // console.log(startdate.getDate())
-        // console.log(startdate.getDate()+14)
-        // console.log(endDate)
-        let endY = endDate.getFullYear()
-        let endM = endDate.getMonth() + 1
-        if (endM < 10) {
-          endM = '0' + endM
-        }
-        let endD = endDate.getDate()
-        this.endDate = endY + '-' + endM + '-' + endD
-      }
-      if (this.startDate && this.endDate) {
-        this.setAvailableDevicesList()
-      }
-    },
-    endDate() {
-      // console.log('end')
-      if (this.startDate && this.endDate) {
-        this.setAvailableDevicesList()
-      }
-    }
   }
+
 }
 </script>
 
