@@ -6,9 +6,7 @@
         <v-menu bottom right>
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on" color="primary">
-              <span class="title font-weight-bold">
-                {{ typeToLabel[type] }}
-              </span>
+              <span class="title font-weight-bold">{{ typeToLabel[type] }}</span>
               <v-icon right>mdi-menu-down</v-icon>
             </v-btn>
           </template>
@@ -52,19 +50,16 @@
           </template>
 
           <v-card>
-            <v-card-title class="title primary--text">
-              Calendar Height
-            </v-card-title>
+            <v-card-title class="title primary--text">Calendar Height</v-card-title>
             <v-card-text>
               <v-slider
                 v-model="calendarMonthHeight"
                 :color="color"
                 track-color="grey"
-                hide-details=""
+                hide-details
                 min="1000"
                 max="3000"
-              >
-              </v-slider>
+              ></v-slider>
             </v-card-text>
           </v-card>
         </v-menu>
@@ -73,9 +68,7 @@
           <v-icon color="primary">mdi-calendar-plus</v-icon>
         </v-btn>
         <v-btn icon @click="navDrawer = !navDrawer">
-          <v-icon color="primary">
-            {{ navDrawer ? 'mdi-filter-remove' : 'mdi-filter' }}
-          </v-icon>
+          <v-icon color="primary">{{ navDrawer ? 'mdi-filter-remove' : 'mdi-filter' }}</v-icon>
         </v-btn>
       </v-toolbar>
       <!-- </v-sheet> -->
@@ -125,15 +118,12 @@
           <v-tooltip top v-model="tooltipEvent" v-bind="toptipPosition">
             <span>HELLO</span>
           </v-tooltip>
-          <v-dialog
-            v-model="modalDetailsShow"
-            max-width="800px"
-            transition="dialog-transition"
-          >
+          <v-dialog v-model="modalDetailsShow" max-width="800px" transition="dialog-transition">
             <component
               :key="modalDetailsShow + modalDetailsComp"
               :is="modalDetailsComp"
-              @close="modalDetailsShow = false"
+              :event="selectedEvent"
+              @close="onDetailsClose"
             ></component>
           </v-dialog>
         </v-sheet>
@@ -192,10 +182,30 @@ export default {
     ...mapState({
       filter: state => state.filter,
       events: state => state.events,
-      catalogItems: state => state.catalogItems
+      catalogItems: state => state.catalogItems,
+      patrons: state => state.patrons
     }),
     eventsList() {
-      return this.events
+      let events = []
+      if (Array.isArray(this.events)) {
+        this.events.forEach(e => {
+          events.push({
+            ...e,
+            ciData: filters.getObjectFromArray(
+              this.catalogItems,
+              'id',
+              e.item_id
+            ), //
+            patronData: filters.getObjectFromArray(
+              this.patrons,
+              'id',
+              e.patron_id
+            )
+          })
+        })
+      }
+      // return this.events
+      return events
     },
     title() {
       const { start, end } = this
@@ -248,7 +258,7 @@ export default {
     eventLabel(v) {
       let start = timestampHuman(v.input.start_date, false, false)
       let end = timestampHuman(v.input.end_date, false, false)
-      let label = `<span class="mx-2 subtitle-2"><strong>${v.input.device}</strong>  ${v.input.patron_last} ${start} - ${end}</span>`
+      let label = `<span class="mx-2 subtitle-2"><strong>${v.input.ciData.abbreviation}</strong>  ${v.input.patronData.last_name} ${start} - ${end}</span>`
 
       return label
     },
@@ -275,11 +285,14 @@ export default {
       //expects event id
       console.log(eid)
     },
-    eventEdit(eid) {
-      console.log(eid)
-      //expects event id
-      let event = this.getEventById(eid)
-      if (event) {
+    eventEdit(e) {
+      if (e) {
+        this.$store.dispatch('setStateValue', {
+          key: 'eventEditting',
+          value: e
+        })
+        this.modalDetailsComp = 'eventEdit'
+        setTimeout(() => (this.modalDetailsShow = true), 19)
         console.log('event found open modal')
       } else {
         console.log('error: event not found')
@@ -292,23 +305,23 @@ export default {
     formatEventPreview(e) {
       //TODO: move to module
       //this will format each reservation until we do so in backend
+      console.log(e)
       const data = {
-        item: filters.getObjectFromArray(this.catalogItems, 'id', e.item_id),
         details: {
           color: this.eventColor(e),
-          id: e.id
+          id: e.id,
+          title: e.ciData.name || 'Event Details'
         },
+        eventData: e,
         fields: {
-          First: e.patron_first || '',
-          Last: e.patron_last || '-',
+          First: e.patronData.first_name || '',
+          Last: e.patronData.last_name || '-',
           Start: e.start_date || '-',
           End: e.end_date || '-',
           Length: 'TBD?',
-          Note: e.notes[0] || null
+          Note: e.notes && e.notes[0] ? e.notes[0] : e.notes
         }
       }
-      data.details.title = data.item.name || 'Event Details'
-      //TODO: add full user details when implemented
       return data
     },
     getEventById(eid) {
@@ -326,6 +339,13 @@ export default {
     },
     next() {
       this.$refs.calendar.next()
+    },
+    onDetailsClose() {
+      this.modalDetailsShow = false
+      this.$store.dispatch('setStateValue', {
+        key: 'eventEditting',
+        value: null
+      })
     },
     showDetails(e) {
       console.log(e)

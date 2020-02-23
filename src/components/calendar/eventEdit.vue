@@ -1,15 +1,16 @@
 <template>
   <v-card>
-    <v-card-title primary-title class="headline primary--text justify-center"
-      >ADD NEW RESERVATION</v-card-title
-    >
+    <v-card-title
+      v-text="`${id ? 'EDIT' : 'ADD NEW'} RESERVATION`"
+      class="headline primary--text justify-center"
+    ></v-card-title>
     <v-card-text style="max-width: 1000px; max-height: 600px;">
       <v-form ref="form" v-model="valid">
         <v-row align="center" justify="center">
-          <v-col cols="8" class=" pt-4 pb-0">
+          <v-col cols="8" class="pt-4 pb-0">
             <!--
               CATALOG ITEM MENU
-              -->
+            -->
             <v-autocomplete
               v-model="ciSelected"
               :items="orderBy(itemList, 'name', 1)"
@@ -25,15 +26,12 @@
               :error-messages="formErrors.ciSelected"
             >
               <template v-slot:selection="data">
-                <v-list-item >
+                <v-list-item>
                   <v-list-item-avatar size="45">
                     <img :src="data.item.image" />
                   </v-list-item-avatar>
                   <v-list-item-content>
-                    <v-list-item-title
-                      v-text="data.item.name"
-                      class="font-weight-bold"
-                    ></v-list-item-title>
+                    <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
                     <v-list-item-subtitle
                       class="text--primary"
                       v-text="
@@ -43,8 +41,8 @@
                   </v-list-item-content>
                   <v-list-item-action>
                     <v-icon
-                      v-text="statusData[data.item.status].icon"
-                      :color="statusData[data.item.status].color"
+                      v-text="statusData[ciSelectedStatus].icon"
+                      :color="statusData[ciSelectedStatus].color"
                     ></v-icon>
                   </v-list-item-action>
                 </v-list-item>
@@ -54,10 +52,7 @@
                   <img :src="data.item.image" />
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title
-                    v-text="data.item.name"
-                    class="font-weight-bold"
-                  ></v-list-item-title>
+                  <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
                   <v-list-item-subtitle
                     :class="
                       data.item.isDisabled ? 'text--disabled' : 'text--primary'
@@ -77,7 +72,7 @@
           <v-col cols="8" class="text-xs-right py-0 mt-0">
             <!--
               PATRONMENU
-              -->
+            -->
             <v-autocomplete
               label="Patron"
               prepend-icon="mdi-account"
@@ -88,8 +83,9 @@
               item-text="last_name"
               item-value="id"
               return-object
-
+              :filter="customFilter"
               :error-messages="formErrors.patronSelected"
+              class="mt-4"
             >
               <template v-slot:append>
                 <v-tooltip top v-if="!patronSelected">
@@ -101,8 +97,9 @@
                       color="primary"
                       @click="modalPatronEdit = true"
                       v-on="on"
-                      ><v-icon color="primary">mdi-account-plus</v-icon></v-btn
                     >
+                      <v-icon color="primary">mdi-account-plus</v-icon>
+                    </v-btn>
                   </template>
                   <span>Add New Patron</span>
                 </v-tooltip>
@@ -114,10 +111,7 @@
                       v-text="`${data.item.last_name}, ${data.item.first_name}`"
                       class="font-weight-bold"
                     ></v-list-item-title>
-                    <v-list-item-subtitle
-                      class="text--primary"
-                      v-text="`Barcode`"
-                    ></v-list-item-subtitle>
+                    <v-list-item-subtitle class="text--primary" v-text="`Barcode`"></v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </template>
@@ -127,10 +121,7 @@
                     v-text="`${data.item.last_name}, ${data.item.first_name}`"
                     class="font-weight-bold"
                   ></v-list-item-title>
-                  <v-list-item-subtitle
-                    class="text--primary"
-                    v-text="`Barcode`"
-                  ></v-list-item-subtitle>
+                  <v-list-item-subtitle class="text--primary" v-text="data.item.barcode"></v-list-item-subtitle>
                 </v-list-item-content>
               </template>
             </v-autocomplete>
@@ -138,7 +129,7 @@
           <v-col cols="5">
             <!--
               START DATE ++ TIME
-              -->
+            -->
             <v-dialog
               ref="startDateDialog"
               v-model="modalStartDate"
@@ -153,25 +144,13 @@
                   prepend-icon="mdi-calendar"
                   readonly
                   v-on="on"
-
-              :error-messages="formErrors.startDate"
+                  :error-messages="formErrors.startDate"
                 ></v-text-field>
               </template>
-              <v-date-picker
-                v-model="startDate"
-                scrollable
-                :allowed-dates="allowedStart"
-              >
+              <v-date-picker v-model="startDate" scrollable :allowed-dates="allowedStart">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartDate = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.startDateDialog.save(startDate)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalStartDate = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.startDateDialog.save(startDate)">OK</v-btn>
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -195,22 +174,15 @@
               </template>
               <v-time-picker v-if="modalStartTime" v-model="startTime">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartTime = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.startTimeDialog.save(startTime)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalStartTime = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.startTimeDialog.save(startTime)">OK</v-btn>
               </v-time-picker>
             </v-dialog>
           </v-col>
           <v-col cols="5">
             <!--
               END DATE ++ TIME
-              -->
+            -->
             <v-dialog
               ref="modalEndDateDialog"
               v-model="modalEndDate"
@@ -229,21 +201,10 @@
                   :error-messages="formErrors.endDate"
                 ></v-text-field>
               </template>
-              <v-date-picker
-                v-model="endDate"
-                scrollable
-                :allowed-dates="allowedEnd"
-              >
+              <v-date-picker v-model="endDate" scrollable :allowed-dates="allowedEnd">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndDate = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.modalEndDateDialog.save(endDate)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalEndDate = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.modalEndDateDialog.save(endDate)">OK</v-btn>
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -267,12 +228,8 @@
               </template>
               <v-time-picker v-if="modalEndTime" v-model="endTime" full-width>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndTime = false"
-                  >Cancel</v-btn
-                >
-                <v-btn text color="primary" @click="$refs.dialog.save(endTime)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalEndTime = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.dialog.save(endTime)">OK</v-btn>
               </v-time-picker>
             </v-dialog>
           </v-col>
@@ -280,7 +237,7 @@
           <v-col cols="7">
             <!--
               NOTES
-              -->
+            -->
             <v-textarea
               v-model="notes"
               label="Notes"
@@ -294,21 +251,18 @@
       </v-form>
     </v-card-text>
     <v-card-actions>
+      <v-btn color="warning darken-1" text :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
       <v-spacer></v-spacer>
       <v-btn color="green darken-1" text @click="$emit('close')">CANCEL</v-btn>
       <v-btn
         color="primary"
         text
+        v-text="id ? 'SAVE' : 'SUBMIT'"
         @click.native="modalAction('submit')"
-        :disabled="!valid || Object.keys(formErrors).length > 0"
-        >SUBMIT</v-btn
-      >
+        :disabled="!valid || Object.keys(formErrors).length > 0 || !isChanged"
+      ></v-btn>
     </v-card-actions>
-    <v-dialog
-      v-model="modalPatronEdit"
-      transition="dialog-transition"
-      max-width="800"
-    >
+    <v-dialog v-model="modalPatronEdit" transition="dialog-transition" max-width="800">
       <patronEdit
         :key="modalPatronEdit"
         @close="modalPatronEdit = false"
@@ -338,6 +292,7 @@ export default {
       ciSelected: null,
       endDate: null,
       endTime: null,
+      id: null,
       modalPatronEdit: false,
       patronSelected: null,
       startDate: null,
@@ -364,17 +319,8 @@ export default {
       modalEndTime: false,
       modalStartDate: false,
       modalStartTime: false,
-      nameFirst: '',
-      nameLast: '',
-      barcode: '',
       notes: '',
-      device: '',
-      searchAvailability: {},
-      barcodeInputRules: [
-        v => !!v || 'BARCODE MANDATORY',
-        v => v > 0 || 'BARCODE MANDATORY',
-        v => !Number.isInteger(v) || 'NUMBERS ONLY NO SPACES'
-      ],
+      originalValues: {},
       endDateRules: [
         v =>
           new Date(v) >= new Date(this.startDate) ||
@@ -405,8 +351,14 @@ export default {
     },
     formErrors() {
       let errors = {}
-      const requireds = ['patronSelected', 'ciSelected', 'startDate', 'endDate', 'patronSelected']
-      requireds.forEach(key => { 
+      const requireds = [
+        'patronSelected',
+        'ciSelected',
+        'startDate',
+        'endDate',
+        'patronSelected'
+      ]
+      requireds.forEach(key => {
         if (!this[key]) {
           errors[key] = ['Required']
         }
@@ -419,8 +371,21 @@ export default {
       if (this.ciSelectedStatus !== 'enabled' && !errors.ciSelected) {
         errors.ciSelected = ['Item invalid status']
       }
-      
+
       return errors
+    },
+    isChanged() {
+      //TODO: FIND WHY AFTER SAVING isChanged does not reset to false
+      let isChanged = false
+      // let origStr = this.originalValues.toString()
+      // let loadingState = this.loading
+      console.log(this.originalValues)
+      Object.keys(this.originalValues).forEach(field => {
+        if (this.originalValues[field] !== this[field]) {
+          isChanged = true
+        }
+      })
+      return isChanged
     },
     itemList() {
       let list = []
@@ -456,6 +421,15 @@ export default {
         } else {
           ci.isDisabled = false
         }
+
+        if (
+          this.eventEditting &&
+          this.eventEditting.ciData &&
+          this.eventEditting.ciData.id === ci.id
+        ) {
+          ci.isDisabled = false
+          ci.status = 'enabled'
+        }
         list.push(ci)
       }
       return list
@@ -469,7 +443,8 @@ export default {
         return null
       } else {
         const id = this.ciSelected.id
-        const item =  filters.customfieldById(id, this.itemList)
+        const item = filters.customfieldById(id, this.itemList)
+
         return item.status
       }
     }
@@ -497,15 +472,24 @@ export default {
       return cDate > startDate
     },
     customFilter(item, queryText) {
-      const name = item.name.toLowerCase()
-      const category = item.name.toLowerCase() //TODO: FIX TO CAT
-      const abbreviation = item.abbreviation.toLowerCase()
-
-      return (
-        name.indexOf(queryText.toLowerCase()) > -1 ||
-        abbreviation.indexOf(queryText.toLowerCase()) > -1 ||
-        category.indexOf(queryText.toLowerCase()) > -1
-      )
+      const possibleKeys = [
+        'abbreviation',
+        'category',
+        'name',
+        'first_name',
+        'last_name',
+        'barcode'
+      ]
+      let pass = false
+      possibleKeys.forEach(key => {
+        if (item[key]) {
+          let str = item[key].toLowerCase()
+          if (str.indexOf(queryText.toLowerCase()) > -1) {
+            pass = true
+          }
+        }
+      })
+      return pass
     },
     dateMin() {
       const now = new Date()
@@ -541,6 +525,14 @@ export default {
       this.patronSelected = e
       this.modalPatronEdit = false
     },
+    setEventValue(e) {
+      this.ciSelected = filters.customfieldById(e.item_id, this.itemList)
+    },
+    resetChanges() {
+      Object.keys(this.originalValues).forEach(field => {
+        this[field] = this.originalValues[field]
+      })
+    },
     testRangeOverlap(startDate1, endDate1, startDate2, endDate2) {
       let searchStartDate1 = new Date(startDate1)
       let searchEndDate1 = new Date(endDate1)
@@ -560,10 +552,41 @@ export default {
   mounted() {
     // console.log('mounted')
     if (this.eventEditting) {
-      console.log('ci editting:', this.eventEditting)
+      const event = this.eventEditting
+      console.log('ci editting:', event)
+      if (event.id) {
+        this.id = event.id
+      }
+      if (event.ciData) {
+        this.ciSelected = event.ciData
+      }
+      if (event.patronData) {
+        this.patronSelected = event.patronData
+      }
+      if (event.start_date) {
+        const splitStart = event.start_date.split(' ')
+        console.log(splitStart)
+        this.startDate = splitStart[0]
+        this.startTime = splitStart[1] || null
+      }
+      if (event.end_date) {
+        const splitEnd = event.end_date.split(' ')
+        console.log(splitEnd)
+        this.endDate = splitEnd[0]
+        this.endTime = splitEnd[1] || null
+      }
+      const values = [
+        'ciSelected',
+        'patronSelected',
+        'startDate',
+        'endDate',
+        'startime',
+        'endTime',
+        'notes'
+      ]
+      values.forEach(v => this.$set(this.originalValues, v, this[v]))
     }
   }
-
 }
 </script>
 

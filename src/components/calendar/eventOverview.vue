@@ -90,7 +90,7 @@
           <v-btn
             icon
             color="warning"
-            @click="$emit('editEvent', event.details.id)"
+            @click="$emit('editEvent', event.eventData)"
             v-on="on"
           >
             <v-icon>mdi-square-edit-outline</v-icon>
