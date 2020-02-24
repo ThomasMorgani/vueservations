@@ -253,9 +253,9 @@
     <v-card-actions>
       <v-btn color="warning darken-1" text :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="green darken-1" text @click="$emit('close')">CANCEL</v-btn>
+      <v-btn color="primary" text @click="$emit('close')">CANCEL</v-btn>
       <v-btn
-        color="primary"
+        color="success"
         text
         v-text="id ? 'SAVE' : 'SUBMIT'"
         @click.native="modalAction('submit')"
@@ -320,7 +320,15 @@ export default {
       modalStartDate: false,
       modalStartTime: false,
       notes: '',
-      originalValues: {},
+      originalValues: {
+        ciSelected: null,
+        endDate: null,
+        endTime: null,
+        patronSelected: null,
+        startDate: null,
+        startTime: null,
+        notes: ''
+      },
       endDateRules: [
         v =>
           new Date(v) >= new Date(this.startDate) ||
@@ -377,9 +385,6 @@ export default {
     isChanged() {
       //TODO: FIND WHY AFTER SAVING isChanged does not reset to false
       let isChanged = false
-      // let origStr = this.originalValues.toString()
-      // let loadingState = this.loading
-      console.log(this.originalValues)
       Object.keys(this.originalValues).forEach(field => {
         if (this.originalValues[field] !== this[field]) {
           isChanged = true
@@ -580,7 +585,7 @@ export default {
         'patronSelected',
         'startDate',
         'endDate',
-        'startime',
+        'startTime',
         'endTime',
         'notes'
       ]

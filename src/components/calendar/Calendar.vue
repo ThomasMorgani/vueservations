@@ -256,9 +256,18 @@ export default {
       return item.color
     },
     eventLabel(v) {
+      console.log(v.input.notes)
       let start = timestampHuman(v.input.start_date, false, false)
       let end = timestampHuman(v.input.end_date, false, false)
-      let label = `<span class="mx-2 subtitle-2"><strong>${v.input.ciData.abbreviation}</strong>  ${v.input.patronData.last_name} ${start} - ${end}</span>`
+      let label = `
+        <span class="mx-2 subtitle-2">
+          <strong>${v.input.ciData.abbreviation}</strong>  
+          ${v.input.patronData.last_name} ${start} - ${end}
+          <v-icon small color="white">${
+            v.input.notes ? 'mdi-note' : ''
+          }</v-icon>
+        </span>
+      `
 
       return label
     },
