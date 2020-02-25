@@ -6,7 +6,9 @@
         <v-menu bottom right>
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on" color="primary">
-              <span class="title font-weight-bold">{{ typeToLabel[type] }}</span>
+              <span class="title font-weight-bold">{{
+                typeToLabel[type]
+              }}</span>
               <v-icon right>mdi-menu-down</v-icon>
             </v-btn>
           </template>
@@ -50,7 +52,9 @@
           </template>
 
           <v-card>
-            <v-card-title class="title primary--text">Calendar Height</v-card-title>
+            <v-card-title class="title primary--text"
+              >Calendar Height</v-card-title
+            >
             <v-card-text>
               <v-slider
                 v-model="calendarMonthHeight"
@@ -68,7 +72,9 @@
           <v-icon color="primary">mdi-calendar-plus</v-icon>
         </v-btn>
         <v-btn icon @click="navDrawer = !navDrawer">
-          <v-icon color="primary">{{ navDrawer ? 'mdi-filter-remove' : 'mdi-filter' }}</v-icon>
+          <v-icon color="primary">{{
+            navDrawer ? 'mdi-filter-remove' : 'mdi-filter'
+          }}</v-icon>
         </v-btn>
       </v-toolbar>
       <!-- </v-sheet> -->
@@ -118,7 +124,11 @@
           <v-tooltip top v-model="tooltipEvent" v-bind="toptipPosition">
             <span>HELLO</span>
           </v-tooltip>
-          <v-dialog v-model="modalDetailsShow" max-width="800px" transition="dialog-transition">
+          <v-dialog
+            v-model="modalDetailsShow"
+            max-width="800px"
+            transition="dialog-transition"
+          >
             <component
               :key="modalDetailsShow + modalDetailsComp"
               :is="modalDetailsComp"
@@ -133,7 +143,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import filters from '@/modules/filters.js'
 import { timestampHuman } from '@/modules/formats.js'
 import eventMenu from '@/components/calendar/eventOverview'
@@ -180,16 +190,25 @@ export default {
   }),
   computed: {
     ...mapState({
-      filter: state => state.filter,
       events: state => state.events,
+      filterCategory: state => state.filterCategory,
+      filterRangeDate: state => state.filterRangeDate,
+      filterSearch: state => state.filterSearch,
       catalogItems: state => state.catalogItems,
       patrons: state => state.patrons
     }),
+    ...mapGetters(['categoriesById']),
     eventsList() {
-      let events = []
+      let eventsFiltered = []
+      const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
+      let filtersSet = {}
+      filterNames.forEach(f =>
+        this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
+      )
       if (Array.isArray(this.events)) {
+        let eventsFormatted = []
         this.events.forEach(e => {
-          events.push({
+          eventsFormatted.push({
             ...e,
             ciData: filters.getObjectFromArray(
               this.catalogItems,
@@ -203,9 +222,104 @@ export default {
             )
           })
         })
+
+        eventsFiltered = eventsFormatted
+
+        if (Object.keys(filtersSet).length < 0) {
+          eventsFiltered = eventsFormatted
+
+          if (filtersSet.filterCategory) {
+            eventsFiltered = eventsFormatted.filter(
+              e => filtersSet.filterCategory.indexOf(e.ciData.category) > -1
+            )
+          }
+
+          //
+          // TODO FIX THIS, SET 1 EVENTS ARRAY, no need for formatted/filtered
+          // search filter: e=> findStringMatchesInObj(.ciData) || findStringMatchesInObj(.patronData)
+          //
+          //
+          console.log(filtersSet)
+          if (filtersSet.filterSearch) {
+            console.log('is true')
+            const possibleKeys = [
+              'abbreviation',
+              'category',
+              'name',
+              'first_name',
+              'last_name',
+              'barcode'
+            ]
+            console.log(eventsFiltered)
+            eventsFiltered = eventsFiltered.filter(e => {
+              filters.findStringMatchesInObj(
+                e,
+                possibleKeys,
+                filtersSet.filterSearch
+              )
+            })
+          }
+        }
+      }
+      return eventsFiltered
+    },
+    eventsList1() {
+      let eventsFiltered = []
+      const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
+      let filtersSet = {}
+      filterNames.forEach(f =>
+        this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
+      )
+      console.log(filterNames)
+      console.log(filtersSet)
+
+      if (Array.isArray(this.events)) {
+        this.events.forEach(e => {
+          let event = {
+            ...e,
+            ciData: filters.getObjectFromArray(
+              this.catalogItems,
+              'id',
+              e.item_id
+            ), //
+            patronData: filters.getObjectFromArray(
+              this.patrons,
+              'id',
+              e.patron_id
+            )
+          }
+          if (Object.keys(filtersSet).length < 1) {
+            eventsFiltered.push(event)
+          } else {
+            if (
+              filtersSet.filterCategory &&
+              filtersSet.filterCategory.indexOf(event.ciData.category) > -1
+            ) {
+              eventsFiltered.push(event)
+            } else if (filtersSet.filterSearch) {
+              const possibleKeys = [
+                'abbreviation',
+                'category',
+                'name',
+                'first_name',
+                'last_name',
+                'barcode'
+              ]
+              if (
+                filters.findStringMatchesInObj(
+                  event,
+                  possibleKeys,
+                  filtersSet.filterSearch
+                )
+              ) {
+                eventsFiltered.push(event)
+              }
+            }
+          }
+        })
       }
       // return this.events
-      return events
+      return eventsFiltered
     },
     title() {
       const { start, end } = this
@@ -253,15 +367,16 @@ export default {
   methods: {
     eventColor(e) {
       let item = filters.getObjectFromArray(this.catalogItems, 'id', e.item_id)
-      return item.color
+      return this.filterCategory.length > 1
+        ? this.categoriesById[item.category].color
+        : item.color
     },
     eventLabel(v) {
-      console.log(v.input.notes)
       let start = timestampHuman(v.input.start_date, false, false)
       let end = timestampHuman(v.input.end_date, false, false)
       let label = `
         <span class="mx-2 subtitle-2">
-          <strong>${v.input.ciData.abbreviation}</strong>  
+          <strong>${v.input.ciData.abbreviation}</strong>
           ${v.input.patronData.last_name} ${start} - ${end}
           <v-icon small color="white">${
             v.input.notes ? 'mdi-note' : ''

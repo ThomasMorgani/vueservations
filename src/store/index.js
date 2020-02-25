@@ -22,10 +22,9 @@ export default new Vuex.Store({
     customFields: [],
     events: [],
     eventEditting: null,
-    eventsFilterSearchbox: null,
-    eventsFilterCategories: [],
-    eventsFilterCategorySelect: [],
-    eventsFilterDateRange: [],
+    filterSearch: null,
+    filterCategory: [],
+    filterRangeDate: [],
     imagePreviewData: {},
     modalCatalogCustomfield: false,
     modalImageFullPreview: false,
@@ -45,6 +44,13 @@ export default new Vuex.Store({
     snackbarState: false
   },
   getters: {
+    categoriesById(state) {
+      let cats = {}
+      if (Array.isArray(state.categories)) {
+        state.categories.forEach(c => (cats[c.id] = c))
+      }
+      return cats
+    },
     categoriesDisplayed(state) {
       //actual category ids mapped from select array
       let catsDisplayed = []

@@ -15,6 +15,19 @@ export default {
     let field = customFields.find(field => field.id === id)
     return field
   },
+  findStringMatchesInObj(targetObj, keysArr, queryText) {
+    console.log(targetObj, queryText)
+    let pass = false
+    keysArr.forEach(key => {
+      if (targetObj[key]) {
+        let str = targetObj[key].toLowerCase()
+        if (str.indexOf(queryText.toLowerCase()) > -1) {
+          pass = true
+        }
+      }
+    })
+    return pass
+  },
   getObjectFromArray(arr, key, val, returnVal = false) {
     //return item from obj where key === val
     if (!Array.isArray(arr)) {

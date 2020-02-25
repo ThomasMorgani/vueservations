@@ -31,7 +31,10 @@
                     <img :src="data.item.image" />
                   </v-list-item-avatar>
                   <v-list-item-content>
-                    <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
+                    <v-list-item-title
+                      v-text="data.item.name"
+                      class="font-weight-bold"
+                    ></v-list-item-title>
                     <v-list-item-subtitle
                       class="text--primary"
                       v-text="
@@ -52,7 +55,10 @@
                   <img :src="data.item.image" />
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
+                  <v-list-item-title
+                    v-text="data.item.name"
+                    class="font-weight-bold"
+                  ></v-list-item-title>
                   <v-list-item-subtitle
                     :class="
                       data.item.isDisabled ? 'text--disabled' : 'text--primary'
@@ -111,7 +117,10 @@
                       v-text="`${data.item.last_name}, ${data.item.first_name}`"
                       class="font-weight-bold"
                     ></v-list-item-title>
-                    <v-list-item-subtitle class="text--primary" v-text="`Barcode`"></v-list-item-subtitle>
+                    <v-list-item-subtitle
+                      class="text--primary"
+                      v-text="`Barcode`"
+                    ></v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </template>
@@ -121,7 +130,10 @@
                     v-text="`${data.item.last_name}, ${data.item.first_name}`"
                     class="font-weight-bold"
                   ></v-list-item-title>
-                  <v-list-item-subtitle class="text--primary" v-text="data.item.barcode"></v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    class="text--primary"
+                    v-text="data.item.barcode"
+                  ></v-list-item-subtitle>
                 </v-list-item-content>
               </template>
             </v-autocomplete>
@@ -147,10 +159,21 @@
                   :error-messages="formErrors.startDate"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="startDate" scrollable :allowed-dates="allowedStart">
+              <v-date-picker
+                v-model="startDate"
+                scrollable
+                :allowed-dates="allowedStart"
+              >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartDate = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.startDateDialog.save(startDate)">OK</v-btn>
+                <v-btn text color="primary" @click="modalStartDate = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.startDateDialog.save(startDate)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -174,8 +197,15 @@
               </template>
               <v-time-picker v-if="modalStartTime" v-model="startTime">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartTime = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.startTimeDialog.save(startTime)">OK</v-btn>
+                <v-btn text color="primary" @click="modalStartTime = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.startTimeDialog.save(startTime)"
+                  >OK</v-btn
+                >
               </v-time-picker>
             </v-dialog>
           </v-col>
@@ -201,10 +231,21 @@
                   :error-messages="formErrors.endDate"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="endDate" scrollable :allowed-dates="allowedEnd">
+              <v-date-picker
+                v-model="endDate"
+                scrollable
+                :allowed-dates="allowedEnd"
+              >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndDate = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.modalEndDateDialog.save(endDate)">OK</v-btn>
+                <v-btn text color="primary" @click="modalEndDate = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.modalEndDateDialog.save(endDate)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -228,8 +269,12 @@
               </template>
               <v-time-picker v-if="modalEndTime" v-model="endTime" full-width>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndTime = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.dialog.save(endTime)">OK</v-btn>
+                <v-btn text color="primary" @click="modalEndTime = false"
+                  >Cancel</v-btn
+                >
+                <v-btn text color="primary" @click="$refs.dialog.save(endTime)"
+                  >OK</v-btn
+                >
               </v-time-picker>
             </v-dialog>
           </v-col>
@@ -251,7 +296,13 @@
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="warning darken-1" text :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
+      <v-btn
+        color="warning darken-1"
+        text
+        :disabled="!isChanged"
+        @click="resetChanges"
+        >RESET</v-btn
+      >
       <v-spacer></v-spacer>
       <v-btn color="primary" text @click="$emit('close')">CANCEL</v-btn>
       <v-btn
@@ -262,7 +313,11 @@
         :disabled="!valid || Object.keys(formErrors).length > 0 || !isChanged"
       ></v-btn>
     </v-card-actions>
-    <v-dialog v-model="modalPatronEdit" transition="dialog-transition" max-width="800">
+    <v-dialog
+      v-model="modalPatronEdit"
+      transition="dialog-transition"
+      max-width="800"
+    >
       <patronEdit
         :key="modalPatronEdit"
         @close="modalPatronEdit = false"
@@ -485,16 +540,7 @@ export default {
         'last_name',
         'barcode'
       ]
-      let pass = false
-      possibleKeys.forEach(key => {
-        if (item[key]) {
-          let str = item[key].toLowerCase()
-          if (str.indexOf(queryText.toLowerCase()) > -1) {
-            pass = true
-          }
-        }
-      })
-      return pass
+      return filters.findStringMatchesInObj(item, possibleKeys, queryText)
     },
     dateMin() {
       const now = new Date()
