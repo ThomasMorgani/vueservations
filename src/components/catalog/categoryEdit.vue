@@ -139,20 +139,24 @@ export default {
     },
     nameAvailable() {
       const nameMatches = this.categories.find(
-        el =>
-          el.name.toLowerCase() === String(this.name).toLowerCase() &&
-          el.id !== this.id
+        el => el.name.toLowerCase() === String(this.name).toLowerCase()
       )
       if (!this.name) {
         return 'Name Required'
       }
-      if (
-        nameMatches !== undefined &&
-        this.categoryEdittingData &&
-        this.name !== this.categoryEdittingData.name
-      ) {
-        return 'Category name already exists.'
+      console.log(nameMatches)
+      console.log(this.categoryEdittingData)
+      console.log(this.name)
+      if (nameMatches !== undefined) {
+        if (
+          !this.id ||
+          (this.categoryEdittingData &&
+            this.name !== this.categoryEdittingData.name)
+        ) {
+          return 'Category name already exists.'
+        }
       }
+
       return null
     },
     saveDisabled() {

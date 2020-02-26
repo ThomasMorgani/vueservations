@@ -1,3 +1,6 @@
+import Moment from 'moment'
+import { extendMoment } from 'moment-range'
+const moment = extendMoment(Moment)
 export default {
   categoryByKey(categories, key) {
     let cat = categories.find(cat => cat.id === key)
@@ -16,7 +19,6 @@ export default {
     return field
   },
   findStringMatchesInObj(targetObj, keysArr, queryText) {
-    console.log(targetObj, queryText)
     let pass = false
     keysArr.forEach(key => {
       if (targetObj[key]) {
@@ -39,5 +41,20 @@ export default {
       // console.log(result)
       return returnVal ? result[returnVal] : result
     }
+  },
+  testRangeOverlap(startDate1, endDate1, startDate2, endDate2) {
+    let searchStartDate1 = new Date(startDate1)
+    let searchEndDate1 = new Date(endDate1)
+    //THIS IS FOR CUSTOM BUFFER PERIODS
+    //TODO: make this a setting
+    searchStartDate1.setDate(searchStartDate1.getDate() - 1)
+    searchEndDate1.setDate(searchEndDate1.getDate() + 2)
+    const searchRange1 = moment.range(searchStartDate1, searchEndDate1)
+
+    const searchStartDate2 = new Date(startDate2)
+    const searchEndtDate2 = new Date(endDate2)
+    const searchRange2 = moment.range(searchStartDate2, searchEndtDate2)
+
+    return searchRange1.overlaps(searchRange2, { adjacent: true })
   }
 }

@@ -49,10 +49,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-
-        <v-btn icon>
-          <v-icon color="primary">{{ 'mdi-filter' }}</v-icon>
-        </v-btn>
+        <filterBtn></filterBtn>
       </v-toolbar>
     </v-col>
     <v-col cols="12" class="pa-0 flex-grow-1">
@@ -97,7 +94,9 @@
         )}`
       "
     >
-      <catalogItemEditFields :key="modalEditCatalogItemFields + ''"></catalogItemEditFields>
+      <catalogItemEditFields
+        :key="modalEditCatalogItemFields + ''"
+      ></catalogItemEditFields>
     </v-dialog>
     <!-- Catalog Custom Fields Mgmtm Modal  -->
     <!-- <v-dialog
@@ -137,6 +136,7 @@ import catalogItemEdit from '@/components/catalog/catalogItemEdit'
 import catalogItemEditFields from '@/components/catalog/catalogItemEditFields'
 import categoryEdit from '@/components/catalog/categoryEdit'
 import category from '@/views/catalog/category'
+import filterBtn from '@/components/global/buttons/filterDrawerToggle'
 import imagePreviewModal from '@/components/images/imagePreviewModal'
 import overview from '@/views/catalog/overview'
 export default {
@@ -148,6 +148,7 @@ export default {
     catalogItemEditFields,
     category,
     categoryEdit,
+    filterBtn,
     imagePreviewModal,
     overview
   },

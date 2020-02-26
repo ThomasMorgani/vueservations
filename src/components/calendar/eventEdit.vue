@@ -331,9 +331,6 @@
 import { mapState } from 'vuex'
 import filters from '@/modules/filters'
 import Vue2Filters from 'vue2-filters'
-import Moment from 'moment'
-import { extendMoment } from 'moment-range'
-const moment = extendMoment(Moment)
 export default {
   name: 'eventEdit',
   components: {
@@ -465,7 +462,7 @@ export default {
           this.events.forEach(event => {
             if (
               event.item_id === item.id &&
-              this.testRangeOverlap(
+              filters.testRangeOverlap(
                 this.startDate,
                 this.endDate,
                 event.start_date,
@@ -516,7 +513,7 @@ export default {
         const ci = { ...this.ciSelected }
         events = this.events.filter(e => {
           if (e.item_id === ci.id) {
-            return !this.testRangeOverlap(e.start_date, e.end_date, val, val)
+            return !filters.testRangeOverlap(e.start_date, e.end_date, val, val)
           } else {
             return true
           }
@@ -583,21 +580,6 @@ export default {
       Object.keys(this.originalValues).forEach(field => {
         this[field] = this.originalValues[field]
       })
-    },
-    testRangeOverlap(startDate1, endDate1, startDate2, endDate2) {
-      let searchStartDate1 = new Date(startDate1)
-      let searchEndDate1 = new Date(endDate1)
-      //THIS IS FOR CUSTOM BUFFER PERIODS
-      //TODO: make this a setting
-      searchStartDate1.setDate(searchStartDate1.getDate() - 1)
-      searchEndDate1.setDate(searchEndDate1.getDate() + 2)
-      const searchRange1 = moment.range(searchStartDate1, searchEndDate1)
-
-      const searchStartDate2 = new Date(startDate2)
-      const searchEndtDate2 = new Date(endDate2)
-      const searchRange2 = moment.range(searchStartDate2, searchEndtDate2)
-
-      return searchRange1.overlaps(searchRange2, { adjacent: true })
     }
   },
   mounted() {

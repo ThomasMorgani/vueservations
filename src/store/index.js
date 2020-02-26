@@ -33,6 +33,7 @@ export default new Vuex.Store({
     modalCategoryEdit: false,
     patrons: [],
     settings: [],
+    sideDrawer: false,
     snackbarData: {},
     snackbarSettings: {
       defaultColor: 'primary',
@@ -41,7 +42,9 @@ export default new Vuex.Store({
       timeout: 5000,
       vertical: true
     },
-    snackbarState: false
+    snackbarState: false,
+    viewMain: null,
+    viewSub: null
   },
   getters: {
     categoriesById(state) {
@@ -51,29 +54,17 @@ export default new Vuex.Store({
       }
       return cats
     },
-    categoriesDisplayed(state) {
+    categoriesDisplayed(state, getters) {
       //actual category ids mapped from select array
       let catsDisplayed = []
-      if (
-        state.eventsFilterCategorySelect &&
-        state.eventsFilterCategorySelect.length > 0
-      ) {
-        state.eventsFilterCategorySelect.forEach(cat =>
-          catsDisplayed.push(state.categories[cat].id)
+      if (state.filterCategory && state.filterCategory.length > 0) {
+        state.filterCategory.forEach(cat =>
+          catsDisplayed.push(getters.categoriesById[cat].id)
         )
       }
       return catsDisplayed
     },
-    catalogItemsDisplayed(state, getters) {
-      let catalogItems = state.catalogItems
-      //filter out selected categories, if any
-      if (getters.categoriesDisplayed.length > 0) {
-        catalogItems = catalogItems.filter(catalogItem => {
-          return getters.categoriesDisplayed.includes(catalogItem.category)
-        })
-      }
-      return catalogItems
-    },
+
     eventsDisplayed(state, getters) {
       // console.log(getters.categoriesDisplayed);
       let events = state.events
@@ -142,7 +133,6 @@ export default new Vuex.Store({
     },
     setStateValue(state, data) {
       //data expects: {key: state key, value: state value}
-      console.log(data)
       state[data.key] = data.value
     },
     toggleModalCatalogCustomfield(state, data) {
@@ -378,13 +368,15 @@ export default new Vuex.Store({
       })
     },
     setStateValue({ commit }, data) {
-      console.log(data)
       if (data.isPush) {
         console.log('is push')
         commit('pushStateValue', { key: data.key, value: data.value })
       } else {
         commit('setStateValue', { key: data.key, value: data.value })
       }
+    },
+    toggleStateValue({ commit, state }, data) {
+      commit('setStateValue', { key: data, value: !state[data] })
     },
     toggleModalCatalogCustomfield({ commit, state }) {
       commit('toggleModalCatalogCustomfield', !state.modalCatalogCustomfield)

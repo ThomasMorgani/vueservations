@@ -23,61 +23,62 @@
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <v-btn text icon color="warning" v-on="on" @click="setMode('edit')">
-              <v-icon v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"></v-icon>
+              <v-icon
+                v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"
+              ></v-icon>
             </v-btn>
           </template>
           <span>Toggle Edit Mode</span>
         </v-tooltip>
       </template>
     </v-card-title>
-    <v-card-text>
+    <v-card-text :style="styleCategoryList">
       <v-list>
-        <v-list-item-group
-          v-model="categorySelect"
-          :multiple="catalogView === 'overview'"
-          color="primary"
-          :key="'ig' + catalogView"
-          :style="styleCategoryList"
+        <v-list-item
+          v-for="(category, i) in categoryList"
+          :key="i"
+          :input-value="filterCategory.includes(category.id)"
+          active-class="primary lighten-5"
+          @click="selectItem(category)"
         >
-          <v-list-item v-for="(category, i) in categoryList" :key="i">
-            <v-list-item-avatar :color="category.color"></v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title
-                v-text="category.name"
-                class="headline text-capitalize primary--text"
-              ></v-list-item-title>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-btn
-                text
-                icon
-                :color="modeIcons[mode].color"
-                v-if="mode"
-                @click="action(modeIcons[mode].action, category.id)"
-              >
-                <v-icon v-text="modeIcons[mode].icon"></v-icon>
-              </v-btn>
-              <div v-else>
-                <v-tooltip top v-if="category.id == defaultCategory.id">
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on" class="align-end">mdi-star-box</v-icon>
-                  </template>
-                  <span>This is the default category.</span>
-                </v-tooltip>
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <span v-on="on" class="mb-0 title">({{ categoryCounts[category.id] || 0 }})</span>
-                  </template>
-                  <span
-                    v-text="
-                      countText(categoryCounts[category.id] || 0, category.name)
-                    "
-                  ></span>
-                </v-tooltip>
-              </div>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list-item-group>
+          <v-list-item-avatar :color="category.color"></v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title class="headline text-capitalize primary--text">
+              {{ category.name }}
+              <v-tooltip top v-if="category.id == defaultCategory.id">
+                <template v-slot:activator="{ on }">
+                  <v-icon x-small v-on="on" class="mb-4">mdi-star</v-icon>
+                </template>
+                <span>This is the default category.</span>
+              </v-tooltip></v-list-item-title
+            >
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-btn
+              text
+              icon
+              :color="modeIcons[mode].color"
+              v-if="mode"
+              @click="action(modeIcons[mode].action, category.id)"
+            >
+              <v-icon v-text="modeIcons[mode].icon"></v-icon>
+            </v-btn>
+            <div v-else>
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <span v-on="on" class="mb-0 title"
+                    >({{ categoryCounts[category.id] || 0 }})</span
+                  >
+                </template>
+                <span
+                  v-text="
+                    countText(categoryCounts[category.id] || 0, category.name)
+                  "
+                ></span>
+              </v-tooltip>
+            </div>
+          </v-list-item-action>
+        </v-list-item>
       </v-list>
     </v-card-text>
   </v-card>
@@ -113,7 +114,7 @@ export default {
       catalogItems: state => state.catalogItems,
       catalogView: state => state.catalogView,
       categories: state => state.categories,
-      filterCategorySelect: state => state.eventsFilterCategorySelect,
+      filterCategory: state => state.filterCategory,
       settings: state => state.settings
     }),
     categoryList() {
@@ -136,7 +137,10 @@ export default {
         return this.filterCategorySelect
       },
       set(val) {
-        this.$store.commit('eventsFilterCategorySelect', val)
+        this.$store.commit('setStateValue', {
+          key: 'filterCategory',
+          value: val
+        })
       }
     },
     defaultCategory() {
@@ -197,10 +201,35 @@ export default {
       this.$store.dispatch('toggleModalEditCategory')
     },
     selectAll() {
-      this.categorySelect = [...this.categories.keys()]
+      // this.categorySelect = [...this.categories.keys()]
+      this.categoryList.forEach(c =>
+        this.$store.dispatch('setStateValue', {
+          key: 'filterCategory',
+          value: c.id,
+          isPush: true
+        })
+      )
+    },
+    selectItem(c) {
+      if (this.filterCategory.includes(c.id)) {
+        this.$store.dispatch('setStateValue', {
+          key: 'filterCategory',
+          value: this.filterCategory.filter(e => e !== c.id)
+        })
+      } else {
+        this.$store.dispatch('setStateValue', {
+          key: 'filterCategory',
+          value: c.id,
+          isPush: true
+        })
+      }
     },
     selectNone() {
-      this.categorySelect = []
+      // this.categorySelect = []
+      this.$store.dispatch('setStateValue', {
+        key: 'filterCategory',
+        value: []
+      })
     },
     setMode(mode) {
       this.mode = this.mode === mode ? null : mode
@@ -216,5 +245,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>

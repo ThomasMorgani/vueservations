@@ -71,17 +71,11 @@
         <v-btn icon @click="eventAdd">
           <v-icon color="primary">mdi-calendar-plus</v-icon>
         </v-btn>
-        <v-btn icon @click="navDrawer = !navDrawer">
-          <v-icon color="primary">{{
-            navDrawer ? 'mdi-filter-remove' : 'mdi-filter'
-          }}</v-icon>
-        </v-btn>
+        <filterBtn></filterBtn>
       </v-toolbar>
       <!-- </v-sheet> -->
     </v-col>
     <v-col cols="12">
-      <FilterDrawer :value="navDrawer"></FilterDrawer>
-
       <!-- <v-sheet height="calc(100vh - 64px)" style="overflow-y: scroll;"> -->
       <v-sheet class="px-2" :style="styleCal">
         <v-sheet :height="type === 'month' ? calendarMonthHeight : '100%'">
@@ -147,17 +141,18 @@ import { mapGetters, mapState } from 'vuex'
 import filters from '@/modules/filters.js'
 import { timestampHuman } from '@/modules/formats.js'
 import eventMenu from '@/components/calendar/eventOverview'
-import FilterDrawer from '@/components/filterDrawer/FilterDrawer'
+import filterBtn from '@/components/global/buttons/filterDrawerToggle'
+
 import Vue2Filters from 'vue2-filters'
 
 export default {
   name: 'Calendar',
   components: {
-    eventMenu,
-    FilterDrawer,
     ciDetails: () => import('@/components/catalog/catalogItemDetails'),
     eventEdit: () => import('@/components/calendar/eventEdit'),
     eventDetails: () => import('@/components/calendar/eventDetails'),
+    eventMenu,
+    filterBtn,
     patronDetails: () => import('@/components/patron/patronDetails')
   },
   mixins: [Vue2Filters.mixin],
@@ -206,9 +201,8 @@ export default {
         this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
       )
       if (Array.isArray(this.events)) {
-        let eventsFormatted = []
         this.events.forEach(e => {
-          eventsFormatted.push({
+          eventsFiltered.push({
             ...e,
             ciData: filters.getObjectFromArray(
               this.catalogItems,
@@ -223,104 +217,114 @@ export default {
           })
         })
 
-        eventsFiltered = eventsFormatted
-
-        if (Object.keys(filtersSet).length < 0) {
-          eventsFiltered = eventsFormatted
-
+        if (Object.keys(filtersSet).length > 0) {
           if (filtersSet.filterCategory) {
-            eventsFiltered = eventsFormatted.filter(
+            eventsFiltered = eventsFiltered.filter(
               e => filtersSet.filterCategory.indexOf(e.ciData.category) > -1
             )
           }
 
-          //
-          // TODO FIX THIS, SET 1 EVENTS ARRAY, no need for formatted/filtered
-          // search filter: e=> findStringMatchesInObj(.ciData) || findStringMatchesInObj(.patronData)
-          //
-          //
-          console.log(filtersSet)
           if (filtersSet.filterSearch) {
-            console.log('is true')
-            const possibleKeys = [
-              'abbreviation',
-              'category',
-              'name',
+            const possibleKeysCi = ['abbreviation', 'name']
+            const possibleKeysPatron = [
+              'barcode',
+              'email',
               'first_name',
               'last_name',
-              'barcode'
+              'phone'
             ]
-            console.log(eventsFiltered)
             eventsFiltered = eventsFiltered.filter(e => {
-              filters.findStringMatchesInObj(
-                e,
-                possibleKeys,
-                filtersSet.filterSearch
+              return (
+                filters.findStringMatchesInObj(
+                  e.ciData,
+                  possibleKeysCi,
+                  filtersSet.filterSearch
+                ) ||
+                filters.findStringMatchesInObj(
+                  e.patronData,
+                  possibleKeysPatron,
+                  filtersSet.filterSearch
+                )
               )
             })
+          }
+
+          if (
+            filtersSet.filterRangeDate &&
+            filtersSet.filterRangeDate['0'] &&
+            filtersSet.filterRangeDate['1']
+          ) {
+            eventsFiltered = eventsFiltered.filter(e =>
+              filters.testRangeOverlap(
+                filtersSet.filterRangeDate['0'],
+                filtersSet.filterRangeDate['1'],
+                e.start_date,
+                e.end_date
+              )
+            )
           }
         }
       }
       return eventsFiltered
     },
-    eventsList1() {
-      let eventsFiltered = []
-      const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
-      let filtersSet = {}
-      filterNames.forEach(f =>
-        this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
-      )
-      console.log(filterNames)
-      console.log(filtersSet)
+    // eventsList1() {
+    //   let eventsFiltered = []
+    //   const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
+    //   let filtersSet = {}
+    //   filterNames.forEach(f =>
+    //     this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
+    //   )
+    //   console.log(filterNames)
+    //   console.log(filtersSet)
 
-      if (Array.isArray(this.events)) {
-        this.events.forEach(e => {
-          let event = {
-            ...e,
-            ciData: filters.getObjectFromArray(
-              this.catalogItems,
-              'id',
-              e.item_id
-            ), //
-            patronData: filters.getObjectFromArray(
-              this.patrons,
-              'id',
-              e.patron_id
-            )
-          }
-          if (Object.keys(filtersSet).length < 1) {
-            eventsFiltered.push(event)
-          } else {
-            if (
-              filtersSet.filterCategory &&
-              filtersSet.filterCategory.indexOf(event.ciData.category) > -1
-            ) {
-              eventsFiltered.push(event)
-            } else if (filtersSet.filterSearch) {
-              const possibleKeys = [
-                'abbreviation',
-                'category',
-                'name',
-                'first_name',
-                'last_name',
-                'barcode'
-              ]
-              if (
-                filters.findStringMatchesInObj(
-                  event,
-                  possibleKeys,
-                  filtersSet.filterSearch
-                )
-              ) {
-                eventsFiltered.push(event)
-              }
-            }
-          }
-        })
-      }
-      // return this.events
-      return eventsFiltered
-    },
+    //   if (Array.isArray(this.events)) {
+    //     this.events.forEach(e => {
+    //       let event = {
+    //         ...e,
+    //         ciData: filters.getObjectFromArray(
+    //           this.catalogItems,
+    //           'id',
+    //           e.item_id
+    //         ), //
+    //         patronData: filters.getObjectFromArray(
+    //           this.patrons,
+    //           'id',
+    //           e.patron_id
+    //         )
+    //       }
+    //       if (Object.keys(filtersSet).length < 1) {
+    //         eventsFiltered.push(event)
+    //       } else {
+    //         if (
+    //           filtersSet.filterCategory &&
+    //           filtersSet.filterCategory.indexOf(event.ciData.category) > -1
+    //         ) {
+    //           eventsFiltered.push(event)
+    //         } else if (filtersSet.filterSearch) {
+    //           const possibleKeys = [
+    //             'abbreviation',
+    //             'category',
+    //             'name',
+    //             'first_name',
+    //             'last_name',
+    //             'barcode'
+    //           ]
+    //           if (
+    //             filters.findStringMatchesInObj(
+    //               event,
+    //               possibleKeys,
+    //               filtersSet.filterSearch
+    //             )
+    //           ) {
+    //             eventsFiltered.push(event)
+    //           }
+    //         }
+    //       }
+    //     })
+    //   }
+    //   // return this.events
+    //   return eventsFiltered
+    // },
     title() {
       const { start, end } = this
       if (!start || !end) {

@@ -8,13 +8,13 @@
       <v-icon left color="primary">mdi-filter</v-icon>
       {{ `${itemList.length} of ${catalogItems.length}` }}
     </v-card-title>
-    <v-card-text>
-      <v-expansion-panels popout v-model="panel" class="py-1" :style="styleCiList">
+    <v-card-text :style="styleCiList">
+      <v-expansion-panels popout v-model="panel" class="py-1">
         <!-- <template v-for="(item, key) in limitBy(itemsDisplayed, itemDisplayLimit)"> -->
         <template v-for="(item, key) in orderBy(itemList, 'name')">
           <catalogItem
             :key="item.id ? item.id : key + 'ci'"
-            :item="formatsareCatalogItemData(item)"
+            :item="item"
             :statusData="statusData"
           ></catalogItem>
           <!-- <catalogItem :key="item.id" :item="item" :isActivePanel="key === panel"></catalogItem> -->
@@ -82,10 +82,50 @@ export default {
     ...mapState({
       catalogItems: state => state.catalogItems,
       categories: state => state.categories,
-      filterCategorySelect: state => state.filterCategorySelect
+      filterCategory: state => state.filterCategory,
+      filterRangeDate: state => state.filterRangeDate,
+      filterSearch: state => state.filterSearch
     }),
     itemList() {
-      return this.$store.getters.catalogItemsDisplayed
+      let cItemsFiltered = []
+      const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
+      let filtersSet = {}
+      filterNames.forEach(f =>
+        this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
+      )
+
+      if (Array.isArray(this.catalogItems)) {
+        this.catalogItems.forEach(ci => {
+          cItemsFiltered.push(this.formatCatalogItemData(ci))
+        })
+      }
+
+      if (Object.keys(filtersSet).length > 0) {
+        if (filtersSet.filterCategory) {
+          cItemsFiltered = cItemsFiltered.filter(ci =>
+            filtersSet.filterCategory.includes(ci.category)
+          )
+        }
+      }
+
+      if (filtersSet.filterSearch) {
+        const possibleKeys = [
+          'abbreviation',
+          'categoryName',
+          'description',
+          'name',
+          'status'
+        ]
+        cItemsFiltered = cItemsFiltered.filter(ci => {
+          return filters.findStringMatchesInObj(
+            ci,
+            possibleKeys,
+            filtersSet.filterSearch
+          )
+        })
+      }
+
+      return cItemsFiltered
     },
     styleCiList() {
       let height = this.$store.state.content.main.y || null
@@ -99,7 +139,7 @@ export default {
     }
   },
   methods: {
-    formatsareCatalogItemData(catalogItem) {
+    formatCatalogItemData(catalogItem) {
       //format data to be passed to list item
       if (catalogItem && catalogItem.name) {
         const category = filters.categoryById(
@@ -115,12 +155,6 @@ export default {
         return formats.catalogItem(catalogItem)
       }
     }
-  },
-  created() {
-    console.log(this)
-  },
-  mounted() {
-    // console.log(this.$parent.$el)
   }
 }
 </script>
