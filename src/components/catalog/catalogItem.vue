@@ -3,20 +3,16 @@
     <v-expansion-panel-header class="pa-2">
       <v-row dense align="center" justify="center">
         <v-col cols="2" align-self="center" class="d-flex justify-center">
-          <v-img
-            contain
-            :src="thumbnailSrc"
-            max-width="100"
-            max-height="100"
-            class="pa-0"
-          ></v-img>
+          <v-img contain :src="thumbnailSrc" max-width="100" max-height="100" class="pa-0"></v-img>
         </v-col>
         <v-col cols="10">
           <v-row dense class="display-flex align-center justify-start">
             <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
-            <span class="font-weight-medium title primary--text">{{
+            <span class="font-weight-medium title primary--text">
+              {{
               item.name
-            }}</span>
+              }}
+            </span>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-chip
@@ -37,9 +33,7 @@
                   <strong>Color:</strong>
                   {{ item.color }}
                 </p>
-                <div
-                  :style="{ height: '10px', 'background-color': item.color }"
-                ></div>
+                <div :style="{ height: '10px', 'background-color': item.color }"></div>
               </span>
             </v-tooltip>
           </v-row>
@@ -68,16 +62,9 @@
             <!-- STATUS -->
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card
-                  flat
-                  class="d-flex align-center text-left mr-3"
-                  v-on="on"
-                >
+                <v-card flat class="d-flex align-center text-left mr-3" v-on="on">
                   <v-icon :color="status.color" v-text="status.icon"></v-icon>
-                  <p
-                    v-text="status.text"
-                    :class="` ml-1 font-weight-bold ${status.color}--text`"
-                  ></p>
+                  <p v-text="status.text" :class="` ml-1 font-weight-bold ${status.color}--text`"></p>
                 </v-card>
               </template>
               <span v-html="status.popovertext"></span>
@@ -100,11 +87,7 @@
             <!-- LAST CHECKOUT date, never-->
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card
-                  flat
-                  class="d-flex align-center text-left mx-3"
-                  v-on="on"
-                >
+                <v-card flat class="d-flex align-center text-left mx-3" v-on="on">
                   <v-icon color="primary" v-text="'mdi-history'"></v-icon>
                   <p
                     v-text="
@@ -128,7 +111,7 @@
     </v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-row dense justify="end">
-        <v-col class="flex-grow-1 flex-shrink-0"> </v-col>
+        <v-col class="flex-grow-1 flex-shrink-0"></v-col>
         <v-col class="text-right flex-grow-0 flex-shrink-1">
           <v-tooltip top>
             <template v-slot:activator="{ on }">
@@ -187,16 +170,12 @@ export default {
     item: {
       type: Object,
       required: true
-    },
-    statusData: {
-      type: Object,
-      required: true
     }
   },
-
   computed: {
     ...mapState({
-      categories: state => state.categories
+      categories: state => state.categories,
+      statusData: state => state.statusData
     }),
     isReserved() {
       let reserved = false

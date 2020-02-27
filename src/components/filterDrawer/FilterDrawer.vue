@@ -5,7 +5,13 @@
       <v-tooltip left>
         <template v-slot:activator="{ on }">
           <div v-on="on">
-            <v-btn text icon color="error" :disabled="!isFiltered">
+            <v-btn
+              text
+              icon
+              color="error"
+              :disabled="!isFiltered"
+              @click="$store.dispatch('filtersClearAll')"
+            >
               <v-icon color="error">mdi-filter-remove</v-icon>
             </v-btn>
           </div>

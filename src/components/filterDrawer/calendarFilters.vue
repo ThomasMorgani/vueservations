@@ -11,7 +11,6 @@
       class="flex-grow-0 flex-shrink-1"
       v-model="searchField"
     ></v-text-field>
-    <v-divider color="primary--text"></v-divider>
     <v-select
       v-model="categorySelect"
       :items="orderBy(categories, 'name')"
@@ -57,17 +56,12 @@
         </v-chip>
       </template>
     </v-select>
-    <!--
-        add to the above once store is setup
-        :events="functionEvents"
-        :event-color="date => date[9] % 2 ? 'red' : 'yellow'"
-    -->
-    <v-subheader>DATE RANGE</v-subheader>
+    <p class="subtitle-2 mb-0 primary--text">DATE RANGE</p>
     <v-date-picker
       v-model="dateRange"
       range
       color="primary"
-      class="flex-grow-0 flex-shrink-1"
+      class="flex-grow-0 flex-shrink-1 mt-1"
       no-title
     ></v-date-picker>
     <v-text-field

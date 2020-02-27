@@ -58,10 +58,10 @@
       </template>
     </v-select>
     <v-select
-      v-model="categorySelect"
-      :items="orderBy(categories, 'name')"
-      item-text="name"
-      item-value="id"
+      v-model="statusSelect"
+      :items="orderBy(statusOptions, 'name')"
+      item-text="text"
+      item-value="text"
       label="Status"
       multiple
       chips
@@ -76,17 +76,17 @@
         <v-list-item-icon>
           <v-icon
             v-text="
-              filterCategory.includes(item.id)
+              statusSelect.includes(item.text)
                 ? 'mdi-checkbox-marked'
                 : 'mdi-checkbox-blank-outline'
             "
           ></v-icon>
         </v-list-item-icon>
         <v-list-item-content>
-          <v-list-item-title v-text="item.name"></v-list-item-title>
+          <v-list-item-title v-text="item.text"></v-list-item-title>
         </v-list-item-content>
         <v-list-item-action>
-          <v-icon :color="item.color" v-text="'mdi-checkbox-blank-circle'"></v-icon>
+          <v-icon :color="item.color" v-text="item.icon"></v-icon>
         </v-list-item-action>
       </template>
       <template v-slot:selection="{ item }">
@@ -94,11 +94,11 @@
           :color="item.color"
           close
           @click:close="
-            categorySelect = categorySelect.filter(i => i !== item.id)
+            statusSelect = statusSelect.filter(i => i !== item.text)
           "
           class="white--text font-weight-bold"
         >
-          <span>{{ item.name }}</span>
+          <span>{{ item.text }}</span>
         </v-chip>
       </template>
     </v-select>
@@ -117,6 +117,8 @@ export default {
       filterCategory: state => state.filterCategory,
       filterRangeDate: state => state.filterRangeDate,
       filterSearch: state => state.filterSearch,
+      filterStatus: state => state.filterStatus,
+      statusData: state => state.statusData,
       viewMain: state => state.viewMain
     }),
     ...mapGetters(['categoriesById']),
@@ -157,6 +159,24 @@ export default {
           value: val
         })
         // this.$store.commit('eventsFilterSearchbox', val)
+      }
+    },
+    statusOptions() {
+      const names = ['blocked', 'disabled', 'enabled']
+      let statuses = []
+      names.forEach(n => statuses.push(this.statusData[n]))
+      return statuses
+    },
+    statusSelect: {
+      get() {
+        return this.filterStatus
+      },
+      set(val) {
+        this.$store.dispatch('setStateValue', {
+          key: 'filterStatus',
+          value: val
+        })
+        // this.$store.commit('eventsFilterCategorySelect', val)
       }
     }
   },

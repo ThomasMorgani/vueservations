@@ -367,9 +367,9 @@ export default {
   methods: {
     eventColor(e) {
       let item = filters.getObjectFromArray(this.catalogItems, 'id', e.item_id)
-      return this.filterCategory.length > 1
-        ? this.categoriesById[item.category].color
-        : item.color
+      return this.filterCategory.length === 1
+        ? item.color
+        : this.categoriesById[item.category].color
     },
     eventLabel(v) {
       let start = timestampHuman(v.input.start_date, false, false)

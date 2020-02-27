@@ -25,6 +25,7 @@ export default new Vuex.Store({
     filterCategory: [],
     filterRangeDate: [],
     filterSearch: '',
+    filterStatus: [],
     imagePreviewData: {},
     modalCatalogCustomfield: false,
     modalImageFullPreview: false,
@@ -43,6 +44,44 @@ export default new Vuex.Store({
       vertical: true
     },
     snackbarState: false,
+    statusData: {
+      available: {
+        color: 'success',
+        icon: 'mdi-calendar-check',
+        popovertext: 'Item is available for reservation',
+        text: 'AVAILABLE'
+      },
+      blocked: {
+        color: 'error',
+        icon: 'mdi-phone-cancel',
+        popovertext: "Item's service blocked",
+        text: 'BLOCKED'
+      },
+      enabled: {
+        color: 'success',
+        icon: 'mdi-check-circle',
+        popovertext: 'Item is enabled',
+        text: 'ENABLED'
+      },
+      disabled: {
+        color: 'error',
+        icon: 'mdi-cancel',
+        popovertext: 'Item is disabled',
+        text: 'DISABLED'
+      },
+      unavailable: {
+        color: 'warning',
+        icon: 'mdi-calendar-alert',
+        popovertext: 'Item is currently reserved',
+        text: 'UNAVAILABLE'
+      },
+      unkown: {
+        color: 'disabled',
+        icon: 'mdi-help-circle',
+        popovertext: 'Item status unknown',
+        text: 'STATUS UNK'
+      }
+    },
     viewMain: null,
     viewSub: null
   },
@@ -57,7 +96,12 @@ export default new Vuex.Store({
     filtersApplied(state) {
       //TODO: will need different names array dependant on view
       let filters = []
-      const names = ['filterCategory', 'filterRangeDate', 'filterSearch']
+      const names = [
+        'filterCategory',
+        'filterRangeDate',
+        'filterSearch',
+        'filterStatus'
+      ]
       names.forEach(n =>
         state[n] && state[n].length > 0
           ? filters.push({ name: n, value: state[n] })
@@ -336,6 +380,17 @@ export default new Vuex.Store({
     },
     customfieldsAddField({ commit }, data) {
       commit('customfieldsAddField', data)
+    },
+    filtersClearAll({ commit }) {
+      const filterDefaults = {
+        filterCategory: [],
+        filterRangeDate: [],
+        filterSearch: '',
+        filterStatus: []
+      }
+      Object.keys(filterDefaults).forEach(f => {
+        commit('setStateValue', { key: f, value: filterDefaults[f] })
+      })
     },
     settingsNew({ commit, dispatch }, data) {
       return new Promise((resolve, reject) => {
