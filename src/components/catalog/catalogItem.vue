@@ -3,15 +3,19 @@
     <v-expansion-panel-header class="pa-2">
       <v-row dense align="center" justify="center">
         <v-col cols="2" align-self="center" class="d-flex justify-center">
-          <v-img contain :src="thumbnailSrc" max-width="100" max-height="100" class="pa-0"></v-img>
+          <v-img
+            contain
+            :src="thumbnailSrc"
+            max-width="100"
+            max-height="100"
+            class="pa-0"
+          ></v-img>
         </v-col>
         <v-col cols="10">
           <v-row dense class="display-flex align-center justify-start">
             <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
             <span class="font-weight-medium title primary--text">
-              {{
-              item.name
-              }}
+              {{ item.name }}
             </span>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
@@ -33,7 +37,9 @@
                   <strong>Color:</strong>
                   {{ item.color }}
                 </p>
-                <div :style="{ height: '10px', 'background-color': item.color }"></div>
+                <div
+                  :style="{ height: '10px', 'background-color': item.color }"
+                ></div>
               </span>
             </v-tooltip>
           </v-row>
@@ -62,32 +68,27 @@
             <!-- STATUS -->
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card flat class="d-flex align-center text-left mr-3" v-on="on">
+                <v-card
+                  flat
+                  class="d-flex align-center text-left mr-3"
+                  v-on="on"
+                >
                   <v-icon :color="status.color" v-text="status.icon"></v-icon>
-                  <p v-text="status.text" :class="` ml-1 font-weight-bold ${status.color}--text`"></p>
+                  <p
+                    v-text="status.text"
+                    :class="` ml-1 font-weight-bold ${status.color}--text`"
+                  ></p>
                 </v-card>
               </template>
               <span v-html="status.popovertext"></span>
             </v-tooltip>
-
-            <!-- CHECKOUT STATUS available, reserved, disabled-->
-            <!-- <v-card flat class="d-flex align-center text-left grow">
-              <v-icon
-                :color="statusData.available.color || statusData.unknown.color"
-                v-text="statusData.available.icon || statusData.unknown.icon"
-              ></v-icon>
-              <p
-                v-text="statusData.available.text"
-                :class="
-                  ` ml-1 font-weight-bold ${statusData.available.color ||
-                    statusData.unknown.color}--text`
-                "
-              ></p>
-            </v-card>-->
-            <!-- LAST CHECKOUT date, never-->
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card flat class="d-flex align-center text-left mx-3" v-on="on">
+                <v-card
+                  flat
+                  class="d-flex align-center text-left mx-3"
+                  v-on="on"
+                >
                   <v-icon color="primary" v-text="'mdi-history'"></v-icon>
                   <p
                     v-text="
@@ -189,27 +190,30 @@ export default {
       return reserved
     },
     status() {
-      let data = this.statusData.enabled
-      switch (this.item.status) {
-        case 'blocked':
-          data = this.statusData.blocked
-          break
-        case 'enabled':
-          if (!this.isReserved) {
+      let data
+      if (this.item.isAvailable) {
+        data = this.statusData.enabled
+
+        switch (this.item.status) {
+          case 'blocked':
+            data = this.statusData.blocked
+            break
+          case 'enabled':
             data = this.statusData.available
-          } else {
-            data = {
-              ...this.statusData.unavailable,
-              popovertext: this.isReserved
-            }
-          }
-          break
-        case 'disabled':
-          data = this.statusData.disabled
-          break
-        default:
-          data = this.statusData.unkown
-          break
+
+            break
+          case 'disabled':
+            data = this.statusData.disabled
+            break
+          default:
+            data = this.statusData.unkown
+            break
+        }
+      } else {
+        data = {
+          ...this.statusData.unavailable,
+          popovertext: this.isReserved
+        }
       }
       return data
     },
@@ -241,6 +245,7 @@ export default {
       let dateStart = this.formatDate(resData.start_date, wYear, true)
       let dateEnd = this.formatDate(resData.end_date, wYear, true)
       let text = `<p class="mb-1"><strong>${resData.patron_last}, ${resData.patron_first}</strong></p><p class="mb-1">${dateStart} - ${dateEnd}</p>`
+      // let text = `<p class="mb-1"><strong>${resData.patronData.last_name}, ${resData.patronData.first_name}</strong></p><p class="mb-1">${dateStart} - ${dateEnd}</p>`
       return text
     },
     formatDate(timestamp, withYear, withTime) {

@@ -1,7 +1,16 @@
 <template>
-  <v-navigation-drawer :value="show" app clipped right @input="$emit('input')" width="350">
+  <v-navigation-drawer
+    :value="show"
+    app
+    clipped
+    right
+    @input="$emit('input')"
+    width="350"
+  >
     <v-sheet height="40" class="d-flex align-center justify-space-between pa-2">
-      <span class="title font-weight-bold align-center primary--text">FILTERS</span>
+      <span class="title font-weight-bold align-center primary--text"
+        >FILTERS</span
+      >
       <v-tooltip left>
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -16,7 +25,7 @@
             </v-btn>
           </div>
         </template>
-        <span>{{isFiltered ? 'Clear Filters' : '0 filters applied' }}</span>
+        <span>{{ isFiltered ? 'Clear Filters' : '0 filters applied' }}</span>
       </v-tooltip>
     </v-sheet>
     <v-sheet :style="styleFiltersSheet">
@@ -25,16 +34,14 @@
   </v-navigation-drawer>
 </template>
 <script>
-import {mapGetters, mapState} from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 export default {
   components: {
     calendar: () => import('@/components/filterDrawer/calendarFilters'),
     catalog: () => import('@/components/filterDrawer/catalogFilters')
   },
   computed: {
-    ...mapGetters([
-      'filtersApplied'
-    ]),
+    ...mapGetters(['filtersApplied']),
     ...mapState({
       contentHeight: state => state.content.main.y
     }),
@@ -53,9 +60,6 @@ export default {
       }
       return null
     },
-    show() {
-      return this.$store.state.sideDrawer
-    },
     styleFiltersSheet() {
       let height = this.contentHeight || null
       if (height) {
@@ -72,5 +76,4 @@ export default {
   }
 }
 </script>
-<style scoped>
-</style>
+<style scoped></style>

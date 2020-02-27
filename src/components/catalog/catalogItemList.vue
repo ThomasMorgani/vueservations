@@ -84,11 +84,17 @@ export default {
       categories: state => state.categories,
       filterCategory: state => state.filterCategory,
       filterRangeDate: state => state.filterRangeDate,
-      filterSearch: state => state.filterSearch
+      filterSearch: state => state.filterSearch,
+      filterStatus: state => state.filterStatus
     }),
     itemList() {
       let cItemsFiltered = []
-      const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
+      const filterNames = [
+        'filterCategory',
+        'filterRangeDate',
+        'filterSearch',
+        'filterStatus'
+      ]
       let filtersSet = {}
       filterNames.forEach(f =>
         this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
@@ -106,23 +112,29 @@ export default {
             filtersSet.filterCategory.includes(ci.category)
           )
         }
-      }
 
-      if (filtersSet.filterSearch) {
-        const possibleKeys = [
-          'abbreviation',
-          'categoryName',
-          'description',
-          'name',
-          'status'
-        ]
-        cItemsFiltered = cItemsFiltered.filter(ci => {
-          return filters.findStringMatchesInObj(
-            ci,
-            possibleKeys,
-            filtersSet.filterSearch
+        if (filtersSet.filterStatus) {
+          cItemsFiltered = cItemsFiltered.filter(ci =>
+            filtersSet.filterStatus.includes(ci.status.toUpperCase())
           )
-        })
+        }
+
+        if (filtersSet.filterSearch) {
+          const possibleKeys = [
+            'abbreviation',
+            'categoryName',
+            'description',
+            'name',
+            'status'
+          ]
+          cItemsFiltered = cItemsFiltered.filter(ci => {
+            return filters.findStringMatchesInObj(
+              ci,
+              possibleKeys,
+              filtersSet.filterSearch
+            )
+          })
+        }
       }
 
       return cItemsFiltered
@@ -148,6 +160,18 @@ export default {
         )
         catalogItem.categoryName = category.name || 'MISC'
         // catalogItem.customFields = cata
+
+        if (catalogItem.lastReservation && catalogItem.lastReservation['0']) {
+          let now = new Date()
+          catalogItem.isAvailable = !filters.testRangeOverlap(
+            catalogItem.lastReservation['0'].start_date,
+            catalogItem.lastReservation['0'].end_date,
+            now,
+            now
+          )
+        } else {
+          catalogItem.isAvailable = true
+        }
 
         return formats.catalogItem(catalogItem)
       } else {

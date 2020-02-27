@@ -43,17 +43,31 @@ export default {
     }
   },
   testRangeOverlap(startDate1, endDate1, startDate2, endDate2) {
-    let searchStartDate1 = new Date(startDate1)
-    let searchEndDate1 = new Date(endDate1)
+    let searchStartDate1 =
+      typeof startDate1.getMonth === 'function'
+        ? startDate1
+        : new Date(startDate1)
+    let searchEndDate1 =
+      typeof endDate1.getMonth === 'function' ? endDate1 : new Date(endDate1)
     //THIS IS FOR CUSTOM BUFFER PERIODS
     //TODO: make this a setting
     searchStartDate1.setDate(searchStartDate1.getDate() - 1)
     searchEndDate1.setDate(searchEndDate1.getDate() + 2)
     const searchRange1 = moment.range(searchStartDate1, searchEndDate1)
 
-    const searchStartDate2 = new Date(startDate2)
-    const searchEndtDate2 = new Date(endDate2)
-    const searchRange2 = moment.range(searchStartDate2, searchEndtDate2)
+    const searchStartDate2 =
+      typeof startDate2.getMonth === 'function'
+        ? startDate2
+        : new Date(startDate2)
+    const searchEndDate2 =
+      typeof endDate2.getMonth === 'function' ? endDate2 : new Date(endDate2)
+
+    const searchRange2 = moment.range(searchStartDate2, searchEndDate2)
+
+    console.log(searchStartDate1)
+    console.log(searchStartDate2)
+    console.log(searchEndDate1)
+    console.log(searchEndDate2)
 
     return searchRange1.overlaps(searchRange2, { adjacent: true })
   }
