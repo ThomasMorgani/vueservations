@@ -1,15 +1,14 @@
 <template>
-  <v-card class="d-flex flex-column pa-5 justify-start" height="100%">
-    <span class="title align-center primary--text">FILTERS</span>
+  <v-card class="d-flex flex-column py-1 px-4 justify-start" height="100%">
     <v-text-field
-      solo
-      rounded
       single-line
+      rounded
+      solo
       clearable
       formatsend-inner-icon="mdi-magnify"
       placeholder="Search"
       color="primary"
-      class="mt-4 flex-grow-0 flex-shrink-1"
+      class="flex-grow-0 flex-shrink-1"
       v-model="searchField"
     ></v-text-field>
     <v-divider color="primary--text"></v-divider>
@@ -42,10 +41,7 @@
           <v-list-item-title v-text="item.name"></v-list-item-title>
         </v-list-item-content>
         <v-list-item-action>
-          <v-icon
-            :color="item.color"
-            v-text="'mdi-checkbox-blank-circle'"
-          ></v-icon>
+          <v-icon :color="item.color" v-text="'mdi-checkbox-blank-circle'"></v-icon>
         </v-list-item-action>
       </template>
       <template v-slot:selection="{ item }">
@@ -65,7 +61,7 @@
         add to the above once store is setup
         :events="functionEvents"
         :event-color="date => date[9] % 2 ? 'red' : 'yellow'"
-      -->
+    -->
     <v-subheader>DATE RANGE</v-subheader>
     <v-date-picker
       v-model="dateRange"
@@ -83,9 +79,6 @@
       clearable
       @click:clear="dateRange = []"
     ></v-text-field>
-    <v-card flat class="d-flex flex-grow-1 align-end justify-center ma-3">
-      <v-btn color="primary" block>RESET FILTERS</v-btn>
-    </v-card>
   </v-card>
 </template>
 

@@ -6,9 +6,9 @@
       <v-btn icon @click="setView">
         <v-icon>
           {{
-            viewMain === 'Calendar'
-              ? 'mdi-format-list-bulleted-type'
-              : 'mdi-calendar'
+          viewMain === 'calendar'
+          ? 'mdi-format-list-bulleted-type'
+          : 'mdi-calendar'
           }}
         </v-icon>
       </v-btn>
@@ -21,13 +21,15 @@
       <v-spacer></v-spacer>
       </template>-->
     </v-app-bar>
-    <sideDrawer></sideDrawer>
 
     <v-content ref="content">
-      <transition name="component-fade" appear mode="out-in">
-        <component :is="viewMain" v-if="isLoaded" :key="viewMain"></component>
-        <!-- <Calendar></Calendar> -->
-      </transition>
+      <template v-if="isLoaded">
+        <sideDrawer></sideDrawer>
+        <transition name="component-fade" appear mode="out-in">
+          <component :is="viewMain" :key="viewMain"></component>
+          <!-- <Calendar></Calendar> -->
+        </transition>
+      </template>
     </v-content>
     <v-footer color="primary" app dark clipped-right>
       <v-spacer></v-spacer>

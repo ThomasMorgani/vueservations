@@ -22,9 +22,9 @@ export default new Vuex.Store({
     customFields: [],
     events: [],
     eventEditting: null,
-    filterSearch: null,
     filterCategory: [],
     filterRangeDate: [],
+    filterSearch: '',
     imagePreviewData: {},
     modalCatalogCustomfield: false,
     modalImageFullPreview: false,
@@ -54,26 +54,16 @@ export default new Vuex.Store({
       }
       return cats
     },
-    categoriesDisplayed(state, getters) {
-      //actual category ids mapped from select array
-      let catsDisplayed = []
-      if (state.filterCategory && state.filterCategory.length > 0) {
-        state.filterCategory.forEach(cat =>
-          catsDisplayed.push(getters.categoriesById[cat].id)
-        )
-      }
-      return catsDisplayed
-    },
-
-    eventsDisplayed(state, getters) {
-      // console.log(getters.categoriesDisplayed);
-      let events = state.events
-      if (getters.categoriesDisplayed.length > 0) {
-        events = events.filter(event => {
-          return getters.categoriesDisplayed.includes(event.itemCategory)
-        })
-      }
-      return events
+    filtersApplied(state) {
+      //TODO: will need different names array dependant on view
+      let filters = []
+      const names = ['filterCategory', 'filterRangeDate', 'filterSearch']
+      names.forEach(n =>
+        state[n] && state[n].length > 0
+          ? filters.push({ name: n, value: state[n] })
+          : null
+      )
+      return filters
     }
   },
   mutations: {
