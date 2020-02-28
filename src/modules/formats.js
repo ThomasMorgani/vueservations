@@ -13,7 +13,7 @@ const catalogItem = item => {
     description: item.description || '',
     id: item.id,
     image_data: item.image_data || {},
-    isAvailable: item.isAvailable || 'UNK',
+    isAvailable: item.isAvailable,
     lastReservation:
       item.lastReservation && item.lastReservation['0']
         ? item.lastReservation['0']

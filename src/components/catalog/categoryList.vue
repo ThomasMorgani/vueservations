@@ -23,9 +23,7 @@
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <v-btn text icon color="warning" v-on="on" @click="setMode('edit')">
-              <v-icon
-                v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"
-              ></v-icon>
+              <v-icon v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"></v-icon>
             </v-btn>
           </template>
           <span>Toggle Edit Mode</span>
@@ -41,8 +39,8 @@
           active-class="primary lighten-5"
           @click="selectItem(category)"
         >
-          <v-list-item-avatar :color="category.color"></v-list-item-avatar>
-          <v-list-item-content>
+          <v-list-item-avatar size="20" :color="category.color"></v-list-item-avatar>
+          <v-list-item-content class="py-2">
             <v-list-item-title class="headline text-capitalize primary--text">
               {{ category.name }}
               <v-tooltip top v-if="category.id == defaultCategory.id">
@@ -50,8 +48,8 @@
                   <v-icon x-small v-on="on" class="mb-4">mdi-star</v-icon>
                 </template>
                 <span>This is the default category.</span>
-              </v-tooltip></v-list-item-title
-            >
+              </v-tooltip>
+            </v-list-item-title>
           </v-list-item-content>
           <v-list-item-action>
             <v-btn
@@ -66,9 +64,7 @@
             <div v-else>
               <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                  <span v-on="on" class="mb-0 title"
-                    >({{ categoryCounts[category.id] || 0 }})</span
-                  >
+                  <span v-on="on" class="mb-0 subheading-1">({{ categoryCounts[category.id] || 0 }})</span>
                 </template>
                 <span
                   v-text="

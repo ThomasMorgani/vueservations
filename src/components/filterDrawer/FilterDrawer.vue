@@ -4,24 +4,22 @@
     app
     clipped
     right
+    stateless
     @input="$emit('input')"
     width="350"
   >
     <v-sheet height="40" class="d-flex align-center justify-space-between pa-2">
-      <span class="title font-weight-bold align-center primary--text"
-        >FILTERS</span
-      >
-      <v-tooltip left>
+      <span class="title font-weight-bold align-center primary--text">FILTERS</span>
+      <v-tooltip top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
               text
-              icon
               color="error"
               :disabled="!isFiltered"
               @click="$store.dispatch('filtersClearAll')"
             >
-              <v-icon color="error">mdi-filter-remove</v-icon>
+              <v-icon color="error" left>mdi-filter-remove</v-icon>CLEAR
             </v-btn>
           </div>
         </template>
@@ -43,7 +41,8 @@ export default {
   computed: {
     ...mapGetters(['filtersApplied']),
     ...mapState({
-      contentHeight: state => state.content.main.y
+      contentHeight: state => state.content.main.y,
+      show: state => state.sideDrawer
     }),
     contentHeight() {
       return this.$store.state.content.main.y

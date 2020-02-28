@@ -64,10 +64,10 @@ export default {
 
     const searchRange2 = moment.range(searchStartDate2, searchEndDate2)
 
-    console.log(searchStartDate1)
-    console.log(searchStartDate2)
-    console.log(searchEndDate1)
-    console.log(searchEndDate2)
+    // console.log(searchStartDate1)
+    // console.log(searchStartDate2)
+    // console.log(searchEndDate1)
+    // console.log(searchEndDate2)
 
     return searchRange1.overlaps(searchRange2, { adjacent: true })
   }

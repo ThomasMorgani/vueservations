@@ -6,17 +6,13 @@
       <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
       <v-icon left color="primary">mdi-filter</v-icon>
-      {{ `${itemList.length} of ${catalogItems.length}` }}
+      <span class="body-1 font-weight-bold">{{ `${itemList.length} of ${catalogItems.length}` }}</span>
     </v-card-title>
     <v-card-text :style="styleCiList">
       <v-expansion-panels popout v-model="panel" class="py-1">
         <!-- <template v-for="(item, key) in limitBy(itemsDisplayed, itemDisplayLimit)"> -->
         <template v-for="(item, key) in orderBy(itemList, 'name')">
-          <catalogItem
-            :key="item.id ? item.id : key + 'ci'"
-            :item="item"
-            :statusData="statusData"
-          ></catalogItem>
+          <catalogItem :key="item.id ? item.id : key + 'ci'" :item="item" :statusData="statusData"></catalogItem>
           <!-- <catalogItem :key="item.id" :item="item" :isActivePanel="key === panel"></catalogItem> -->
         </template>
       </v-expansion-panels>

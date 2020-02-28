@@ -6,17 +6,15 @@
           <v-img
             contain
             :src="thumbnailSrc"
-            max-width="100"
-            max-height="100"
+            :max-width="$vuetify.breakpoint.smAndDown   ? 75 : 100"
+            :max-height="$vuetify.breakpoint.smAndDown ? 75 : 100"
             class="pa-0"
           ></v-img>
         </v-col>
         <v-col cols="10">
           <v-row dense class="display-flex align-center justify-start">
             <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
-            <span class="font-weight-medium title primary--text">
-              {{ item.name }}
-            </span>
+            <span class="font-weight-medium title primary--text">{{ item.name }}</span>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-chip
@@ -37,9 +35,7 @@
                   <strong>Color:</strong>
                   {{ item.color }}
                 </p>
-                <div
-                  :style="{ height: '10px', 'background-color': item.color }"
-                ></div>
+                <div :style="{ height: '10px', 'background-color': item.color }"></div>
               </span>
             </v-tooltip>
           </v-row>
@@ -68,27 +64,17 @@
             <!-- STATUS -->
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card
-                  flat
-                  class="d-flex align-center text-left mr-3"
-                  v-on="on"
-                >
-                  <v-icon :color="status.color" v-text="status.icon"></v-icon>
-                  <p
-                    v-text="status.text"
-                    :class="` ml-1 font-weight-bold ${status.color}--text`"
-                  ></p>
-                </v-card>
+                <v-btn text :color="status.color" class="mr-3" v-on="on" @click.stop="reserve">
+                  <v-icon left v-text="status.icon"></v-icon>
+                  {{status.text}}
+                  <!-- <p v-text="status.text" :class="` ml-1 font-weight-bold ${status.color}--text`"></p> -->
+                </v-btn>
               </template>
               <span v-html="status.popovertext"></span>
             </v-tooltip>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card
-                  flat
-                  class="d-flex align-center text-left mx-3"
-                  v-on="on"
-                >
+                <v-card flat class="d-flex align-center text-left mx-3" v-on="on">
                   <v-icon color="primary" v-text="'mdi-history'"></v-icon>
                   <p
                     v-text="
@@ -212,7 +198,7 @@ export default {
       } else {
         data = {
           ...this.statusData.unavailable,
-          popovertext: this.isReserved
+          popovertext: this.isReservedText()
         }
       }
       return data
@@ -244,7 +230,7 @@ export default {
         resData.start_date.substring(0, 4) !== resData.end_date.substring(0, 4)
       let dateStart = this.formatDate(resData.start_date, wYear, true)
       let dateEnd = this.formatDate(resData.end_date, wYear, true)
-      let text = `<p class="mb-1"><strong>${resData.patron_last}, ${resData.patron_first}</strong></p><p class="mb-1">${dateStart} - ${dateEnd}</p>`
+      let text = `<p class="mb-1"><strong>${resData.patronData['last_name']}, ${resData.patronData['first_name']}</strong></p><p class="mb-1">${dateStart} - ${dateEnd}</p>`
       // let text = `<p class="mb-1"><strong>${resData.patronData.last_name}, ${resData.patronData.first_name}</strong></p><p class="mb-1">${dateStart} - ${dateEnd}</p>`
       return text
     },
@@ -256,6 +242,11 @@ export default {
       return this.item.lastReservation
         ? this.isReservedText()
         : '<p class="mb-1"><strong>Last Reservation:</strong></p><p class="mb-1">None</p>'
+    },
+    reserve() {
+      if (this.item.isAvailable) {
+        console.log('reserve')
+      }
     },
     showReservations() {
       console.log('showReservations')

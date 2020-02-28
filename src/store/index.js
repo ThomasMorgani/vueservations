@@ -49,7 +49,7 @@ export default new Vuex.Store({
         color: 'success',
         icon: 'mdi-calendar-check',
         popovertext: 'Item is available for reservation',
-        text: 'AVAILABLE'
+        text: 'RESERVE'
       },
       blocked: {
         color: 'error',
