@@ -7,9 +7,7 @@
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on" color="primary">
               <span class="title font-weight-bold">
-                {{
-                typeToLabel[type]
-                }}
+                {{ typeToLabel[type] }}
               </span>
               <v-icon right>mdi-menu-down</v-icon>
             </v-btn>
@@ -54,7 +52,9 @@
           </template>
 
           <v-card>
-            <v-card-title class="title primary--text">Calendar Height</v-card-title>
+            <v-card-title class="title primary--text"
+              >Calendar Height</v-card-title
+            >
             <v-card-text>
               <v-slider
                 v-model="calendarMonthHeight"
@@ -118,12 +118,17 @@
           <v-tooltip top v-model="tooltipEvent" v-bind="toptipPosition">
             <span>HELLO</span>
           </v-tooltip>
-          <v-dialog v-model="modalDetailsShow" max-width="800px" transition="dialog-transition">
+          <v-dialog
+            v-model="modalDetailsShow"
+            max-width="800px"
+            transition="dialog-transition"
+          >
             <component
               :key="modalDetailsShow + modalDetailsComp"
               :is="modalDetailsComp"
               :event="selectedEvent"
               @close="onDetailsClose"
+              @eventModalAction="onDetailsAction"
             ></component>
           </v-dialog>
         </v-sheet>
@@ -263,64 +268,6 @@ export default {
       }
       return eventsFiltered
     },
-    // eventsList1() {
-    //   let eventsFiltered = []
-    //   const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
-    //   let filtersSet = {}
-    //   filterNames.forEach(f =>
-    //     this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
-    //   )
-    //   console.log(filterNames)
-    //   console.log(filtersSet)
-
-    //   if (Array.isArray(this.events)) {
-    //     this.events.forEach(e => {
-    //       let event = {
-    //         ...e,
-    //         ciData: filters.getObjectFromArray(
-    //           this.catalogItems,
-    //           'id',
-    //           e.item_id
-    //         ), //
-    //         patronData: filters.getObjectFromArray(
-    //           this.patrons,
-    //           'id',
-    //           e.patron_id
-    //         )
-    //       }
-    //       if (Object.keys(filtersSet).length < 1) {
-    //         eventsFiltered.push(event)
-    //       } else {
-    //         if (
-    //           filtersSet.filterCategory &&
-    //           filtersSet.filterCategory.indexOf(event.ciData.category) > -1
-    //         ) {
-    //           eventsFiltered.push(event)
-    //         } else if (filtersSet.filterSearch) {
-    //           const possibleKeys = [
-    //             'abbreviation',
-    //             'category',
-    //             'name',
-    //             'first_name',
-    //             'last_name',
-    //             'barcode'
-    //           ]
-    //           if (
-    //             filters.findStringMatchesInObj(
-    //               event,
-    //               possibleKeys,
-    //               filtersSet.filterSearch
-    //             )
-    //           ) {
-    //             eventsFiltered.push(event)
-    //           }
-    //         }
-    //       }
-    //     })
-    //   }
-    //   // return this.events
-    //   return eventsFiltered
-    // },
     title() {
       const { start, end } = this
       if (!start || !end) {
@@ -387,6 +334,7 @@ export default {
       return label
     },
     initializeApp() {
+      //MOVE THIS TO APP.js
       console.log('get events method')
       this.axios
         .get(`${this.$apiSettings.baseUrl}/initialize_page_data`)
@@ -412,7 +360,7 @@ export default {
     eventEdit(e) {
       if (e) {
         this.$store.dispatch('setStateValue', {
-          key: 'eventEditting',
+          key: 'eventediting',
           value: e
         })
         this.modalDetailsComp = 'eventEdit'
@@ -464,10 +412,13 @@ export default {
     next() {
       this.$refs.calendar.next()
     },
+    onDetailsAction(a) {
+      console.log(a)
+    },
     onDetailsClose() {
       this.modalDetailsShow = false
       this.$store.dispatch('setStateValue', {
-        key: 'eventEditting',
+        key: 'eventediting',
         value: null
       })
     },

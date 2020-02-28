@@ -31,7 +31,10 @@
                     <img :src="data.item.image" />
                   </v-list-item-avatar>
                   <v-list-item-content>
-                    <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
+                    <v-list-item-title
+                      v-text="data.item.name"
+                      class="font-weight-bold"
+                    ></v-list-item-title>
                     <v-list-item-subtitle
                       class="text--primary"
                       v-text="
@@ -52,7 +55,10 @@
                   <img :src="data.item.image" />
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
+                  <v-list-item-title
+                    v-text="data.item.name"
+                    class="font-weight-bold"
+                  ></v-list-item-title>
                   <v-list-item-subtitle
                     :class="
                       data.item.isDisabled ? 'text--disabled' : 'text--primary'
@@ -111,7 +117,10 @@
                       v-text="`${data.item.last_name}, ${data.item.first_name}`"
                       class="font-weight-bold"
                     ></v-list-item-title>
-                    <v-list-item-subtitle class="text--primary" v-text="`Barcode`"></v-list-item-subtitle>
+                    <v-list-item-subtitle
+                      class="text--primary"
+                      v-text="data.item.barcode"
+                    ></v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </template>
@@ -121,7 +130,10 @@
                     v-text="`${data.item.last_name}, ${data.item.first_name}`"
                     class="font-weight-bold"
                   ></v-list-item-title>
-                  <v-list-item-subtitle class="text--primary" v-text="data.item.barcode"></v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    class="text--primary"
+                    v-text="data.item.barcode"
+                  ></v-list-item-subtitle>
                 </v-list-item-content>
               </template>
             </v-autocomplete>
@@ -147,10 +159,21 @@
                   :error-messages="formErrors.startDate"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="startDate" scrollable :allowed-dates="allowedStart">
+              <v-date-picker
+                v-model="startDate"
+                scrollable
+                :allowed-dates="allowedStart"
+              >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartDate = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.startDateDialog.save(startDate)">OK</v-btn>
+                <v-btn text color="primary" @click="modalStartDate = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.startDateDialog.save(startDate)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -174,8 +197,15 @@
               </template>
               <v-time-picker v-if="modalStartTime" v-model="startTime">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartTime = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.startTimeDialog.save(startTime)">OK</v-btn>
+                <v-btn text color="primary" @click="modalStartTime = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.startTimeDialog.save(startTime)"
+                  >OK</v-btn
+                >
               </v-time-picker>
             </v-dialog>
           </v-col>
@@ -201,10 +231,21 @@
                   :error-messages="formErrors.endDate"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="endDate" scrollable :allowed-dates="allowedEnd">
+              <v-date-picker
+                v-model="endDate"
+                scrollable
+                :allowed-dates="allowedEnd"
+              >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndDate = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.modalEndDateDialog.save(endDate)">OK</v-btn>
+                <v-btn text color="primary" @click="modalEndDate = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.modalEndDateDialog.save(endDate)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -228,8 +269,12 @@
               </template>
               <v-time-picker v-if="modalEndTime" v-model="endTime" full-width>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndTime = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.dialog.save(endTime)">OK</v-btn>
+                <v-btn text color="primary" @click="modalEndTime = false"
+                  >Cancel</v-btn
+                >
+                <v-btn text color="primary" @click="$refs.dialog.save(endTime)"
+                  >OK</v-btn
+                >
               </v-time-picker>
             </v-dialog>
           </v-col>
@@ -251,7 +296,13 @@
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="warning darken-1" text :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
+      <v-btn
+        color="warning darken-1"
+        text
+        :disabled="!isChanged"
+        @click="resetChanges"
+        >RESET</v-btn
+      >
       <v-spacer></v-spacer>
       <v-btn color="primary" text @click="$emit('close')">CANCEL</v-btn>
       <v-btn
@@ -262,7 +313,11 @@
         :disabled="!valid || Object.keys(formErrors).length > 0 || !isChanged"
       ></v-btn>
     </v-card-actions>
-    <v-dialog v-model="modalPatronEdit" transition="dialog-transition" max-width="800">
+    <v-dialog
+      v-model="modalPatronEdit"
+      transition="dialog-transition"
+      max-width="800"
+    >
       <patronEdit
         :key="modalPatronEdit"
         @close="modalPatronEdit = false"
@@ -339,7 +394,7 @@ export default {
       catalogItems: state => state.catalogItems,
       categories: state => state.categories,
       events: state => state.events,
-      eventEditting: state => state.eventEditting,
+      eventediting: state => state.eventediting,
       filter: state => state.filter,
       patrons: state => state.patrons
     }),
@@ -394,8 +449,6 @@ export default {
       for (let item of this.catalogItems) {
         let ci = { ...item }
         const category = filters.categoryById(ci.category, this.categories)
-        // console.log(ci)
-        // console.log(category)
         ci.isDisabled = false
         ci.category = category && category.name ? category.name : 'unk'
         ci.image =
@@ -404,6 +457,7 @@ export default {
         if (ci.status !== 'enabled') {
           ci.isDisabled = true
         } else if (this.startDate && this.endDate) {
+          console.log('--')
           this.events.forEach(event => {
             if (
               event.item_id === item.id &&
@@ -425,9 +479,9 @@ export default {
         }
 
         if (
-          this.eventEditting &&
-          this.eventEditting.ciData &&
-          this.eventEditting.ciData.id === ci.id
+          this.eventediting &&
+          this.eventediting.ciData &&
+          this.eventediting.ciData.id === ci.id
         ) {
           ci.isDisabled = false
           ci.status = 'enabled'
@@ -498,21 +552,35 @@ export default {
       //console.log(year + '-' + month + '-' + day)
       return year + '-' + month + '-' + day
     },
-    modalAction(action) {
-      let data = []
-      data['action'] = action
-      if (action === 'submit') {
-        if (this.$refs.form.validate()) {
-          data['startDate'] = this.startDate
-          data['endDate'] = this.endDate
-          data['nameFirst'] = this.nameFirst
-          data['nameLast'] = this.nameLast
-          data['barcode'] = this.barcode
-          data['notes'] = this.notes
-          data['device'] = this.device
-        }
+    formattedEvent() {
+      //
+      let event = {
+        item_id: this.ciSelected.id,
+        patron_id: this.patronSelected.id,
+        start_date: this.startDate + ' ' + this.startTime,
+        end_date: this.endDate + ' ' + this.endTime,
+        notes: this.notes
       }
-      this.$emit('addEventModalAction', data)
+      return event
+    },
+    modalAction(action) {
+      if (action === 'submit') {
+        if (Object.keys(this.formErrors).length < 1) {
+          this.$emit('eventModalAction', {
+            action: action,
+            data: this.formattedEvent()
+          })
+        }
+        // if (this.$refs.form.validate()) {
+        //   data['startDate'] = this.startDate
+        //   data['endDate'] = this.endDate
+        //   data['nameFirst'] = this.nameFirst
+        //   data['nameLast'] = this.nameLast
+        //   data['barcode'] = this.barcode
+        //   data['notes'] = this.notes
+        //   data['device'] = this.device
+        // }
+      }
     },
     onPatronAdd(e) {
       this.patronSelected = e
@@ -529,40 +597,39 @@ export default {
   },
   mounted() {
     // console.log('mounted')
-    if (this.eventEditting) {
-      const event = this.eventEditting
-      console.log('ci editting:', event)
-      if (event.id) {
-        this.id = event.id
+    if (this.eventediting) {
+      const event = this.eventediting
+
+      console.log('ciEditing:', event)
+      const valPairs = {
+        id: 'id',
+        ciData: 'ciSelected',
+        patronData: 'patronSelected',
+        start_date: 'startDate',
+        end_date: 'endDate',
+        note: 'notes'
       }
-      if (event.ciData) {
-        this.ciSelected = event.ciData
-      }
-      if (event.patronData) {
-        this.patronSelected = event.patronData
-      }
-      if (event.start_date) {
-        const splitStart = event.start_date.split(' ')
-        console.log(splitStart)
-        this.startDate = splitStart[0]
-        this.startTime = splitStart[1] || null
-      }
-      if (event.end_date) {
-        const splitEnd = event.end_date.split(' ')
-        console.log(splitEnd)
-        this.endDate = splitEnd[0]
-        this.endTime = splitEnd[1] || null
-      }
-      const values = [
-        'ciSelected',
-        'patronSelected',
-        'startDate',
-        'endDate',
-        'startTime',
-        'endTime',
-        'notes'
-      ]
-      values.forEach(v => this.$set(this.originalValues, v, this[v]))
+
+      Object.keys(valPairs).forEach(k => {
+        if (k == 'start_date') {
+          const splitStart = event.start_date.split(' ')
+          this.startDate = splitStart[0]
+          this.startTime = splitStart[1] || null
+          this.$set(this.originalValues, 'startDate', this.startDate)
+          this.$set(this.originalValues, 'startTime', this.startTime)
+        } else if (k == 'end_date') {
+          const splitEnd = event.end_date.split(' ')
+          this.endDate = splitEnd[0]
+          this.endTime = splitEnd[1] || null
+          this.$set(this.originalValues, 'endDate', this.endDate)
+          this.$set(this.originalValues, 'endTime', this.endTime)
+        } else {
+          if (event[k] != undefined) {
+            this[valPairs[k]] = event[k]
+            this.$set(this.originalValues, valPairs[k], this[valPairs[k]])
+          }
+        }
+      })
     }
   }
 }

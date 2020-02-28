@@ -7,11 +7,11 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     catalogItems: [],
-    catalogitemEditting: null, //category id ? set id,
-    catalogitemFieldsEditting: [], //category id ? set id,
+    catalogitemediting: null, //category id ? set id,
+    catalogitemFieldsediting: [], //category id ? set id,
     catalogView: 'overview',
     categories: [],
-    categoryEditting: null, //category id ? set id,
+    categoryediting: null, //category id ? set id,
     content: {
       main: {
         height: 0,
@@ -21,7 +21,7 @@ export default new Vuex.Store({
     },
     customFields: [],
     events: [],
-    eventEditting: null,
+    eventediting: null,
     filterCategory: [],
     filterRangeDate: [],
     filterSearch: '',
@@ -117,15 +117,15 @@ export default new Vuex.Store({
     catalogitemDelete(state, data) {
       Vue.delete(state.catalogItems, data)
     },
-    catalogitemEditting(state, data) {
-      state.catalogitemEditting = data
+    catalogitemediting(state, data) {
+      state.catalogitemediting = data
     },
-    catalogitemEdittingSetValue(state, data) {
-      //data : {key: value editting, data: value of item }
-      state.catalogitemEditting[data.key] = data.data
+    catalogitemeditingSetValue(state, data) {
+      //data : {key: value editing, data: value of item }
+      state.catalogitemediting[data.key] = data.data
     },
     catalogitemSetValue(state, data) {
-      //data : {key: value editting, data: value of item }
+      //data : {key: value editing, data: value of item }
       console.log(data)
       state.catalogItems[data.index][data.key] = data.data
     },
@@ -138,16 +138,16 @@ export default new Vuex.Store({
     categoryDelete(state, data) {
       Vue.delete(state.categories, data)
     },
-    categoryEditting(state, data) {
-      state.categoryEditting = data
+    categoryediting(state, data) {
+      state.categoryediting = data
     },
     categoryUpdate(state, data) {
       //data expects: {key: state.category key, value: state.category value}
       Vue.set(state.categories, data.key, data.value)
     },
-    customfieldsSetEditting(state, data) {
+    customfieldsSetediting(state, data) {
       //data expects: {key: state.category key, value: state.category value}
-      state.catalogitemFieldsEditting = data
+      state.catalogitemFieldsediting = data
     },
     customfieldsAddField(state, field) {
       state.customFields.push(field)
@@ -186,12 +186,22 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    apiCall(context, data) {
+    apiCall({ dispatch }, data) {
       // console.log(data)
       return new Promise((resolve, reject) => {
         apiFunctions.callApi(data.endpoint, data.postData || null).then(
-          response => {
-            resolve(response)
+          resp => {
+            if (resp.status && resp.message) {
+              dispatch('setStateValue', {
+                key: 'snackbarData',
+                value: { status: resp.status, message: resp.message }
+              })
+              dispatch('setStateValue', {
+                key: 'snackbarState',
+                value: true
+              })
+            }
+            resolve(resp)
           },
           error => {
             reject(error)
@@ -268,11 +278,11 @@ export default new Vuex.Store({
         return false
       }
     },
-    catalogitemEditting({ commit }, data) {
+    catalogitemediting({ commit }, data) {
       if (data) {
-        commit('catalogitemEditting', data)
+        commit('catalogitemediting', data)
       } else {
-        commit('catalogitemEditting', {
+        commit('catalogitemediting', {
           abbreviation: null,
           categoryName: null,
           customFields: [],
@@ -297,13 +307,13 @@ export default new Vuex.Store({
         })
       }
     },
-    catalogitemEdittingSetValue({ commit }, data) {
-      //data : item editting int, fields obj
-      commit('catalogitemEdittingSetValue', data)
+    catalogitemeditingSetValue({ commit }, data) {
+      //data : item editing int, fields obj
+      commit('catalogitemeditingSetValue', data)
     },
-    catalogitemEdittingcustomfieldsSetEditting({ commit }, data) {
+    catalogitemeditingcustomfieldsSetediting({ commit }, data) {
       return new Promise(resolve => {
-        commit('customfieldsSetEditting', data)
+        commit('customfieldsSetediting', data)
         resolve()
       })
     },
@@ -347,7 +357,7 @@ export default new Vuex.Store({
       })
     },
     categoryEdit({ commit }, data) {
-      commit('categoryEditting', data)
+      commit('categoryediting', data)
     },
     categoryEditSave({ commit, dispatch, state }, data) {
       // console.log('data', data)
@@ -392,6 +402,7 @@ export default new Vuex.Store({
         commit('setStateValue', { key: f, value: filterDefaults[f] })
       })
     },
+    reservationAdd() {},
     settingsNew({ commit, dispatch }, data) {
       return new Promise((resolve, reject) => {
         dispatch('apiCall', {

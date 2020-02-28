@@ -6,17 +6,31 @@
       <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
       <v-icon left color="primary">mdi-filter</v-icon>
-      <span class="body-1 font-weight-bold">{{ `${itemList.length} of ${catalogItems.length}` }}</span>
+      <span class="body-1 font-weight-bold">{{
+        `${itemList.length} of ${catalogItems.length}`
+      }}</span>
     </v-card-title>
     <v-card-text :style="styleCiList">
       <v-expansion-panels popout v-model="panel" class="py-1">
         <!-- <template v-for="(item, key) in limitBy(itemsDisplayed, itemDisplayLimit)"> -->
         <template v-for="(item, key) in orderBy(itemList, 'name')">
-          <catalogItem :key="item.id ? item.id : key + 'ci'" :item="item" :statusData="statusData"></catalogItem>
+          <catalogItem
+            :key="item.id ? item.id : key + 'ci'"
+            :item="item"
+            :statusData="statusData"
+            @reserve="onReserve"
+          ></catalogItem>
           <!-- <catalogItem :key="item.id" :item="item" :isActivePanel="key === panel"></catalogItem> -->
         </template>
       </v-expansion-panels>
     </v-card-text>
+    <v-dialog v-model="modal" max-width="800px" transition="dialog-transition">
+      <component
+        :key="modal + modalComp"
+        :is="modalComp"
+        @close="onModalClose"
+      ></component>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -30,10 +44,13 @@ import catalogItem from '@/components/catalog/catalogItem'
 export default {
   name: 'catalogList',
   components: {
-    catalogItem
+    catalogItem,
+    eventEdit: () => import('@/components/calendar/eventEdit')
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({
+    modal: false,
+    modalComp: null,
     panel: null,
     statusData: {
       available: {
@@ -173,6 +190,29 @@ export default {
       } else {
         console.log('no cat')
         return formats.catalogItem(catalogItem)
+      }
+    },
+    onModalClose() {
+      console.log('ci list modal closed')
+      this.modal = false
+      this.$store.dispatch('setStateValue', {
+        key: 'eventediting',
+        value: null
+      })
+    },
+    onReserve(e) {
+      console.log('onReserve')
+      console.log(e)
+      if (e) {
+        this.$store.dispatch('setStateValue', {
+          key: 'eventediting',
+          value: { ciData: e }
+        })
+        this.modalComp = 'eventEdit'
+        setTimeout(() => (this.modal = true), 19)
+        console.log('event found open modal')
+      } else {
+        console.log('error: ci not found')
       }
     }
   }

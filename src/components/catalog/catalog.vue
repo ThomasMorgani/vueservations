@@ -62,7 +62,7 @@
       max-width="500px"
       transition="dialog-transition"
     >
-      <categoryEdit :key="'cEdit' + String(categoryEditting)"></categoryEdit>
+      <categoryEdit :key="'cEdit' + String(categoryediting)"></categoryEdit>
     </v-dialog>
     <!-- Edit Catalog Item Modal  -->
     <v-dialog
@@ -72,8 +72,8 @@
       transition="dialog-transition"
       :key="
         `ciEdit${String(
-          catalogItemEditting && catalogItemEditting.id
-            ? catalogItemEditting.id
+          catalogItemediting && catalogItemediting.id
+            ? catalogItemediting.id
             : 'none'
         )}`
       "
@@ -88,8 +88,8 @@
       transition="dialog-transition"
       :key="
         `cifEdit${String(
-          catalogItemEditting && catalogItemEditting.id
-            ? catalogItemEditting.id
+          catalogItemediting && catalogItemediting.id
+            ? catalogItemediting.id
             : 'none'
         )}`
       "
@@ -106,8 +106,8 @@
       transition="dialog-transition"
       :key="
         `cinewfEdit${String(
-          catalogItemEditting && catalogItemEditting.id
-            ? catalogItemEditting.id
+          catalogItemediting && catalogItemediting.id
+            ? catalogItemediting.id
             : 'none'
         )}`
       "
@@ -167,9 +167,9 @@ export default {
   computed: {
     ...mapState({
       catalogView: state => state.catalogView,
-      catalogItemEditting: state => state.catalogitemEditting,
-      catalogitemFieldsEditting: state => state.catalogitemFieldsEditting,
-      categoryEditting: state => state.categoryEditting,
+      catalogItemediting: state => state.catalogitemediting,
+      catalogitemFieldsediting: state => state.catalogitemFieldsediting,
+      categoryediting: state => state.categoryediting,
       imagePreviewData: state => state.imagePreviewData,
       modalCatalogitemEdit: state => state.modalCatalogitemEdit,
       modalCatalogCustomfield: state => state.modalCatalogCustomfield,
@@ -191,7 +191,7 @@ export default {
   methods: {
     catalogItemAdd() {
       console.log('catalogItemAdd')
-      this.$store.dispatch('catalogitemEditting', null)
+      this.$store.dispatch('catalogitemediting', null)
       setTimeout(() => {
         this.$store.dispatch('toggleModalCatalogitemEdit')
       }, 500)

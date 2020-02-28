@@ -276,7 +276,7 @@ export default {
   computed: {
     ...mapState({
       catalogItems: state => state.catalogItems,
-      catalogItemEditting: state => state.catalogitemEditting,
+      catalogItemediting: state => state.catalogitemediting,
       categories: state => state.categories
     }),
     abbreviationAvailable() {
@@ -294,7 +294,7 @@ export default {
       return null
     },
     customFieldsDisplayed() {
-      return this.catalogItemEditting.customFields
+      return this.catalogItemediting.customFields
     },
     imageDisplayed() {
       let img =
@@ -412,11 +412,11 @@ export default {
         })
     },
     editCustomFields() {
-      const customFields = this.catalogItemEditting.customFields
-        ? this.catalogItemEditting.customFields
+      const customFields = this.catalogItemediting.customFields
+        ? this.catalogItemediting.customFields
         : []
       this.$store
-        .dispatch('catalogitemEdittingcustomfieldsSetEditting', customFields)
+        .dispatch('catalogitemeditingcustomfieldsSetediting', customFields)
         .then(() => {
           this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
         })
@@ -454,7 +454,7 @@ export default {
       const isNew = !postData.id
       if (isNew) {
         //TODO: WE SHOULD BE ABLE TO WORK THIS INTO UPDATE FUNCTION ON SERVERSIDE
-        postData.customFields = this.catalogItemEditting.customFields
+        postData.customFields = this.catalogItemediting.customFields
       }
       const endpoint = isNew ? '/catalogitem_create' : '/catalogitem_update'
       this.$store
@@ -467,9 +467,9 @@ export default {
             if (isNew) {
               //ADD ITEM TO LIST
               this.$store.dispatch('catalogitemAdd', resp.data)
-              this.$store.dispatch('catalogitemEditting', resp.data)
-              this.setItemEdittingValues(resp.data)
-              //SET CATALOG ITEM EDITTING ID
+              this.$store.dispatch('catalogitemediting', resp.data)
+              this.setItemeditingValues(resp.data)
+              //SET CATALOG ITEM editing ID
             } else {
               const itemData = { ...postData, image_data: this.image_data }
               console.log(itemData)
@@ -485,7 +485,7 @@ export default {
               //   key: 'image_data',
               //   data: this.image_data
               // })
-              this.setItemEdittingValues(itemData)
+              this.setItemeditingValues(itemData)
             }
           }
           //set originalItem to item
@@ -494,12 +494,12 @@ export default {
 
       this.loading = null
     },
-    setItemEdittingValues(values) {
+    setItemeditingValues(values) {
       for (let item in values) {
-        // if (item === 'color' && this.catalogItemEditting[item] === 'primary') {
+        // if (item === 'color' && this.catalogItemediting[item] === 'primary') {
         //   this[item] = this.$vuetify.themes.light.primary
         // } else {
-        //   this[item] = this.catalogItemEditting[item]
+        //   this[item] = this.catalogItemediting[item]
         // }
         this[item] = values[item]
         this.$set(this.originalValues, item, values[item])
@@ -512,8 +512,8 @@ export default {
   },
   created() {
     // console.log('catItemEdititing created')
-    if (this.catalogItemEditting) {
-      this.setItemEdittingValues(this.catalogItemEditting)
+    if (this.catalogItemediting) {
+      this.setItemeditingValues(this.catalogItemediting)
     }
   },
   mounted() {

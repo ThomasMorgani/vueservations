@@ -116,11 +116,11 @@ export default {
     ...mapState({
       catalogItems: state => state.catalogItems,
       categories: state => state.categories,
-      categoryEditting: state => state.categoryEditting,
+      categoryediting: state => state.categoryediting,
       settings: state => state.settings
     }),
-    categoryEdittingData() {
-      return filters.categoryById(this.categoryEditting, this.categories)
+    categoryeditingData() {
+      return filters.categoryById(this.categoryediting, this.categories)
     },
     dataChanged() {
       return (
@@ -145,13 +145,13 @@ export default {
         return 'Name Required'
       }
       console.log(nameMatches)
-      console.log(this.categoryEdittingData)
+      console.log(this.categoryeditingData)
       console.log(this.name)
       if (nameMatches !== undefined) {
         if (
           !this.id ||
-          (this.categoryEdittingData &&
-            this.name !== this.categoryEdittingData.name)
+          (this.categoryeditingData &&
+            this.name !== this.categoryeditingData.name)
         ) {
           return 'Category name already exists.'
         }
@@ -230,8 +230,8 @@ export default {
     }
   },
   created() {
-    if (this.categoryEditting) {
-      const data = filters.categoryById(this.categoryEditting, this.categories)
+    if (this.categoryediting) {
+      const data = filters.categoryById(this.categoryediting, this.categories)
       this.color = data.color
       this.id = data.id
       this.name = data.name

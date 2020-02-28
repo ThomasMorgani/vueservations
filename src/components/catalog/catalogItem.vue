@@ -6,7 +6,7 @@
           <v-img
             contain
             :src="thumbnailSrc"
-            :max-width="$vuetify.breakpoint.smAndDown   ? 75 : 100"
+            :max-width="$vuetify.breakpoint.smAndDown ? 75 : 100"
             :max-height="$vuetify.breakpoint.smAndDown ? 75 : 100"
             class="pa-0"
           ></v-img>
@@ -14,7 +14,9 @@
         <v-col cols="10">
           <v-row dense class="display-flex align-center justify-start">
             <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
-            <span class="font-weight-medium title primary--text">{{ item.name }}</span>
+            <span class="font-weight-medium title primary--text">{{
+              item.name
+            }}</span>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-chip
@@ -35,7 +37,9 @@
                   <strong>Color:</strong>
                   {{ item.color }}
                 </p>
-                <div :style="{ height: '10px', 'background-color': item.color }"></div>
+                <div
+                  :style="{ height: '10px', 'background-color': item.color }"
+                ></div>
               </span>
             </v-tooltip>
           </v-row>
@@ -64,9 +68,15 @@
             <!-- STATUS -->
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-btn text :color="status.color" class="mr-3" v-on="on" @click.stop="reserve">
+                <v-btn
+                  text
+                  :color="status.color"
+                  class="mr-3"
+                  v-on="on"
+                  @click.stop="reserve(item)"
+                >
                   <v-icon left v-text="status.icon"></v-icon>
-                  {{status.text}}
+                  {{ status.text }}
                   <!-- <p v-text="status.text" :class="` ml-1 font-weight-bold ${status.color}--text`"></p> -->
                 </v-btn>
               </template>
@@ -74,7 +84,11 @@
             </v-tooltip>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card flat class="d-flex align-center text-left mx-3" v-on="on">
+                <v-card
+                  flat
+                  class="d-flex align-center text-left mx-3"
+                  v-on="on"
+                >
                   <v-icon color="primary" v-text="'mdi-history'"></v-icon>
                   <p
                     v-text="
@@ -218,7 +232,7 @@ export default {
   methods: {
     edit() {
       console.log('edit', this.item)
-      this.$store.dispatch('catalogitemEditting', this.item)
+      this.$store.dispatch('catalogitemediting', this.item)
       setTimeout(() => {
         this.$store.dispatch('toggleModalCatalogitemEdit')
       }, 500)
@@ -243,9 +257,9 @@ export default {
         ? this.isReservedText()
         : '<p class="mb-1"><strong>Last Reservation:</strong></p><p class="mb-1">None</p>'
     },
-    reserve() {
+    reserve(e) {
       if (this.item.isAvailable) {
-        console.log('reserve')
+        this.$emit('reserve', e)
       }
     },
     showReservations() {

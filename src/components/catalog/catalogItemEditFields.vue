@@ -12,7 +12,7 @@
       ></catalogCustomfield>
     </v-dialog>
     <v-card-title class="justify-center title primary--text outlined">
-      {{ catalogItemEditting.id ? `EDIT DETAILS` : 'ADD FIELDS' }}
+      {{ catalogItemediting.id ? `EDIT DETAILS` : 'ADD FIELDS' }}
     </v-card-title>
     <v-card-text class="modalBody">
       <template v-if="fieldsDisplayed.length < 1">
@@ -39,7 +39,7 @@
                 small
                 icon
                 color="error"
-                :disabled="!isEditting(field.objectKey)"
+                :disabled="!isediting(field.objectKey)"
                 @click="deleteField(field.objectKey)"
                 class="mr-2"
               >
@@ -53,7 +53,7 @@
               >
                 <v-icon>
                   {{
-                    isEditting(field.objectKey)
+                    isediting(field.objectKey)
                       ? 'mdi-pencil-off'
                       : 'mdi-pencil'
                   }}
@@ -61,7 +61,7 @@
               </v-btn>
             </v-col>
           </v-row>
-          <v-row dense v-if="!isEditting(field.objectKey)">
+          <v-row dense v-if="!isediting(field.objectKey)">
             <v-col cols="12">
               <v-row align="center" dense>
                 <v-col
@@ -92,7 +92,7 @@
               </v-row>
             </v-col>
           </v-row>
-          <!-- IS EDITTING-->
+          <!-- IS editing-->
           <v-row dense align="center" v-else>
             <v-col cols="11">
               <v-autocomplete
@@ -268,7 +268,7 @@ export default {
     ],
     fieldAddingNew: null,
     fields: {},
-    fieldsEditting: [],
+    fieldsediting: [],
     fieldsOriginal: {},
     loading: null,
     fieldTemplate: {
@@ -304,8 +304,8 @@ export default {
   }),
   computed: {
     ...mapState({
-      catalogItemEditting: state => state.catalogitemEditting,
-      catalogitemFieldsEditting: state => state.catalogitemFieldsEditting,
+      catalogItemediting: state => state.catalogitemediting,
+      catalogitemFieldsediting: state => state.catalogitemFieldsediting,
       customFields: state => state.customFields,
       modalCatalogCustomfield: state => state.modalCatalogCustomfield
     }),
@@ -414,21 +414,21 @@ export default {
     deleteField(key) {
       //key = String(key);
       this.$delete(this.fields, key)
-      this.fieldsEditting.splice(this.fieldsEditting.indexOf(key), 1)
+      this.fieldsediting.splice(this.fieldsediting.indexOf(key), 1)
     },
     editField(key) {
       key = String(key)
       //check if field is in array, get key
-      const fieldKey = this.fieldsEditting.indexOf(key)
-      //if editting, remove to disable, else add to editting
+      const fieldKey = this.fieldsediting.indexOf(key)
+      //if editing, remove to disable, else add to editing
       fieldKey < 0
-        ? this.fieldsEditting.push(key)
-        : this.fieldsEditting.splice(fieldKey, 1)
+        ? this.fieldsediting.push(key)
+        : this.fieldsediting.splice(fieldKey, 1)
     },
-    isEditting(key) {
+    isediting(key) {
       //determine if "edit mode" is enabled for field from field.objectKey
       key = String(key)
-      const fieldKey = this.fieldsEditting.indexOf(key)
+      const fieldKey = this.fieldsediting.indexOf(key)
       return fieldKey > -1
     },
     formatFields() {
@@ -462,8 +462,8 @@ export default {
       }
     },
     reset() {
-      this.$store.dispatch('catalogitemEdittingcustomfieldsSetEditting', [])
-      this.fieldsEditting = []
+      this.$store.dispatch('catalogitemeditingcustomfieldsSetediting', [])
+      this.fieldsediting = []
       this.loading = null
     },
     restoreValues() {
@@ -476,8 +476,8 @@ export default {
         console.log('no fields. if fields !== fields_original:')
         console.log('confirm removing all fields, set new endpoint?')
       }
-      if (!this.catalogItemEditting.id) {
-        this.$store.dispatch('catalogitemEdittingSetValue', {
+      if (!this.catalogItemediting.id) {
+        this.$store.dispatch('catalogitemeditingSetValue', {
           key: 'customFields',
           data: this.formatFields()
         })
@@ -488,22 +488,22 @@ export default {
           .dispatch('apiCall', {
             endpoint: '/catalogitem_fields_edit',
             postData: {
-              catalogItem: this.catalogItemEditting.id,
+              catalogItem: this.catalogItemediting.id,
               fields: this.formatFields()
             }
           })
           .then(resp => {
             console.log(resp)
             if (resp.status === 'success') {
-              //update editting item, actual item custom fields, close modal
+              //update editing item, actual item custom fields, close modal
               // let custom_fields = []
               // Object.key(this.f)
-              this.$store.dispatch('catalogitemEdittingSetValue', {
+              this.$store.dispatch('catalogitemeditingSetValue', {
                 key: 'customFields',
                 data: resp.data
               })
               this.$store.dispatch('catalogitemSetValue', {
-                id: this.catalogItemEditting.id,
+                id: this.catalogItemediting.id,
                 key: 'custom_fields',
                 data: resp.data
               })
@@ -517,24 +517,24 @@ export default {
   created() {
     console.log('edit fields modal created___')
     //Form available for creating new fields in app or an exisiting catalog item
-    //if editting an existing item check custom fields are present and set each to
+    //if editing an existing item check custom fields are present and set each to
     //fields object to initialize reactivity
     //TODO: FIX BELOW, SET FUNCTION TO FORMAT DATA STRUCTURES PROPERLY
     //WAY TOO HACKY??
     if (
-      this.catalogitemFieldsEditting &&
-      this.catalogItemEditting.customFields &&
-      this.catalogItemEditting.customFields.length > 0
+      this.catalogitemFieldsediting &&
+      this.catalogItemediting.customFields &&
+      this.catalogItemediting.customFields.length > 0
     ) {
-      for (let key in this.catalogitemFieldsEditting) {
+      for (let key in this.catalogitemFieldsediting) {
         this.$set(this.fields, key, {
-          ...this.catalogitemFieldsEditting[key]
+          ...this.catalogitemFieldsediting[key]
         })
         this.$set(this.fieldsOriginal, key, {
-          ...this.catalogitemFieldsEditting[key]
+          ...this.catalogitemFieldsediting[key]
         })
         this.$set(this.autocomplete, key, {
-          ...this.catalogitemFieldsEditting[key]
+          ...this.catalogitemFieldsediting[key]
         })
         this.$delete(this.autocomplete[key], 'field_id')
       }
