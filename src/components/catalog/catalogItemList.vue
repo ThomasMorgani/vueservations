@@ -36,7 +36,7 @@
 import { mapState } from 'vuex'
 import Vue2Filters from 'vue2-filters'
 import filters from '@/modules/filters'
-import * as formats from '@/modules/formats'
+import * as formats from '@/modules/formats.js'
 
 import catalogItem from '@/components/catalog/catalogItem'
 export default {

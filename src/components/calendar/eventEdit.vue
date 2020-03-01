@@ -251,6 +251,12 @@
       </v-form>
     </v-card-text>
     <v-card-actions>
+      <v-btn
+        color="error darken-1"
+        text
+        :disabled="!id"
+        @click="modalConfirmDelete = !modalConfirmDelete"
+      >DELETE</v-btn>
       <v-btn color="warning darken-1" text :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
       <v-spacer></v-spacer>
       <v-btn color="primary" text @click="$emit('close')">CANCEL</v-btn>
@@ -268,6 +274,33 @@
         @close="modalPatronEdit = false"
         @patronAdded="onPatronAdd"
       ></patronEdit>
+    </v-dialog>
+    <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
+      <!--TODO: Move to Component -->
+      <v-card v-if="modalConfirmDelete">
+        <v-card-title class="justify-center title error--text">CONFIRM DELETE</v-card-title>
+        <v-card-text>
+          <v-row class="justify-center align-center">
+            <v-col cols="12" class="align-center">
+              <p
+                class="font-weight-bold text-center mb-0"
+              >WARNING: You are about to delete reservation:</p>
+              <p v-if="isChanged" class="text-center caption">(original reservation details below)</p>
+              <p class="title font-weight-bold text-center mt-4">{{originalValues.ciSelected.name}}</p>
+              <p
+                class="font-weight-bold text-center"
+              >{{`${originalValues.patronSelected.last_name}, ${originalValues.patronSelected.first_name}`}}</p>
+              <p
+                class="font-weight-bold text-center"
+              >{{`${originalValues.startDate} - ${originalValues.endDate}`}}</p>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions class="d-flex justify-space-around">
+          <v-btn color="primary" text @click="modalConfirmDelete = !modalConfirmDelete">CANCEL</v-btn>
+          <v-btn color="error" text @click="deleteEvent">DELETE</v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
   </v-card>
 </template>
@@ -290,6 +323,7 @@ export default {
       endDate: null,
       endTime: null,
       id: null,
+      modalConfirmDelete: false,
       modalPatronEdit: false,
       patronSelected: null,
       startDate: null,
@@ -319,6 +353,7 @@ export default {
       notes: '',
       originalValues: {
         ciSelected: null,
+        id: null,
         endDate: null,
         endTime: null,
         patronSelected: null,
@@ -496,6 +531,24 @@ export default {
       //console.log(year + '-' + month + '-' + day)
       return year + '-' + month + '-' + day
     },
+    deleteEvent() {
+      console.log('deleteEvent')
+      this.$store
+        .dispatch('apiCall', {
+          endpoint: '/reservation_delete/' + this.id
+        })
+        .then(resp => {
+          console.log(resp)
+          if (resp.status === 'success') {
+            this.$store.dispatch('setStateValue', {
+              key: 'events',
+              value: this.events.filter(e => e.id !== this.id)
+            })
+            this.$emit('close', { wasDeleted: true })
+          }
+        })
+        .catch(err => console.log(err))
+    },
     formattedEvent() {
       this.startTime = this.startTime ? this.startTime : '00:00:00'
       this.endTime = this.endTime ? this.endTime : '00:00:00'
@@ -535,7 +588,7 @@ export default {
                 this.$store.dispatch('setStateValue', {
                   isPush: true,
                   key: 'events',
-                  value: { ...event }
+                  value: { ...event, id: resp.data }
                 })
                 this.$emit('close')
               }

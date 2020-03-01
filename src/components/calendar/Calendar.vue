@@ -119,7 +119,7 @@
               :key="modalDetailsShow + modalDetailsComp"
               :is="modalDetailsComp"
               :event="selectedEvent"
-              @close="onDetailsClose"
+              @close="onDetailsClose($event)"
               @eventModalAction="onDetailsAction"
             ></component>
           </v-dialog>
@@ -132,6 +132,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import filters from '@/modules/filters.js'
+import * as formats from '@/modules/formats.js'
 import { timestampHuman } from '@/modules/formats.js'
 import eventMenu from '@/components/calendar/eventOverview'
 import filterBtn from '@/components/global/buttons/filterDrawerToggle'
@@ -370,6 +371,8 @@ export default {
       //TODO: move to module
       //this will format each reservation until we do so in backend
       console.log(e)
+      let test = formats.dateDifference(e.start_date, e.end_date)
+      console.log(test)
       const data = {
         details: {
           color: this.eventColor(e),
@@ -382,8 +385,8 @@ export default {
           Last: e.patronData.last_name || '-',
           Start: e.start_date || '-',
           End: e.end_date || '-',
-          Length: 'TBD?',
-          Note: e.notes && e.notes[0] ? e.notes[0] : e.notes
+          Length: formats.dateDifference(e.start_date, e.end_date) + ' Days',
+          Note: e.notes && Array.isArray(e.notes) ? e.notes[0] : e.notes
         }
       }
       return data
@@ -407,12 +410,15 @@ export default {
     onDetailsAction(a) {
       console.log(a)
     },
-    onDetailsClose() {
+    onDetailsClose(e) {
       this.modalDetailsShow = false
       this.$store.dispatch('setStateValue', {
         key: 'eventediting',
         value: null
       })
+      if (e && e.wasDeleted) {
+        this.selectedOpen = false
+      }
     },
     showDetails(e) {
       console.log(e)
@@ -442,6 +448,7 @@ export default {
       }
     },
     showEvent({ nativeEvent, event }) {
+      console.log('show')
       const open = () => {
         this.selectedEvent = this.formatEventPreview(event)
         this.selectedElement = nativeEvent.target

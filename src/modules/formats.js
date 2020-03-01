@@ -1,5 +1,5 @@
+import Moment from 'moment'
 //TODO: WHEN SETTINGS ARE SETUP, IMPORT DEFAULTS, DONT HARDCODE
-
 const catalogItem = item => {
   return {
     abbreviation: item.abbreviation || 'EIPL',
@@ -23,15 +23,26 @@ const catalogItem = item => {
   }
 }
 
-const hotspot = item => {
-  return {
-    abbreviation: item.abbreviation || 'EIPL',
-    categoryName: item.categoryName || 'MISC',
-    description: item.description || '',
-    id: item.id,
-    name: item.name || '',
-    status: item.status || ''
-  }
+const dateDifference = (date1, date2) => {
+  //TODO: need to extend? pass units needed, days, hours, etc
+  //need choice return string or number?
+
+
+  let dateA = typeof date1.getMonth === 'function' ? date1 : new Date(date1)
+  let dateB = typeof date2.getMonth === 'function' ? date2 : new Date(date2)
+
+  dateA = Moment(dateA)
+  dateB = Moment(dateB)
+  const diff = Math.abs(dateA.diff(dateB))
+
+  const total_seconds = parseInt(Math.floor(diff / 1000))
+  const total_minutes = parseInt(Math.floor(total_seconds / 60))
+  const total_hours = parseInt(Math.floor(total_minutes / 60))
+  const total_days = parseInt(Math.floor(total_hours / 24))
+
+
+  return total_days
+
 }
 
 const timestampHuman = (timestamp, withYear = true, withTime = true) => {
@@ -69,4 +80,4 @@ const timestampHuman = (timestamp, withYear = true, withTime = true) => {
   // return timestamp`
 }
 
-export { catalogItem, hotspot, timestampHuman }
+export { catalogItem, dateDifference, timestampHuman }
