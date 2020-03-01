@@ -59,7 +59,7 @@
     </v-select>
     <v-select
       v-model="statusSelect"
-      :items="orderBy(statusOptions, 'name')"
+      :items="orderBy(statusOptions, 'text')"
       item-text="text"
       item-value="text"
       label="Status"
@@ -102,6 +102,42 @@
         </v-chip>
       </template>
     </v-select>
+    <!-- AVAILABILITY SELECT -->
+
+    <v-select
+      v-model="availabilitySelect"
+      :items="orderBy(availabilityOptions, 'text')"
+      item-text="text"
+      item-value="text"
+      label="Availability"
+      no-hint
+      no-title
+      clearable
+      color="primary"
+      class="flex-grow-0 flex-shrink-1"
+    >
+      <template v-slot:item="{ item }">
+        <v-list-item-content>
+          <v-list-item-title v-text="item.text"></v-list-item-title>
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-icon :color="item.color" v-text="item.icon"></v-icon>
+        </v-list-item-action>
+      </template>
+      <template v-slot:selection="{ item }">
+        <!-- <v-chip :color="item.color" class="white--text font-weight-bold">
+          <span>{{ item.text }}</span>
+        </v-chip>-->
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon :color="item.color" v-text="item.icon"></v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.text"></v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </template>
+    </v-select>
   </v-card>
 </template>
 
@@ -122,6 +158,25 @@ export default {
       viewMain: state => state.viewMain
     }),
     ...mapGetters(['categoriesById']),
+    availabilityOptions() {
+      const names = ['available', 'unavailable']
+      let statuses = []
+      names.forEach(n => statuses.push(this.statusData[n]))
+      return statuses
+    },
+    availabilitySelect: {
+      get() {
+        return this.filterAvailability
+      },
+      set(val) {
+        console.log(val)
+        this.$store.dispatch('setStateValue', {
+          key: 'filterAvailability',
+          value: typeof val == 'string' ? val.toLowerCase() : val
+        })
+        // this.$store.commit('eventsFilterCategorySelect', val)
+      }
+    },
     categorySelect: {
       get() {
         return this.filterCategory

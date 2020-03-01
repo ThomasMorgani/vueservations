@@ -22,6 +22,7 @@ export default new Vuex.Store({
     customFields: [],
     events: [],
     eventediting: null,
+    filterAvailability: [],
     filterCategory: [],
     filterRangeDate: [],
     filterSearch: '',
@@ -49,7 +50,7 @@ export default new Vuex.Store({
         color: 'success',
         icon: 'mdi-calendar-check',
         popovertext: 'Item is available for reservation',
-        text: 'RESERVE'
+        text: 'AVAILABLE'
       },
       blocked: {
         color: 'error',
@@ -73,7 +74,7 @@ export default new Vuex.Store({
         color: 'warning',
         icon: 'mdi-calendar-alert',
         popovertext: 'Item is currently reserved',
-        text: 'UNAVAILABLE'
+        text: 'RESERVED'
       },
       unkown: {
         color: 'disabled',
@@ -97,6 +98,7 @@ export default new Vuex.Store({
       //TODO: will need different names array dependant on view
       let filters = []
       const names = [
+        'filterAvailability',
         'filterCategory',
         'filterRangeDate',
         'filterSearch',
@@ -393,6 +395,7 @@ export default new Vuex.Store({
     },
     filtersClearAll({ commit }) {
       const filterDefaults = {
+        filterAvailability: '',
         filterCategory: [],
         filterRangeDate: [],
         filterSearch: '',
@@ -402,7 +405,7 @@ export default new Vuex.Store({
         commit('setStateValue', { key: f, value: filterDefaults[f] })
       })
     },
-    reservationAdd() {},
+    reservationAdd() { },
     settingsNew({ commit, dispatch }, data) {
       return new Promise((resolve, reject) => {
         dispatch('apiCall', {
@@ -424,6 +427,7 @@ export default new Vuex.Store({
       })
     },
     setStateValue({ commit }, data) {
+      console.log(data)
       if (data.isPush) {
         console.log('is push')
         commit('pushStateValue', { key: data.key, value: data.value })

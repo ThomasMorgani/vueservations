@@ -6,9 +6,11 @@
       <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
       <v-icon left color="primary">mdi-filter</v-icon>
-      <span class="body-1 font-weight-bold">{{
+      <span class="body-1 font-weight-bold">
+        {{
         `${itemList.length} of ${catalogItems.length}`
-      }}</span>
+        }}
+      </span>
     </v-card-title>
     <v-card-text :style="styleCiList">
       <v-expansion-panels popout v-model="panel" class="py-1">
@@ -25,11 +27,7 @@
       </v-expansion-panels>
     </v-card-text>
     <v-dialog v-model="modal" max-width="800px" transition="dialog-transition">
-      <component
-        :key="modal + modalComp"
-        :is="modalComp"
-        @close="onModalClose"
-      ></component>
+      <component :key="modal + modalComp" :is="modalComp" @close="onModalClose"></component>
     </v-dialog>
   </v-card>
 </template>
@@ -95,6 +93,7 @@ export default {
     ...mapState({
       catalogItems: state => state.catalogItems,
       categories: state => state.categories,
+      filterAvailability: state => state.filterAvailability,
       filterCategory: state => state.filterCategory,
       filterRangeDate: state => state.filterRangeDate,
       filterSearch: state => state.filterSearch,
@@ -103,6 +102,7 @@ export default {
     itemList() {
       let cItemsFiltered = []
       const filterNames = [
+        'filterAvailability',
         'filterCategory',
         'filterRangeDate',
         'filterSearch',
@@ -120,6 +120,13 @@ export default {
       }
 
       if (Object.keys(filtersSet).length > 0) {
+        if (filtersSet.filterAvailability) {
+          cItemsFiltered = cItemsFiltered.filter(ci =>
+            filtersSet.filterAvailability === 'available'
+              ? ci.isAvailable
+              : !ci.isAvailable
+          )
+        }
         if (filtersSet.filterCategory) {
           cItemsFiltered = cItemsFiltered.filter(ci =>
             filtersSet.filterCategory.includes(ci.category)
