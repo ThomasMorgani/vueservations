@@ -6,9 +6,7 @@
         <v-menu bottom right>
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on" color="primary">
-              <span class="title font-weight-bold">
-                {{ typeToLabel[type] }}
-              </span>
+              <span class="title font-weight-bold">{{ typeToLabel[type] }}</span>
               <v-icon right>mdi-menu-down</v-icon>
             </v-btn>
           </template>
@@ -52,9 +50,7 @@
           </template>
 
           <v-card>
-            <v-card-title class="title primary--text"
-              >Calendar Height</v-card-title
-            >
+            <v-card-title class="title primary--text">Calendar Height</v-card-title>
             <v-card-text>
               <v-slider
                 v-model="calendarMonthHeight"
@@ -118,11 +114,7 @@
           <v-tooltip top v-model="tooltipEvent" v-bind="toptipPosition">
             <span>HELLO</span>
           </v-tooltip>
-          <v-dialog
-            v-model="modalDetailsShow"
-            max-width="800px"
-            transition="dialog-transition"
-          >
+          <v-dialog v-model="modalDetailsShow" max-width="800px" transition="dialog-transition">
             <component
               :key="modalDetailsShow + modalDetailsComp"
               :is="modalDetailsComp"
@@ -325,9 +317,9 @@ export default {
         <span class="mx-2 subtitle-2">
           <strong>${v.input.ciData.abbreviation}</strong>
           ${v.input.patronData.last_name} ${start} - ${end}
-          <v-icon small color="white">${
+          <v-icon small color="white" v-text="${
             v.input.notes ? 'mdi-note' : ''
-          }</v-icon>
+          }"></v-icon>
         </span>
       `
 

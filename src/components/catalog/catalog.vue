@@ -94,9 +94,7 @@
         )}`
       "
     >
-      <catalogItemEditFields
-        :key="modalEditCatalogItemFields + ''"
-      ></catalogItemEditFields>
+      <catalogItemEditFields :key="modalEditCatalogItemFields + ''"></catalogItemEditFields>
     </v-dialog>
     <!-- Catalog Custom Fields Mgmtm Modal  -->
     <!-- <v-dialog
