@@ -42,7 +42,7 @@ export default {
       return returnVal ? result[returnVal] : result
     }
   },
-  testRangeOverlap(startDate1, endDate1, startDate2, endDate2) {
+  testRangeOverlap(startDate1, endDate1, startDate2, endDate2, withBuffer = true) {
     let searchStartDate1 =
       typeof startDate1.getMonth === 'function'
         ? startDate1
@@ -51,8 +51,10 @@ export default {
       typeof endDate1.getMonth === 'function' ? endDate1 : new Date(endDate1)
     //THIS IS FOR CUSTOM BUFFER PERIODS
     //TODO: make this a setting
-    searchStartDate1.setDate(searchStartDate1.getDate() - 1)
-    searchEndDate1.setDate(searchEndDate1.getDate() + 2)
+    if (withBuffer) {
+      searchStartDate1.setDate(searchStartDate1.getDate() - 1)
+      searchEndDate1.setDate(searchEndDate1.getDate() + 2)
+    }
     const searchRange1 = moment.range(searchStartDate1, searchEndDate1)
 
     const searchStartDate2 =

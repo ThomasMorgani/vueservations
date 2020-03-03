@@ -403,10 +403,32 @@ export default {
           errors[key] = ['Required']
         }
       })
-      let end = new Date(this.endDate)
-      let start = new Date(this.startDate)
-      if (end < start) {
-        errors.endDate = ['End date must come after start.']
+      if (this.endDate && this.startDate) {
+        let end = new Date(this.endDate)
+        let start = new Date(this.startDate)
+        console.log(end)
+        console.log(start)
+        if (end < start) {
+          errors.endDate = ['End date must come after start.']
+        }
+        console.log(this.events)
+        const reservationsBetween = this.events.filter(e => {
+          return e.item_id == this.ciSelected.id &&
+          e.id != this.id &&
+              filters.testRangeOverlap(
+                this.startDate,
+                this.endDate,
+                e.start_date,
+                e.end_date
+              )
+        })
+        console.log(reservationsBetween)
+        if (reservationsBetween.length > 0) {
+          errors.endDate = ['Existing reservations between start/end date.']
+          errors.startDate = ['Existing reservations between start/end date.']
+        }
+
+
       }
       if (this.ciSelectedStatus !== 'enabled' && !errors.ciSelected) {
         errors.ciSelected = ['Item invalid status']
@@ -479,7 +501,6 @@ export default {
       } else {
         const id = this.ciSelected.id
         const item = filters.customfieldById(id, this.itemList)
-
         return item.status
       }
     }
@@ -491,7 +512,7 @@ export default {
         const ci = { ...this.ciSelected }
         events = this.events.filter(e => {
           if (e.item_id === ci.id) {
-            return !filters.testRangeOverlap(e.start_date, e.end_date, val, val)
+            return !filters.testRangeOverlap(e.start_date, e.end_date, val, val) || e.id == this.id
           } else {
             return true
           }
@@ -502,9 +523,23 @@ export default {
       }
     },
     allowedEnd(val) {
+      let events = []
       let cDate = new Date(val)
       let startDate = new Date(this.startDate)
-      return cDate > startDate
+
+      if (this.ciSelected) {
+        const ci = { ...this.ciSelected }
+        events = this.events.filter(e => {
+          if (e.item_id === ci.id) {
+            return !filters.testRangeOverlap(e.start_date, e.end_date, val, val, false) || e.id == this.id
+          } else {
+            return true
+          }
+        })
+        return events.length >= this.events.length && cDate > startDate
+      } else {
+        return true
+      }
     },
     customFilter(item, queryText) {
       const possibleKeys = [
@@ -564,10 +599,9 @@ export default {
       }
       return event
     },
-    modalAction(action) {
+    modalAction() {
       const event = this.formattedEvent()
       console.log(event)
-      if (action === 'submit') {
         if (Object.keys(this.formErrors).length < 1) {
           // this.$emit('eventModalAction', {
           //   action: action,
@@ -584,27 +618,24 @@ export default {
                 //TODO SETUP ERROR HANDLING + FEEDBACK
               }
               if (resp.status === 'success') {
-                this.id = resp.data
-                this.$store.dispatch('setStateValue', {
-                  isPush: true,
-                  key: 'events',
-                  value: { ...event, id: resp.data }
-                })
+                console.log(this.id)
+                console.log(this.id == false)
+                if (!this.id) {
+                  this.id = resp.data
+                  this.$store.dispatch('setStateValue', {
+                    isPush: true,
+                    key: 'events',
+                    value: { ...event, id: resp.data }
+                  })
+
+                } else {
+                  this.updateEvent(event)
+                }
                 this.$emit('close')
               }
             })
             .catch(err => console.log(err))
         }
-        // if (this.$refs.form.validate()) {
-        //   data['startDate'] = this.startDate
-        //   data['endDate'] = this.endDate
-        //   data['nameFirst'] = this.nameFirst
-        //   data['nameLast'] = this.nameLast
-        //   data['barcode'] = this.barcode
-        //   data['notes'] = this.notes
-        //   data['device'] = this.device
-        // }
-      }
     },
     onPatronAdd(e) {
       this.patronSelected = e
@@ -617,6 +648,13 @@ export default {
       Object.keys(this.originalValues).forEach(field => {
         this[field] = this.originalValues[field]
       })
+    },
+    updateEvent(event) {
+      const events = this.events
+      const key = this.events.findIndex(e => e.id == this.id)
+      events[key] = event
+      this.$store.dispatch('setStateValue', {key: `events`, value: events})
+      this.$emit('eventUpdated')
     }
   },
   mounted() {

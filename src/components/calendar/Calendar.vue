@@ -81,6 +81,7 @@
           <v-calendar
             ref="calendar"
             v-model="focus"
+            :key="modalDetailsShow"
             color="primary"
             :events="orderBy(eventsList, 'name')"
             :event-color="eventColor"
@@ -121,6 +122,7 @@
               :event="selectedEvent"
               @close="onDetailsClose($event)"
               @eventModalAction="onDetailsAction"
+              @eventUpdated="calendarcheckChanges"
             ></component>
           </v-dialog>
         </v-sheet>
@@ -189,6 +191,8 @@ export default {
     ...mapGetters(['categoriesById']),
     eventsList() {
       let eventsFiltered = []
+      let modalVis = this.modalDetailsShow
+      console.log(modalVis)
       const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
       let filtersSet = {}
       filterNames.forEach(f =>
@@ -305,6 +309,10 @@ export default {
     }
   },
   methods: {
+    calendarcheckChanges() {
+      console.log(this.$refs.calendar)
+      this.$refs.calendar.checkChange()
+    },
     eventColor(e) {
       let item = filters.getObjectFromArray(this.catalogItems, 'id', e.item_id)
       return this.filterCategory.length === 1
