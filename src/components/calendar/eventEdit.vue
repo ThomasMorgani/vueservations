@@ -31,10 +31,7 @@
                     <img :src="data.item.image" />
                   </v-list-item-avatar>
                   <v-list-item-content>
-                    <v-list-item-title
-                      v-text="data.item.name"
-                      class="font-weight-bold"
-                    ></v-list-item-title>
+                    <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
                     <v-list-item-subtitle
                       class="text--primary"
                       v-text="
@@ -55,10 +52,7 @@
                   <img :src="data.item.image" />
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title
-                    v-text="data.item.name"
-                    class="font-weight-bold"
-                  ></v-list-item-title>
+                  <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
                   <v-list-item-subtitle
                     :class="
                       data.item.isDisabled ? 'text--disabled' : 'text--primary'
@@ -117,10 +111,7 @@
                       v-text="`${data.item.last_name}, ${data.item.first_name}`"
                       class="font-weight-bold"
                     ></v-list-item-title>
-                    <v-list-item-subtitle
-                      class="text--primary"
-                      v-text="data.item.barcode"
-                    ></v-list-item-subtitle>
+                    <v-list-item-subtitle class="text--primary" v-text="data.item.barcode"></v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </template>
@@ -130,21 +121,15 @@
                     v-text="`${data.item.last_name}, ${data.item.first_name}`"
                     class="font-weight-bold"
                   ></v-list-item-title>
-                  <v-list-item-subtitle
-                    class="text--primary"
-                    v-text="data.item.barcode"
-                  ></v-list-item-subtitle>
+                  <v-list-item-subtitle class="text--primary" v-text="data.item.barcode"></v-list-item-subtitle>
                 </v-list-item-content>
               </template>
               <template v-slot:no-data>
                 <v-sheet class="d-flex align-center justify-space-between pa-3">
-                  <span class="font-weight-medium"
-                    >NO RESULTS FOUND.
-                    <v-icon color="primary" class="ml-3 mr-1 mb-1"
-                      >mdi-account-plus</v-icon
-                    >
-                    TO ADD A NEW PATRON</span
-                  >
+                  <span class="font-weight-medium">
+                    NO RESULTS FOUND.
+                    <v-icon color="primary" class="ml-3 mr-1 mb-1">mdi-account-plus</v-icon>TO ADD A NEW PATRON
+                  </span>
                 </v-sheet>
               </template>
             </v-autocomplete>
@@ -170,21 +155,10 @@
                   :error-messages="formErrors.startDate"
                 ></v-text-field>
               </template>
-              <v-date-picker
-                v-model="startDate"
-                scrollable
-                :allowed-dates="allowedStart"
-              >
+              <v-date-picker v-model="startDate" scrollable :allowed-dates="allowedStart">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartDate = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.startDateDialog.save(startDate)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalStartDate = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.startDateDialog.save(startDate)">OK</v-btn>
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -208,15 +182,8 @@
               </template>
               <v-time-picker v-if="modalStartTime" v-model="startTime">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartTime = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.startTimeDialog.save(startTime)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalStartTime = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.startTimeDialog.save(startTime)">OK</v-btn>
               </v-time-picker>
             </v-dialog>
           </v-col>
@@ -241,21 +208,10 @@
                   :error-messages="formErrors.endDate"
                 ></v-text-field>
               </template>
-              <v-date-picker
-                v-model="endDate"
-                scrollable
-                :allowed-dates="allowedEnd"
-              >
+              <v-date-picker v-model="endDate" scrollable :allowed-dates="allowedEnd">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndDate = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.modalEndDateDialog.save(endDate)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalEndDate = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.modalEndDateDialog.save(endDate)">OK</v-btn>
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -279,12 +235,8 @@
               </template>
               <v-time-picker v-if="modalEndTime" v-model="endTime" full-width>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndTime = false"
-                  >Cancel</v-btn
-                >
-                <v-btn text color="primary" @click="$refs.dialog.save(endTime)"
-                  >OK</v-btn
-                >
+                <v-btn text color="primary" @click="modalEndTime = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="$refs.dialog.save(endTime)">OK</v-btn>
               </v-time-picker>
             </v-dialog>
           </v-col>
@@ -311,76 +263,51 @@
         text
         :disabled="!id"
         @click="modalConfirmDelete = !modalConfirmDelete"
-        >DELETE</v-btn
-      >
-      <v-btn
-        color="warning darken-1"
-        text
-        :disabled="!isChanged"
-        @click="resetChanges"
-        >RESET</v-btn
-      >
+      >DELETE</v-btn>
+      <v-btn color="warning darken-1" text :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
       <v-spacer></v-spacer>
       <v-btn color="primary" text @click="$emit('close')">CANCEL</v-btn>
-      <v-btn
-        color="success"
-        text
-        v-text="id ? 'SAVE' : 'SUBMIT'"
-        @click.native="modalAction('submit')"
-        :disabled="!valid || Object.keys(formErrors).length > 0 || !isChanged"
-      ></v-btn>
+      <v-btn color="success" text @click.native="modalAction('submit')" :disabled="saveDisabled">
+        <transition name="bounce-top">
+          <v-icon v-if="!saveDisabled" left>mdi-content-save</v-icon>
+        </transition>
+        {{id ? 'SAVE' : 'SUBMIT'}}
+      </v-btn>
     </v-card-actions>
-    <v-dialog
-      v-model="modalPatronEdit"
-      transition="dialog-transition"
-      max-width="800"
-    >
+    <v-dialog v-model="modalPatronEdit" transition="dialog-transition" max-width="800">
       <patronEdit
         :key="modalPatronEdit"
         @close="modalPatronEdit = false"
         @patronAdded="onPatronAdd"
       ></patronEdit>
     </v-dialog>
-    <v-dialog
-      v-model="modalConfirmDelete"
-      max-width="500px"
-      transition="dialog-transition"
-    >
+    <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
       <!--TODO: Move to Component -->
       <v-card v-if="modalConfirmDelete">
-        <v-card-title class="justify-center title error--text"
-          >CONFIRM DELETE</v-card-title
-        >
+        <v-card-title class="justify-center title error--text">CONFIRM DELETE</v-card-title>
         <v-card-text>
           <v-row class="justify-center align-center">
             <v-col cols="12" class="align-center">
-              <p class="font-weight-bold text-center mb-0">
-                WARNING: You are about to delete reservation:
-              </p>
-              <p v-if="isChanged" class="text-center caption">
-                (original reservation details below)
-              </p>
-              <p class="title font-weight-bold text-center mt-4">
-                {{ originalValues.ciSelected.name }}
-              </p>
+              <p
+                class="font-weight-bold text-center mb-0"
+              >WARNING: You are about to delete reservation:</p>
+              <p v-if="isChanged" class="text-center caption">(original reservation details below)</p>
+              <p
+                class="title font-weight-bold text-center mt-4"
+              >{{ originalValues.ciSelected.name }}</p>
               <p class="font-weight-bold text-center">
                 {{
-                  `${originalValues.patronSelected.last_name}, ${originalValues.patronSelected.first_name}`
+                `${originalValues.patronSelected.last_name}, ${originalValues.patronSelected.first_name}`
                 }}
               </p>
-              <p class="font-weight-bold text-center">
-                {{ `${originalValues.startDate} - ${originalValues.endDate}` }}
-              </p>
+              <p
+                class="font-weight-bold text-center"
+              >{{ `${originalValues.startDate} - ${originalValues.endDate}` }}</p>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions class="d-flex justify-space-around">
-          <v-btn
-            color="primary"
-            text
-            @click="modalConfirmDelete = !modalConfirmDelete"
-            >CANCEL</v-btn
-          >
+          <v-btn color="primary" text @click="modalConfirmDelete = !modalConfirmDelete">CANCEL</v-btn>
           <v-btn color="error" text @click="deleteEvent">DELETE</v-btn>
         </v-card-actions>
       </v-card>
@@ -491,7 +418,11 @@ export default {
           errors.endDate = ['End date must come after start.']
         }
         console.log(this.events)
+        console.log(this.ciSelected)
+
         const reservationsBetween = this.events.filter(e => {
+        console.log(this.e)
+
           return (
             e.item_id == this.ciSelected.id &&
             e.id != this.id &&
@@ -574,6 +505,9 @@ export default {
     },
     patronList() {
       return this.patrons
+    },
+    saveDisabled() {
+      return !this.valid || Object.keys(this.formErrors).length > 0 || !this.isChanged
     },
     ciSelectedStatus() {
       if (!this.ciSelected) {
@@ -786,4 +720,185 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.bounce-top-enter-active {
+  -webkit-animation: bounce-top 0.9s both;
+  animation: bounce-top 0.9s both;
+}
+
+.bounce-top-leave-active {
+  animation: fadeOut ease 8s;
+  -webkit-animation: fadeOut ease 8s;
+  -moz-animation: fadeOut ease 8s;
+  -o-animation: fadeOut ease 8s;
+  -ms-animation: fadeOut ease 8s;
+}
+
+/* ----------------------------------------------
+ * Generated by Animista on 2020-3-3 23:18:34
+ * Licensed under FreeBSD License.
+ * See http://animista.net/license for more info.
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * fade out
+ * ----------------------------------------
+ */
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-moz-keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-o-keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-ms-keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/**
+ * ----------------------------------------
+ * animation bounce-top
+ * ----------------------------------------
+ */
+@-webkit-keyframes bounce-top {
+  0% {
+    -webkit-transform: translateY(-45px);
+    transform: translateY(-45px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+    opacity: 1;
+  }
+  24% {
+    opacity: 1;
+  }
+  40% {
+    -webkit-transform: translateY(-24px);
+    transform: translateY(-24px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  65% {
+    -webkit-transform: translateY(-12px);
+    transform: translateY(-12px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  82% {
+    -webkit-transform: translateY(-6px);
+    transform: translateY(-6px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  93% {
+    -webkit-transform: translateY(-4px);
+    transform: translateY(-4px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  25%,
+  55%,
+  75%,
+  87% {
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+    -webkit-animation-timing-function: ease-out;
+    animation-timing-function: ease-out;
+  }
+  100% {
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+    -webkit-animation-timing-function: ease-out;
+    animation-timing-function: ease-out;
+    opacity: 1;
+  }
+}
+@keyframes bounce-top {
+  0% {
+    -webkit-transform: translateY(-45px);
+    transform: translateY(-45px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+    opacity: 1;
+  }
+  24% {
+    opacity: 1;
+  }
+  40% {
+    -webkit-transform: translateY(-24px);
+    transform: translateY(-24px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  65% {
+    -webkit-transform: translateY(-12px);
+    transform: translateY(-12px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  82% {
+    -webkit-transform: translateY(-6px);
+    transform: translateY(-6px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  93% {
+    -webkit-transform: translateY(-4px);
+    transform: translateY(-4px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  25%,
+  55%,
+  75%,
+  87% {
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+    -webkit-animation-timing-function: ease-out;
+    animation-timing-function: ease-out;
+  }
+  100% {
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+    -webkit-animation-timing-function: ease-out;
+    animation-timing-function: ease-out;
+    opacity: 1;
+  }
+}
+</style>
