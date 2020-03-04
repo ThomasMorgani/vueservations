@@ -541,6 +541,7 @@ export default {
           this.events.forEach(event => {
             if (
               event.item_id === item.id &&
+              this.id != event.id &&
               filters.testRangeOverlap(
                 this.startDate,
                 this.endDate,
@@ -694,10 +695,6 @@ export default {
       const event = this.formattedEvent()
       console.log(event)
       if (Object.keys(this.formErrors).length < 1) {
-        // this.$emit('eventModalAction', {
-        //   action: action,
-        //   data: this.formattedEvent()
-        // })
         this.$store
           .dispatch('apiCall', {
             endpoint: '/reservation',
@@ -713,10 +710,11 @@ export default {
               console.log(this.id == false)
               if (!this.id) {
                 this.id = resp.data
+                event.id = resp.data
                 this.$store.dispatch('setStateValue', {
                   isPush: true,
                   key: 'events',
-                  value: { ...event, id: resp.data }
+                  value: { ...event }
                 })
               } else {
                 this.updateEvent(event)
