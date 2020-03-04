@@ -312,6 +312,9 @@ export default {
     calendarcheckChanges() {
       console.log(this.$refs.calendar)
       this.$refs.calendar.checkChange()
+      if (this.selectedOpen) {
+        //TODO MOVE OVERVIEW MENU TO NEW EVENT START
+      }
     },
     eventColor(e) {
       let item = filters.getObjectFromArray(this.catalogItems, 'id', e.item_id)
@@ -323,7 +326,7 @@ export default {
       let start = timestampHuman(v.input.start_date, false, false)
       let end = timestampHuman(v.input.end_date, false, false)
       let label = `
-        <span class="mx-2 subtitle-2">
+        <span id="${v.input.ciData.abbreviation}" class="mx-2 subtitle-2">
           <strong>${v.input.ciData.abbreviation}</strong>
           ${v.input.patronData.last_name} ${start} - ${end}
           <v-icon small color="white" v-text="${
@@ -359,6 +362,7 @@ export default {
       console.log(eid)
     },
     eventEdit(e) {
+      console.log(this.$refs)
       if (e) {
         this.$store.dispatch('setStateValue', {
           key: 'eventediting',

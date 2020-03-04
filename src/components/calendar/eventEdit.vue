@@ -25,6 +25,7 @@
               :filter="customFilter"
               :error-messages="formErrors.ciSelected"
             >
+              <!-- selection -->
               <template v-slot:selection="data">
                 <v-list-item>
                   <v-list-item-avatar size="45">
@@ -47,6 +48,7 @@
                   </v-list-item-action>
                 </v-list-item>
               </template>
+              <!-- items -->
               <template v-slot:item="data">
                 <v-list-item-avatar size="45">
                   <img :src="data.item.image" />
@@ -61,6 +63,7 @@
                   ></v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
+                  <v-list-item-action-text>{{itemActionText(data.item)}}</v-list-item-action-text>
                   <v-icon
                     v-text="statusData[data.item.status].icon"
                     :color="statusData[data.item.status].color"
@@ -318,6 +321,7 @@
 <script>
 import { mapState } from 'vuex'
 import filters from '@/modules/filters'
+import * as formats from '@/modules/formats'
 import Vue2Filters from 'vue2-filters'
 export default {
   name: 'eventEdit',
@@ -353,25 +357,6 @@ export default {
       patronSelected: null,
       startDate: null,
       startTime: null,
-      statusData: {
-        blocked: {
-          icon: 'mdi-phone-cancel',
-          color: 'error'
-        },
-        disabled: {
-          icon: 'mdi-phone-cancel',
-          color: 'error'
-        },
-        enabled: {
-          icon: 'mdi-check-circle',
-          color: 'success'
-        },
-        unavailable: {
-          icon: 'mdi-calendar-alert',
-          color: 'warning'
-        }
-      },
-
       valid: true
     }
   },
@@ -382,7 +367,8 @@ export default {
       events: state => state.events,
       eventediting: state => state.eventediting,
       filter: state => state.filter,
-      patrons: state => state.patrons
+      patrons: state => state.patrons,
+      statusData: state => state.statusData
     }),
     endDateFormatted: {
       get() {
@@ -417,6 +403,8 @@ export default {
         if (end < start) {
           errors.endDate = ['End date must come after start.']
         }
+        if (this.ciSelected) {
+
         console.log(this.events)
         console.log(this.ciSelected)
 
@@ -435,10 +423,12 @@ export default {
           )
         })
         console.log(reservationsBetween)
-        if (reservationsBetween.length > 0) {
+         if (reservationsBetween.length > 0) {
           errors.endDate = ['Existing reservations between start/end date.']
           errors.startDate = ['Existing reservations between start/end date.']
         }
+        }
+
       }
       if (this.ciSelectedStatus !== 'enabled' && !errors.ciSelected) {
         errors.ciSelected = ['Item invalid status']
@@ -610,6 +600,10 @@ export default {
         })
         .catch(err => console.log(err))
     },
+    itemActionText(item) {
+      return item.status == 'unavailable' && item.lastReservation['0']
+ ? `${formats.timestampHuman(item.lastReservation['0'].start_date, false, false)} - ${formats.timestampHuman(item.lastReservation['0'].end_date, false, false)}`: item.status.toUpperCase()
+    },
     formattedEvent() {
       this.startTime = this.startTime ? this.startTime : '00:00:00'
       this.endTime = this.endTime ? this.endTime : '00:00:00'
@@ -653,6 +647,7 @@ export default {
               } else {
                 this.updateEvent(event)
               }
+                this.$emit('eventUpdated')
               this.$emit('close')
             }
           })
