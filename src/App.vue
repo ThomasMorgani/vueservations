@@ -6,9 +6,9 @@
       <v-btn icon @click="setView">
         <v-icon>
           {{
-            viewMain === 'calendar'
-              ? 'mdi-format-list-bulleted-type'
-              : 'mdi-calendar'
+          viewMain === 'calendar'
+          ? 'mdi-format-list-bulleted-type'
+          : 'mdi-calendar'
           }}
         </v-icon>
       </v-btn>
@@ -102,6 +102,10 @@ export default {
 }
 </script>
 <style>
+.hoverPointer:hover {
+  cursor: pointer;
+}
+
 body::-webkit-scrollbar {
   display: none;
 }

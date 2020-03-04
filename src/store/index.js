@@ -51,37 +51,43 @@ export default new Vuex.Store({
         color: 'success',
         icon: 'mdi-calendar-check',
         popovertext: 'Item is available for reservation',
-        text: 'AVAILABLE'
+        text: 'AVAILABLE',
+        value: 'available'
       },
       blocked: {
         color: 'error',
         icon: 'mdi-phone-cancel',
         popovertext: "Item's service blocked",
-        text: 'BLOCKED'
+        text: 'BLOCKED',
+        value: 'blocked'
       },
       enabled: {
         color: 'success',
         icon: 'mdi-check-circle',
         popovertext: 'Item is enabled',
-        text: 'ENABLED'
+        text: 'ENABLED',
+        value: 'enabled'
       },
       disabled: {
         color: 'error',
         icon: 'mdi-cancel',
         popovertext: 'Item is disabled',
-        text: 'DISABLED'
+        text: 'DISABLED',
+        value: 'disabled'
       },
       unavailable: {
         color: 'warning',
         icon: 'mdi-calendar-alert',
         popovertext: 'Item is currently reserved',
-        text: 'RESERVED'
+        text: 'RESERVED',
+        value: 'unavailable'
       },
       unkown: {
         color: 'disabled',
         icon: 'mdi-help-circle',
         popovertext: 'Item status unknown',
-        text: 'STATUS UNK'
+        text: 'STATUS UNKNOWN',
+        value: 'unkown'
       }
     },
     viewMain: null,

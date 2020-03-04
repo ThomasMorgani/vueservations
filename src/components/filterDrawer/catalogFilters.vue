@@ -12,6 +12,7 @@
       v-model="searchField"
     ></v-text-field>
     <v-divider color="primary--text"></v-divider>
+    <!--CATEGORY SELECT -->
     <v-select
       v-model="categorySelect"
       :items="orderBy(categories, 'name')"
@@ -27,6 +28,7 @@
       color="primary"
       class="flex-grow-0 flex-shrink-1"
     >
+      <!--CATEGORY SELECT ITEM -->
       <template v-slot:item="{ item }">
         <v-list-item-icon>
           <v-icon
@@ -57,6 +59,7 @@
         </v-chip>
       </template>
     </v-select>
+    <!--STATUS SELECT -->
     <v-select
       v-model="statusSelect"
       :items="orderBy(statusOptions, 'text')"
