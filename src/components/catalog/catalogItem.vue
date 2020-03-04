@@ -44,20 +44,34 @@
             </v-tooltip>
           </v-row>
 
-          <v-row dense class="display-flex align-start justify-start">
-            <v-col class="text-xs-left">
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
+          <v-row dense class="display-flex align-center justify-start">
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <div v-on="on">
+                  <v-avatar
+                    size="10"
+                    :color="categoriesById[item.category].color"
+                    class="mr-1"
+                  >
+                  </v-avatar>
                   <p
                     v-html="item.categoryName"
-                    class="font-weight-light font-italic subheading text-capitalize"
+                    class=" font-italic subheading text-capitalize"
                     style="display: inline;"
-                    v-on="on"
                   ></p>
-                </template>
-                <span>Category</span>
-              </v-tooltip>
-            </v-col>
+                </div>
+              </template>
+              <span>
+                <p class="mb-1"><strong>Category</strong></p>
+                <v-avatar
+                  size="15"
+                  :color="categoriesById[item.category].color"
+                  class="mr-1"
+                >
+                </v-avatar
+                >{{ item.categoryName }}
+              </span>
+            </v-tooltip>
           </v-row>
           <v-row dense class="display-flex align-start justify-start my-2">
             <v-col class="text-xs-left">
@@ -158,7 +172,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import { timestampHuman } from '@/modules/formats.js'
 
 import customFieldsList from '@/components/catalog/catalogItemCustomFieldsList'
@@ -174,6 +188,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['categoriesById']),
     ...mapState({
       categories: state => state.categories,
       statusData: state => state.statusData
@@ -253,13 +268,24 @@ export default {
     },
     lastReservedText() {
       //merge this with last reservaiton method?
-      return this.item.lastReservation
-        ? this.isReservedText()
-        : '<p class="mb-1"><strong>Last Reservation:</strong></p><p class="mb-1">None</p>'
+      return `<p class="mb-1"><strong>Last Reservation:</strong></p><p class="mb-1">${
+        this.item.lastReservation ? this.isReservedText() : 'None'
+      }</p>`
     },
     reserve(e) {
-      if (this.item.isAvailable) {
-        this.$emit('reserve', e)
+      if (this.item.status !== 'enabled') {
+        this.$store.dispatch('setStateValue', {
+          key: 'snackbarData',
+          value: {
+            status: 'error',
+            message: `${this.item.status.toUpperCase()} items can't be reserved.`
+          }
+        })
+        this.$store.dispatch('toggleStateValue', 'snackbarState')
+      } else {
+        if (this.item.isAvailable) {
+          this.$emit('reserve', e)
+        }
       }
     },
     showReservations() {

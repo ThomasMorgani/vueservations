@@ -1,19 +1,30 @@
 <template>
   <v-snackbar
     v-model="state"
+    :key="state"
     v-bind="sbSettings"
     :color="sbData.status || sbSettings.defaultColor"
     @input="onClose"
+    transition="fade-transition"
   >
     <h5 class="body-1 font-weight-bold text-uppercase">{{ sbData.status }}:</h5>
     {{ sbData.message }}
     <v-btn text color="white" @click.native="onClose">Close</v-btn>
+    <v-progress-linear
+      bottom
+      color="white"
+      :value="progress"
+    ></v-progress-linear>
   </v-snackbar>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 export default {
+  data: () => ({
+    progress: 100,
+    progInterval: null
+  }),
   computed: {
     ...mapState({
       sbData: 'snackbarData',
@@ -38,10 +49,21 @@ export default {
       this.$store.dispatch('setStateValue', { key: 'snackbarData', value: {} })
     }
   },
-  watch: {
-    state() {
-      console.log(this.sbSettings)
-      console.log(this.sbData)
+  mounted() {
+    if (this.state) {
+      const timeoff = Math.abs(this.sbSettings.timeout / 100)
+      this.progInterval = setInterval(() => {
+        this.progress -= 1
+      }, timeoff)
+    } else {
+      if (this.progInterval) {
+        clearInterval(this.progInterval)
+      }
+    }
+  },
+  beforeDestroy() {
+    if (this.progInterval) {
+      clearInterval(this.progInterval)
     }
   }
 }

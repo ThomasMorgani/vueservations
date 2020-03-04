@@ -32,7 +32,6 @@
               label="Email"
               required
               prepend-icon="mdi-email"
-          
             ></v-text-field
           ></v-col>
           <v-col cols="5"
@@ -81,7 +80,7 @@ export default {
   name: 'patronDetails',
   data: () => ({
     barcode: null,
-    email: null, 
+    email: null,
     first_name: null,
     last_name: null,
     notes: null,
@@ -119,7 +118,7 @@ export default {
               })
               this.$store.dispatch('setStateValue', {
                 isPush: true,
-                key: 'patronList',
+                key: 'patrons',
                 value: res.data
               })
               this.$emit('patronAdded', res.data)

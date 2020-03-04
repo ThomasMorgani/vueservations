@@ -6,9 +6,9 @@
       <v-btn icon @click="setView">
         <v-icon>
           {{
-          viewMain === 'calendar'
-          ? 'mdi-format-list-bulleted-type'
-          : 'mdi-calendar'
+            viewMain === 'calendar'
+              ? 'mdi-format-list-bulleted-type'
+              : 'mdi-calendar'
           }}
         </v-icon>
       </v-btn>
@@ -40,7 +40,7 @@
         <v-icon>mdi-settings-outline</v-icon>
       </v-btn>
     </v-footer>
-    <Snackbar></Snackbar>
+    <Snackbar :key="$store.state.snackbarState"></Snackbar>
   </v-app>
 </template>
 

@@ -40,8 +40,9 @@ export default new Vuex.Store({
     snackbarSettings: {
       defaultColor: 'primary',
       'multi-line': true,
-      position: 'bottom',
-      timeout: 5000,
+      bottom: true,
+      right: true,
+      timeout: 7000,
       vertical: true
     },
     snackbarState: false,
@@ -405,7 +406,7 @@ export default new Vuex.Store({
         commit('setStateValue', { key: f, value: filterDefaults[f] })
       })
     },
-    reservationAdd() { },
+    reservationAdd() {},
     settingsNew({ commit, dispatch }, data) {
       return new Promise((resolve, reject) => {
         dispatch('apiCall', {

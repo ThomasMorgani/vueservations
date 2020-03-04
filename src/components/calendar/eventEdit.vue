@@ -31,7 +31,10 @@
                     <img :src="data.item.image" />
                   </v-list-item-avatar>
                   <v-list-item-content>
-                    <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
+                    <v-list-item-title
+                      v-text="data.item.name"
+                      class="font-weight-bold"
+                    ></v-list-item-title>
                     <v-list-item-subtitle
                       class="text--primary"
                       v-text="
@@ -52,7 +55,10 @@
                   <img :src="data.item.image" />
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title v-text="data.item.name" class="font-weight-bold"></v-list-item-title>
+                  <v-list-item-title
+                    v-text="data.item.name"
+                    class="font-weight-bold"
+                  ></v-list-item-title>
                   <v-list-item-subtitle
                     :class="
                       data.item.isDisabled ? 'text--disabled' : 'text--primary'
@@ -111,7 +117,10 @@
                       v-text="`${data.item.last_name}, ${data.item.first_name}`"
                       class="font-weight-bold"
                     ></v-list-item-title>
-                    <v-list-item-subtitle class="text--primary" v-text="data.item.barcode"></v-list-item-subtitle>
+                    <v-list-item-subtitle
+                      class="text--primary"
+                      v-text="data.item.barcode"
+                    ></v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </template>
@@ -121,8 +130,22 @@
                     v-text="`${data.item.last_name}, ${data.item.first_name}`"
                     class="font-weight-bold"
                   ></v-list-item-title>
-                  <v-list-item-subtitle class="text--primary" v-text="data.item.barcode"></v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    class="text--primary"
+                    v-text="data.item.barcode"
+                  ></v-list-item-subtitle>
                 </v-list-item-content>
+              </template>
+              <template v-slot:no-data>
+                <v-sheet class="d-flex align-center justify-space-between pa-3">
+                  <span class="font-weight-medium"
+                    >NO RESULTS FOUND.
+                    <v-icon color="primary" class="ml-3 mr-1 mb-1"
+                      >mdi-account-plus</v-icon
+                    >
+                    TO ADD A NEW PATRON</span
+                  >
+                </v-sheet>
               </template>
             </v-autocomplete>
           </v-col>
@@ -147,10 +170,21 @@
                   :error-messages="formErrors.startDate"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="startDate" scrollable :allowed-dates="allowedStart">
+              <v-date-picker
+                v-model="startDate"
+                scrollable
+                :allowed-dates="allowedStart"
+              >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartDate = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.startDateDialog.save(startDate)">OK</v-btn>
+                <v-btn text color="primary" @click="modalStartDate = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.startDateDialog.save(startDate)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -174,8 +208,15 @@
               </template>
               <v-time-picker v-if="modalStartTime" v-model="startTime">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartTime = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.startTimeDialog.save(startTime)">OK</v-btn>
+                <v-btn text color="primary" @click="modalStartTime = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.startTimeDialog.save(startTime)"
+                  >OK</v-btn
+                >
               </v-time-picker>
             </v-dialog>
           </v-col>
@@ -197,14 +238,24 @@
                   prepend-icon="mdi-calendar"
                   readonly
                   v-on="on"
-                  :rules="endDateRules"
                   :error-messages="formErrors.endDate"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="endDate" scrollable :allowed-dates="allowedEnd">
+              <v-date-picker
+                v-model="endDate"
+                scrollable
+                :allowed-dates="allowedEnd"
+              >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndDate = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.modalEndDateDialog.save(endDate)">OK</v-btn>
+                <v-btn text color="primary" @click="modalEndDate = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.modalEndDateDialog.save(endDate)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-dialog>
           </v-col>
@@ -228,8 +279,12 @@
               </template>
               <v-time-picker v-if="modalEndTime" v-model="endTime" full-width>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndTime = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.dialog.save(endTime)">OK</v-btn>
+                <v-btn text color="primary" @click="modalEndTime = false"
+                  >Cancel</v-btn
+                >
+                <v-btn text color="primary" @click="$refs.dialog.save(endTime)"
+                  >OK</v-btn
+                >
               </v-time-picker>
             </v-dialog>
           </v-col>
@@ -256,8 +311,15 @@
         text
         :disabled="!id"
         @click="modalConfirmDelete = !modalConfirmDelete"
-      >DELETE</v-btn>
-      <v-btn color="warning darken-1" text :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
+        >DELETE</v-btn
+      >
+      <v-btn
+        color="warning darken-1"
+        text
+        :disabled="!isChanged"
+        @click="resetChanges"
+        >RESET</v-btn
+      >
       <v-spacer></v-spacer>
       <v-btn color="primary" text @click="$emit('close')">CANCEL</v-btn>
       <v-btn
@@ -268,36 +330,57 @@
         :disabled="!valid || Object.keys(formErrors).length > 0 || !isChanged"
       ></v-btn>
     </v-card-actions>
-    <v-dialog v-model="modalPatronEdit" transition="dialog-transition" max-width="800">
+    <v-dialog
+      v-model="modalPatronEdit"
+      transition="dialog-transition"
+      max-width="800"
+    >
       <patronEdit
         :key="modalPatronEdit"
         @close="modalPatronEdit = false"
         @patronAdded="onPatronAdd"
       ></patronEdit>
     </v-dialog>
-    <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
+    <v-dialog
+      v-model="modalConfirmDelete"
+      max-width="500px"
+      transition="dialog-transition"
+    >
       <!--TODO: Move to Component -->
       <v-card v-if="modalConfirmDelete">
-        <v-card-title class="justify-center title error--text">CONFIRM DELETE</v-card-title>
+        <v-card-title class="justify-center title error--text"
+          >CONFIRM DELETE</v-card-title
+        >
         <v-card-text>
           <v-row class="justify-center align-center">
             <v-col cols="12" class="align-center">
-              <p
-                class="font-weight-bold text-center mb-0"
-              >WARNING: You are about to delete reservation:</p>
-              <p v-if="isChanged" class="text-center caption">(original reservation details below)</p>
-              <p class="title font-weight-bold text-center mt-4">{{originalValues.ciSelected.name}}</p>
-              <p
-                class="font-weight-bold text-center"
-              >{{`${originalValues.patronSelected.last_name}, ${originalValues.patronSelected.first_name}`}}</p>
-              <p
-                class="font-weight-bold text-center"
-              >{{`${originalValues.startDate} - ${originalValues.endDate}`}}</p>
+              <p class="font-weight-bold text-center mb-0">
+                WARNING: You are about to delete reservation:
+              </p>
+              <p v-if="isChanged" class="text-center caption">
+                (original reservation details below)
+              </p>
+              <p class="title font-weight-bold text-center mt-4">
+                {{ originalValues.ciSelected.name }}
+              </p>
+              <p class="font-weight-bold text-center">
+                {{
+                  `${originalValues.patronSelected.last_name}, ${originalValues.patronSelected.first_name}`
+                }}
+              </p>
+              <p class="font-weight-bold text-center">
+                {{ `${originalValues.startDate} - ${originalValues.endDate}` }}
+              </p>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions class="d-flex justify-space-around">
-          <v-btn color="primary" text @click="modalConfirmDelete = !modalConfirmDelete">CANCEL</v-btn>
+          <v-btn
+            color="primary"
+            text
+            @click="modalConfirmDelete = !modalConfirmDelete"
+            >CANCEL</v-btn
+          >
           <v-btn color="error" text @click="deleteEvent">DELETE</v-btn>
         </v-card-actions>
       </v-card>
@@ -324,7 +407,22 @@ export default {
       endTime: null,
       id: null,
       modalConfirmDelete: false,
+      modalEndDate: false,
+      modalEndTime: false,
       modalPatronEdit: false,
+      modalStartDate: false,
+      modalStartTime: false,
+      notes: '',
+      originalValues: {
+        ciSelected: null,
+        id: null,
+        endDate: null,
+        endTime: null,
+        patronSelected: null,
+        startDate: null,
+        startTime: null,
+        notes: ''
+      },
       patronSelected: null,
       startDate: null,
       startTime: null,
@@ -346,26 +444,7 @@ export default {
           color: 'warning'
         }
       },
-      modalEndDate: false,
-      modalEndTime: false,
-      modalStartDate: false,
-      modalStartTime: false,
-      notes: '',
-      originalValues: {
-        ciSelected: null,
-        id: null,
-        endDate: null,
-        endTime: null,
-        patronSelected: null,
-        startDate: null,
-        startTime: null,
-        notes: ''
-      },
-      endDateRules: [
-        v =>
-          new Date(v) >= new Date(this.startDate) ||
-          'END DATE MUST BE AFTER START DATE'
-      ],
+
       valid: true
     }
   },
@@ -413,22 +492,22 @@ export default {
         }
         console.log(this.events)
         const reservationsBetween = this.events.filter(e => {
-          return e.item_id == this.ciSelected.id &&
-          e.id != this.id &&
-              filters.testRangeOverlap(
-                this.startDate,
-                this.endDate,
-                e.start_date,
-                e.end_date
-              )
+          return (
+            e.item_id == this.ciSelected.id &&
+            e.id != this.id &&
+            filters.testRangeOverlap(
+              this.startDate,
+              this.endDate,
+              e.start_date,
+              e.end_date
+            )
+          )
         })
         console.log(reservationsBetween)
         if (reservationsBetween.length > 0) {
           errors.endDate = ['Existing reservations between start/end date.']
           errors.startDate = ['Existing reservations between start/end date.']
         }
-
-
       }
       if (this.ciSelectedStatus !== 'enabled' && !errors.ciSelected) {
         errors.ciSelected = ['Item invalid status']
@@ -482,7 +561,8 @@ export default {
         if (
           this.eventediting &&
           this.eventediting.ciData &&
-          this.eventediting.ciData.id === ci.id
+          this.eventediting.ciData.id === ci.id &&
+          this.eventediting.ciData.statue === 'enabled'
         ) {
           ci.isDisabled = false
           ci.status = 'enabled'
@@ -492,7 +572,6 @@ export default {
       return list
     },
     patronList() {
-      //TODO: add fillters
       return this.patrons
     },
     ciSelectedStatus() {
@@ -501,6 +580,7 @@ export default {
       } else {
         const id = this.ciSelected.id
         const item = filters.customfieldById(id, this.itemList)
+        console.log(item)
         return item.status
       }
     }
@@ -512,7 +592,10 @@ export default {
         const ci = { ...this.ciSelected }
         events = this.events.filter(e => {
           if (e.item_id === ci.id) {
-            return !filters.testRangeOverlap(e.start_date, e.end_date, val, val) || e.id == this.id
+            return (
+              !filters.testRangeOverlap(e.start_date, e.end_date, val, val) ||
+              e.id == this.id
+            )
           } else {
             return true
           }
@@ -531,7 +614,15 @@ export default {
         const ci = { ...this.ciSelected }
         events = this.events.filter(e => {
           if (e.item_id === ci.id) {
-            return !filters.testRangeOverlap(e.start_date, e.end_date, val, val, false) || e.id == this.id
+            return (
+              !filters.testRangeOverlap(
+                e.start_date,
+                e.end_date,
+                val,
+                val,
+                false
+              ) || e.id == this.id
+            )
           } else {
             return true
           }
@@ -602,40 +693,39 @@ export default {
     modalAction() {
       const event = this.formattedEvent()
       console.log(event)
-        if (Object.keys(this.formErrors).length < 1) {
-          // this.$emit('eventModalAction', {
-          //   action: action,
-          //   data: this.formattedEvent()
-          // })
-          this.$store
-            .dispatch('apiCall', {
-              endpoint: '/reservation',
-              postData: event
-            })
-            .then(resp => {
-              if (resp.status === 'error') {
-                console.log('eventEditResp ERROR', resp)
-                //TODO SETUP ERROR HANDLING + FEEDBACK
+      if (Object.keys(this.formErrors).length < 1) {
+        // this.$emit('eventModalAction', {
+        //   action: action,
+        //   data: this.formattedEvent()
+        // })
+        this.$store
+          .dispatch('apiCall', {
+            endpoint: '/reservation',
+            postData: event
+          })
+          .then(resp => {
+            if (resp.status === 'error') {
+              console.log('eventEditResp ERROR', resp)
+              //TODO SETUP ERROR HANDLING + FEEDBACK
+            }
+            if (resp.status === 'success') {
+              console.log(this.id)
+              console.log(this.id == false)
+              if (!this.id) {
+                this.id = resp.data
+                this.$store.dispatch('setStateValue', {
+                  isPush: true,
+                  key: 'events',
+                  value: { ...event, id: resp.data }
+                })
+              } else {
+                this.updateEvent(event)
               }
-              if (resp.status === 'success') {
-                console.log(this.id)
-                console.log(this.id == false)
-                if (!this.id) {
-                  this.id = resp.data
-                  this.$store.dispatch('setStateValue', {
-                    isPush: true,
-                    key: 'events',
-                    value: { ...event, id: resp.data }
-                  })
-
-                } else {
-                  this.updateEvent(event)
-                }
-                this.$emit('close')
-              }
-            })
-            .catch(err => console.log(err))
-        }
+              this.$emit('close')
+            }
+          })
+          .catch(err => console.log(err))
+      }
     },
     onPatronAdd(e) {
       this.patronSelected = e
@@ -653,7 +743,7 @@ export default {
       const events = this.events
       const key = this.events.findIndex(e => e.id == this.id)
       events[key] = event
-      this.$store.dispatch('setStateValue', {key: `events`, value: events})
+      this.$store.dispatch('setStateValue', { key: `events`, value: events })
       this.$emit('eventUpdated')
     }
   },
@@ -673,14 +763,14 @@ export default {
       }
 
       Object.keys(valPairs).forEach(k => {
-        if (k == 'start_date') {
+        if (k == 'start_date' && event[k]) {
           const splitStart = event.start_date.split(' ')
           console.log(splitStart)
           this.startDate = splitStart[0]
           this.startTime = splitStart[1] || '00:00:00'
           this.$set(this.originalValues, 'startDate', this.startDate)
           this.$set(this.originalValues, 'startTime', this.startTime)
-        } else if (k == 'end_date') {
+        } else if (k == 'end_date' && event[k]) {
           const splitEnd = event.end_date.split(' ')
           this.endDate = splitEnd[0]
           this.endTime = splitEnd[1] || '00:00:00'
