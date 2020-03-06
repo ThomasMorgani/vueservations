@@ -131,53 +131,6 @@
           </v-col>
         </v-row>
       </form>
-      <v-dialog
-        v-model="modalEditImage"
-        max-width="650px"
-        transition="dialog-transition"
-        :key="id + 'imgModal'"
-      >
-        <editImageModal
-          :originalImageData="image_data"
-          :isNew="Boolean(!id)"
-          @closeImageModal="modalEditImage = false"
-          @updateImage="updateImage"
-        ></editImageModal>
-      </v-dialog>
-      <v-dialog
-        v-model="modalConfirmDelete"
-        max-width="500px"
-        transition="dialog-transition"
-      >
-        <!--TODO: Move to Component -->
-        <v-card>
-          <v-card-title class="justify-center title error--text"
-            >CONFIRM DELETE</v-card-title
-          >
-          <v-card-text>
-            <v-row class="justify-center align-center">
-              <v-col cols="12" class="align-center">
-                <p class="font-weight-bold text-center">
-                  WARNING: You are about to delete catalog item:
-                </p>
-                <p class="font-weight-bold text-center">"{{ name }}"</p>
-                <p class="text-center">
-                  All current reservations for this item will be removed.
-                </p>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions class="d-flex justify-space-around">
-            <v-btn
-              color="primary"
-              text
-              @click="modalConfirmDelete = !modalConfirmDelete"
-              >CANCEL</v-btn
-            >
-            <v-btn color="error" text @click="deleteCatalogitem">DELETE</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
     </v-card-text>
     <v-card-actions>
       <v-tooltip top :disabled="!id">
@@ -186,10 +139,10 @@
             <v-btn
               text
               small
-              color="primary"
+              color="error"
               :disabled="!id"
               :loading="loading === 'delete'"
-              @click="modalConfirmDelete = !modalConfirmDelete"
+              @click="deletePrompt"
               >DELETE</v-btn
             >
           </div>
@@ -219,34 +172,106 @@
               :loading="loading === 'save'"
               @click="save"
             >
-              <v-icon
-                small
-                color="warning"
-                class="mr-1"
-                v-if="isChanged && !saveDisabled"
-                >mdi-content-save-alert</v-icon
-              >SAVE
+              <transition name="bounce-top">
+                <v-icon
+                  small
+                  color="warning"
+                  class="mr-1"
+                  v-if="isChanged && !saveDisabled"
+                  >mdi-content-save-alert</v-icon
+                >
+              </transition>
+              SAVE
             </v-btn>
           </div>
         </template>
         <span>{{ saveTooltipText }}</span>
       </v-tooltip>
     </v-card-actions>
+    <!-- DIALOGS -->
+    <!-- DIALOGS -->
+    <!-- DIALOGS -->
+
+    <!-- EDIT IMAGE -->
+    <v-dialog
+      v-model="modalEditImage"
+      max-width="650px"
+      transition="dialog-transition"
+      :key="id + 'imgModal'"
+    >
+      <editImageModal
+        :originalImageData="image_data"
+        :isNew="Boolean(!id)"
+        @closeImageModal="modalEditImage = false"
+        @updateImage="updateImage"
+      ></editImageModal>
+    </v-dialog>
+
+    <!-- DELETE ITEM -->
+    <v-dialog
+      v-model="modalConfirmDelete"
+      max-width="500px"
+      transition="dialog-transition"
+    >
+      <!--TODO: Move to Component -->
+      <v-card>
+        <v-card-title class="justify-center title error--text"
+          >CONFIRM DELETE</v-card-title
+        >
+        <v-card-text>
+          <v-row class="justify-center align-center">
+            <v-col cols="12" class="align-center">
+              <p class="font-weight-bold text-center">
+                WARNING: You are about to delete catalog item:
+              </p>
+              <p class="font-weight-bold text-center">"{{ name }}"</p>
+              <template
+                v-if="affectedEventData && affectedEventData.items.length > 0"
+              >
+                <p class="text-center">
+                  The following reservations for this item will be removed.
+                </p>
+                <eventTableSimple v-bind="affectedEventData"></eventTableSimple>
+              </template>
+              <p class="text-center" v-else>
+                (There are no events associated with this item)
+              </p>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions class="d-flex justify-space-around">
+          <v-btn
+            color="primary"
+            text
+            @click="modalConfirmDelete = !modalConfirmDelete"
+            >CANCEL</v-btn
+          >
+          <v-btn color="error" text @click="deleteCatalogitem"
+            >CONFIRM DELETE</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import customFieldsList from '@/components/catalog/catalogItemCustomFieldsList'
+import * as formats from '@/modules/formats.js'
+import Vue2Filters from 'vue2-filters'
 
 export default {
   name: 'catalogItemEdit',
   components: {
+    customFieldsList,
     editImageModal: () => import('@/components/catalog/catalogItemEditImage'),
-    customFieldsList
+    eventTableSimple: () => import('@/components/global/tableSimple')
   },
+  mixins: [Vue2Filters.mixin],
   data: () => ({
     abbreviation: null,
+    affectedEventData: null,
     category: null,
     color: 'primary',
     customFields: [],
@@ -266,10 +291,10 @@ export default {
     image: null,
     image_data: {},
     loading: false,
-    name: null,
-    originalValues: {},
     modalConfirmDelete: false,
     modalEditImage: false,
+    name: null,
+    originalValues: {},
     status: null,
     statusOptions: ['blocked', 'enabled', 'disabled']
   }),
@@ -277,7 +302,9 @@ export default {
     ...mapState({
       catalogItems: state => state.catalogItems,
       catalogItemediting: state => state.catalogitemediting,
-      categories: state => state.categories
+      categories: state => state.categories,
+      events: state => state.events,
+      patrons: state => state.patrons
     }),
     abbreviationAvailable() {
       const abvMatches = this.catalogItems.find(
@@ -402,6 +429,10 @@ export default {
         .then(resp => {
           console.log(resp)
           if (resp.status === 'success') {
+            this.$store.dispatch('setStateValue', {
+              key: 'events',
+              value: this.events.filter(e => e.item_id !== this.id)
+            })
             this.modalConfirmDelete = !this.modalConfirmDelete
             this.$store.dispatch('toggleModalCatalogitemEdit')
             //TODO: SNACKBAR
@@ -410,6 +441,31 @@ export default {
         .catch(err => {
           console.log('err: ' + err)
         })
+    },
+    deletePrompt() {
+      let affectedEvents = this.events.filter(e => e.item_id === this.id)
+      if (affectedEvents.length > 0) {
+        affectedEvents = formats.eventListSimple(affectedEvents, this.patrons)
+      }
+      this.affectedEventData = {
+        headers: [
+          {
+            value: 'patron',
+            text: 'PATRON'
+          },
+          {
+            value: 'startDate',
+            text: 'START'
+          },
+          {
+            value: 'endDate',
+            text: 'END'
+          }
+        ],
+        items: this.orderBy(affectedEvents, 'startDate'),
+        height: 200
+      }
+      this.modalConfirmDelete = true
     },
     editCustomFields() {
       const customFields = this.catalogItemediting.customFields
@@ -496,11 +552,6 @@ export default {
     },
     setItemeditingValues(values) {
       for (let item in values) {
-        // if (item === 'color' && this.catalogItemediting[item] === 'primary') {
-        //   this[item] = this.$vuetify.themes.light.primary
-        // } else {
-        //   this[item] = this.catalogItemediting[item]
-        // }
         this[item] = values[item]
         this.$set(this.originalValues, item, values[item])
       }
@@ -529,5 +580,186 @@ p {
 .modalBody {
   max-height: 65vh;
   overflow-y: scroll;
+}
+
+.bounce-top-enter-active {
+  -webkit-animation: bounce-top 0.9s both;
+  animation: bounce-top 0.9s both;
+}
+
+.bounce-top-leave-active {
+  animation: fadeOut ease 8s;
+  -webkit-animation: fadeOut ease 8s;
+  -moz-animation: fadeOut ease 8s;
+  -o-animation: fadeOut ease 8s;
+  -ms-animation: fadeOut ease 8s;
+}
+
+/* ----------------------------------------------
+ * Generated by Animista on 2020-3-3 23:18:34
+ * Licensed under FreeBSD License.
+ * See http://animista.net/license for more info.
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * fade out
+ * ----------------------------------------
+ */
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-moz-keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-o-keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-ms-keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/**
+ * ----------------------------------------
+ * animation bounce-top
+ * ----------------------------------------
+ */
+@-webkit-keyframes bounce-top {
+  0% {
+    -webkit-transform: translateY(-45px);
+    transform: translateY(-45px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+    opacity: 1;
+  }
+  24% {
+    opacity: 1;
+  }
+  40% {
+    -webkit-transform: translateY(-24px);
+    transform: translateY(-24px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  65% {
+    -webkit-transform: translateY(-12px);
+    transform: translateY(-12px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  82% {
+    -webkit-transform: translateY(-6px);
+    transform: translateY(-6px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  93% {
+    -webkit-transform: translateY(-4px);
+    transform: translateY(-4px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  25%,
+  55%,
+  75%,
+  87% {
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+    -webkit-animation-timing-function: ease-out;
+    animation-timing-function: ease-out;
+  }
+  100% {
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+    -webkit-animation-timing-function: ease-out;
+    animation-timing-function: ease-out;
+    opacity: 1;
+  }
+}
+@keyframes bounce-top {
+  0% {
+    -webkit-transform: translateY(-45px);
+    transform: translateY(-45px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+    opacity: 1;
+  }
+  24% {
+    opacity: 1;
+  }
+  40% {
+    -webkit-transform: translateY(-24px);
+    transform: translateY(-24px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  65% {
+    -webkit-transform: translateY(-12px);
+    transform: translateY(-12px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  82% {
+    -webkit-transform: translateY(-6px);
+    transform: translateY(-6px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  93% {
+    -webkit-transform: translateY(-4px);
+    transform: translateY(-4px);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+  25%,
+  55%,
+  75%,
+  87% {
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+    -webkit-animation-timing-function: ease-out;
+    animation-timing-function: ease-out;
+  }
+  100% {
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+    -webkit-animation-timing-function: ease-out;
+    animation-timing-function: ease-out;
+    opacity: 1;
+  }
 }
 </style>
