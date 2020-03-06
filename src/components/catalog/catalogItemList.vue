@@ -7,9 +7,7 @@
       <v-spacer></v-spacer>
       <v-icon left color="primary">mdi-filter</v-icon>
       <span class="body-1 font-weight-bold">
-        {{
-        `${itemList.length} of ${catalogItems.length}`
-        }}
+        {{ `${itemList.length} of ${catalogItems.length}` }}
       </span>
     </v-card-title>
     <v-card-text :style="styleCiList">
@@ -21,13 +19,19 @@
             :item="item"
             :statusData="statusData"
             @reserve="onReserve"
+            @showItemReservations="onShowReservations"
           ></catalogItem>
           <!-- <catalogItem :key="item.id" :item="item" :isActivePanel="key === panel"></catalogItem> -->
         </template>
       </v-expansion-panels>
     </v-card-text>
     <v-dialog v-model="modal" max-width="800px" transition="dialog-transition">
-      <component :key="modal + modalComp" :is="modalComp" @close="onModalClose"></component>
+      <component
+        :key="modal + modalComp"
+        :is="modalComp"
+        v-bind="modalCompData"
+        @close="onModalClose"
+      ></component>
     </v-dialog>
   </v-card>
 </template>
@@ -43,12 +47,14 @@ export default {
   name: 'catalogList',
   components: {
     catalogItem,
-    eventEdit: () => import('@/components/calendar/eventEdit')
+    eventEdit: () => import('@/components/calendar/eventEdit'),
+    eventTableSimple: () => import('@/components/calendar/eventTableSimple')
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({
     modal: false,
     modalComp: null,
+    modalCompData: null,
     panel: null,
     statusData: {
       available: {
@@ -93,11 +99,13 @@ export default {
     ...mapState({
       catalogItems: state => state.catalogItems,
       categories: state => state.categories,
+      events: state => state.events,
       filterAvailability: state => state.filterAvailability,
       filterCategory: state => state.filterCategory,
       filterRangeDate: state => state.filterRangeDate,
       filterSearch: state => state.filterSearch,
-      filterStatus: state => state.filterStatus
+      filterStatus: state => state.filterStatus,
+      patrons: state => state.patrons
     }),
     itemList() {
       let cItemsFiltered = []
@@ -221,6 +229,37 @@ export default {
       } else {
         console.log('error: ci not found')
       }
+    },
+    onShowReservations(ci) {
+      this.modalCompData = {
+        catalogItem: ci,
+        tableData: {
+          headers: [
+            {
+              value: 'patron',
+              text: 'PATRON'
+            },
+            {
+              value: 'startDate',
+              text: 'START'
+            },
+            {
+              value: 'endDate',
+              text: 'END'
+            }
+          ],
+          items: this.orderBy(
+            formats.eventListSimple(
+              this.events.filter(e => e.item_id == ci.id),
+              this.patrons
+            ),
+            'startDate'
+          ),
+          height: 600
+        }
+      }
+      this.modalComp = 'eventTableSimple'
+      this.modal = true
     }
   }
 }

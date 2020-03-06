@@ -20,6 +20,29 @@ export default new Vuex.Store({
       test: 2
     },
     customFields: [],
+    defaultCatalogItem: {
+      abbreviation: null,
+      categoryName: null,
+      customFields: [],
+      id: null,
+      image_data: {
+        id: '2',
+        file_name: '458d8cab268259a7e676eadc42ec2c6d.gif',
+        file_name_orig: 'eil2.gif',
+        file_ext: '.gif',
+        file_type: 'image/gif',
+        file_size: '94.93',
+        file_path: '/reservations/images/uploads/',
+        height: '768',
+        width: '844',
+        date_added: '2020-01-14 12:03:35',
+        src:
+          'https://www.eipl.org/reservations/images/uploads/458d8cab268259a7e676eadc42ec2c6d.gif'
+      },
+      description: null,
+      name: null,
+      status: null
+    },
     events: [],
     eventediting: null,
     filterAvailability: [],
@@ -126,9 +149,6 @@ export default new Vuex.Store({
     catalogitemDelete(state, data) {
       Vue.delete(state.catalogItems, data)
     },
-    catalogitemediting(state, data) {
-      state.catalogitemediting = data
-    },
     catalogitemeditingSetValue(state, data) {
       //data : {key: value editing, data: value of item }
       state.catalogitemediting[data.key] = data.data
@@ -146,9 +166,6 @@ export default new Vuex.Store({
     },
     categoryDelete(state, data) {
       Vue.delete(state.categories, data)
-    },
-    categoryediting(state, data) {
-      state.categoryediting = data
     },
     categoryUpdate(state, data) {
       //data expects: {key: state.category key, value: state.category value}
@@ -287,35 +304,6 @@ export default new Vuex.Store({
         return false
       }
     },
-    catalogitemediting({ commit }, data) {
-      if (data) {
-        commit('catalogitemediting', data)
-      } else {
-        commit('catalogitemediting', {
-          abbreviation: null,
-          categoryName: null,
-          customFields: [],
-          id: null,
-          image_data: {
-            id: '2',
-            file_name: '458d8cab268259a7e676eadc42ec2c6d.gif',
-            file_name_orig: 'eil2.gif',
-            file_ext: '.gif',
-            file_type: 'image/gif',
-            file_size: '94.93',
-            file_path: '/reservations/images/uploads/',
-            height: '768',
-            width: '844',
-            date_added: '2020-01-14 12:03:35',
-            src:
-              'https://www.eipl.org/reservations/images/uploads/458d8cab268259a7e676eadc42ec2c6d.gif'
-          },
-          description: null,
-          name: null,
-          status: null
-        })
-      }
-    },
     catalogitemeditingSetValue({ commit }, data) {
       //data : item editing int, fields obj
       commit('catalogitemeditingSetValue', data)
@@ -364,9 +352,6 @@ export default new Vuex.Store({
             reject(err)
           })
       })
-    },
-    categoryEdit({ commit }, data) {
-      commit('categoryediting', data)
     },
     categoryEditSave({ commit, dispatch, state }, data) {
       // console.log('data', data)

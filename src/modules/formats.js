@@ -23,10 +23,23 @@ const catalogItem = item => {
   }
 }
 
+const eventListSimple = (events, patrons) => {
+  return events.map(e => {
+    const patron = patrons.find(p => p.id === e.patron_id)
+    const newEvent = {
+      patron: patron
+        ? `${patron.last_name}, ${patron.first_name}`
+        : 'UNK PATRON',
+      startDate: timestampHuman(e.start_date, false, false),
+      endDate: timestampHuman(e.end_date, false, false)
+    }
+    return newEvent
+  })
+}
+
 const dateDifference = (date1, date2) => {
   //TODO: need to extend? pass units needed, days, hours, etc
   //need choice return string or number?
-
 
   let dateA = typeof date1.getMonth === 'function' ? date1 : new Date(date1)
   let dateB = typeof date2.getMonth === 'function' ? date2 : new Date(date2)
@@ -40,9 +53,7 @@ const dateDifference = (date1, date2) => {
   const total_hours = parseInt(Math.floor(total_minutes / 60))
   const total_days = parseInt(Math.floor(total_hours / 24))
 
-
   return total_days
-
 }
 
 const timestampHuman = (timestamp, withYear = true, withTime = true) => {
@@ -80,4 +91,4 @@ const timestampHuman = (timestamp, withYear = true, withTime = true) => {
   // return timestamp`
 }
 
-export { catalogItem, dateDifference, timestampHuman }
+export { catalogItem, dateDifference, eventListSimple, timestampHuman }

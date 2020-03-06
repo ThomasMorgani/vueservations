@@ -247,7 +247,10 @@ export default {
   methods: {
     edit() {
       console.log('edit', this.item)
-      this.$store.dispatch('catalogitemediting', this.item)
+      this.$store.dispatch('setStateValue', {
+        key: 'catalogitemediting',
+        value: { ...this.item }
+      })
       setTimeout(() => {
         this.$store.dispatch('toggleModalCatalogitemEdit')
       }, 500)
@@ -289,7 +292,7 @@ export default {
       }
     },
     showReservations() {
-      console.log('showReservations')
+      this.$emit('showItemReservations', this.item)
     }
   }
 }
