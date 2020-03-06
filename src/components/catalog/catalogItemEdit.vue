@@ -1,6 +1,8 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text">{{ id ? 'EDIT ITEM' : 'ADD ITEM' }}</v-card-title>
+    <v-card-title class="justify-center title primary--text">{{
+      id ? 'EDIT ITEM' : 'ADD ITEM'
+    }}</v-card-title>
     <v-card-text class="modalBody">
       <form>
         <v-row align="center" justify="center" dense>
@@ -52,7 +54,7 @@
               </template>
               <template v-slot:selection="{ item }">
                 <v-list-item>
-                  <v-list-item-action>
+                  <v-list-item-action class="mr-4">
                     <v-icon :color="item.color" v-text="item.icon"></v-icon>
                   </v-list-item-action>
                   <v-list-item-title v-text="item.text"></v-list-item-title>
@@ -67,13 +69,26 @@
                 <v-card outlined class="d-flex flex-column pa-2">
                   <p>Color</p>
                   <div>
-                    <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
+                    <v-menu
+                      :close-on-content-click="false"
+                      :nudge-width="200"
+                      offset-x
+                    >
                       <template v-slot:activator="{ on }">
-                        <v-avatar tile v-on="on" :color="color" class="hoverPointer">
+                        <v-avatar
+                          tile
+                          v-on="on"
+                          :color="color"
+                          class="hoverPointer"
+                        >
                           <v-icon color="white">mdi-palette</v-icon>
                         </v-avatar>
                       </template>
-                      <v-color-picker v-model="color" class="ma-2" hide-inputs></v-color-picker>
+                      <v-color-picker
+                        v-model="color"
+                        class="ma-2"
+                        hide-inputs
+                      ></v-color-picker>
                     </v-menu>
                   </div>
                 </v-card>
@@ -117,7 +132,13 @@
                 <v-col class="text-right">
                   <v-tooltip top>
                     <template v-slot:activator="{ on }">
-                      <v-btn text icon color="warning" @click="editCustomFields" v-on="on">
+                      <v-btn
+                        text
+                        icon
+                        color="warning"
+                        @click="editCustomFields"
+                        v-on="on"
+                      >
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn>
                     </template>
@@ -126,7 +147,9 @@
                 </v-col>
                 <v-col cols="12">
                   <v-divider></v-divider>
-                  <customFieldsList :items="customFieldsDisplayed"></customFieldsList>
+                  <customFieldsList
+                    :items="customFieldsDisplayed"
+                  ></customFieldsList>
                 </v-col>
               </v-row>
             </v-card>
@@ -145,7 +168,8 @@
               :disabled="!id"
               :loading="loading === 'delete'"
               @click="deletePrompt"
-            >DELETE</v-btn>
+              >DELETE</v-btn
+            >
           </div>
         </template>
         <span>Delete catalog item</span>
@@ -153,7 +177,9 @@
       <v-tooltip top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
-            <v-btn text small :disabled="!isChanged" @click="resetChanges">RESET</v-btn>
+            <v-btn text small :disabled="!isChanged" @click="resetChanges"
+              >RESET</v-btn
+            >
           </div>
         </template>
         <span>Revert all unsaved changes</span>
@@ -177,8 +203,9 @@
                   color="warning"
                   class="mr-1"
                   v-if="isChanged && !saveDisabled"
-                >mdi-content-save-alert</v-icon>
-              </transition>SAVE
+                  >mdi-content-save-alert</v-icon
+                > </transition
+              >SAVE
             </v-btn>
           </div>
         </template>
@@ -205,26 +232,47 @@
     </v-dialog>
 
     <!-- DELETE ITEM -->
-    <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
+    <v-dialog
+      v-model="modalConfirmDelete"
+      max-width="500px"
+      transition="dialog-transition"
+    >
       <!--TODO: Move to Component -->
       <v-card>
-        <v-card-title class="justify-center title error--text">CONFIRM DELETE</v-card-title>
+        <v-card-title class="justify-center title error--text"
+          >CONFIRM DELETE</v-card-title
+        >
         <v-card-text>
           <v-row class="justify-center align-center">
             <v-col cols="12" class="align-center">
-              <p class="font-weight-bold text-center">WARNING: You are about to delete catalog item:</p>
+              <p class="font-weight-bold text-center">
+                WARNING: You are about to delete catalog item:
+              </p>
               <p class="font-weight-bold text-center">"{{ name }}"</p>
-              <template v-if="affectedEventData && affectedEventData.items.length > 0">
-                <p class="text-center">The following reservations for this item will be removed.</p>
+              <template
+                v-if="affectedEventData && affectedEventData.items.length > 0"
+              >
+                <p class="text-center">
+                  The following reservations for this item will be removed.
+                </p>
                 <eventTableSimple v-bind="affectedEventData"></eventTableSimple>
               </template>
-              <p class="text-center" v-else>(There are no events associated with this item)</p>
+              <p class="text-center" v-else>
+                (There are no events associated with this item)
+              </p>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions class="d-flex justify-space-around">
-          <v-btn color="primary" text @click="modalConfirmDelete = !modalConfirmDelete">CANCEL</v-btn>
-          <v-btn color="error" text @click="deleteCatalogitem">CONFIRM DELETE</v-btn>
+          <v-btn
+            color="primary"
+            text
+            @click="modalConfirmDelete = !modalConfirmDelete"
+            >CANCEL</v-btn
+          >
+          <v-btn color="error" text @click="deleteCatalogitem"
+            >CONFIRM DELETE</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -271,7 +319,7 @@ export default {
     modalEditImage: false,
     name: null,
     originalValues: {},
-    status: null,
+    status: null
   }),
   computed: {
     ...mapState({
@@ -397,7 +445,6 @@ export default {
       const statusItems = []
       statuses.forEach(s => statusItems.push(this.statusData[s]))
       return statusItems
-
     }
   },
   methods: {
@@ -548,7 +595,6 @@ export default {
   },
   created() {
     // console.log('catItemEdititing created')
-
   },
   mounted() {
     // console.log('hh')
@@ -558,8 +604,7 @@ export default {
     } else {
       console.log(this.$vuetify)
       const theme = this.$vuetify.theme.isDark ? 'dark' : 'light'
-      this.color =  this.$vuetify.theme.themes[theme].primary
-
+      this.color = this.$vuetify.theme.themes[theme].primary
     }
   }
 }

@@ -6,7 +6,9 @@
       <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
       <v-icon left color="primary">mdi-filter</v-icon>
-      <span class="body-1 font-weight-bold">{{ `${itemList.length} of ${catalogItems.length}` }}</span>
+      <span class="body-1 font-weight-bold">{{
+        `${itemList.length} of ${catalogItems.length}`
+      }}</span>
     </v-card-title>
     <v-card-text :style="styleCiList">
       <v-expansion-panels popout v-model="panel" class="py-1">
@@ -15,7 +17,6 @@
           <catalogItem
             :key="item.id ? item.id : key + 'ci'"
             :item="item"
-            :statusData="statusData"
             @reserve="onReserve"
             @showItemReservations="onShowReservations"
           ></catalogItem>
@@ -53,45 +54,7 @@ export default {
     modal: false,
     modalComp: null,
     modalCompData: null,
-    panel: null,
-    statusData: {
-      available: {
-        color: 'success',
-        icon: 'mdi-calendar-check',
-        popovertext: 'Item is available for reservation',
-        text: 'AVAILABLE'
-      },
-      blocked: {
-        color: 'error',
-        icon: 'mdi-phone-cancel',
-        popovertext: "Item's service blocked",
-        text: 'BLOCKED'
-      },
-      enabled: {
-        color: 'success',
-        icon: 'mdi-check-circle',
-        popovertext: 'Item is enabled',
-        text: 'ENABLED'
-      },
-      disabled: {
-        color: 'error',
-        icon: 'mdi-cancel',
-        popovertext: 'Item is disabled',
-        text: 'DISABLED'
-      },
-      unavailable: {
-        color: 'warning',
-        icon: 'mdi-calendar-alert',
-        popovertext: 'Item is currently reserved',
-        text: 'UNAVAILABLE'
-      },
-      unkown: {
-        color: 'disabled',
-        icon: 'mdi-help-circle',
-        popovertext: 'Item status unknown',
-        text: 'STATUS UNK'
-      }
-    }
+    panel: null
   }),
   computed: {
     ...mapState({

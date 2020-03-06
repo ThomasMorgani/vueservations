@@ -377,7 +377,11 @@
                 }}
               </p>
               <p class="font-weight-bold text-center">
-                {{ `${originalValues.startDate} - ${originalValues.endDate}` }}
+                {{
+                  `${formatTimestamp(
+                    originalValues.startDate
+                  )} - ${formatTimestamp(originalValues.endDate)}`
+                }}
               </p>
             </v-col>
           </v-row>
@@ -707,6 +711,9 @@ export default {
         event.id = this.id
       }
       return event
+    },
+    formatTimestamp(timestamp, withYear = true, withTime = false) {
+      return formats.timestampHuman(timestamp, withYear, withTime)
     },
     modalAction() {
       const event = this.formattedEvent()

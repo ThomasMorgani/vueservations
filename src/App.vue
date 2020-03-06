@@ -6,52 +6,41 @@
       <v-btn icon @click="setView">
         <v-icon>
           {{
-          viewMain === 'calendar'
-          ? 'mdi-format-list-bulleted-type'
-          : 'mdi-calendar'
+            viewMain === 'calendar'
+              ? 'mdi-format-list-bulleted-type'
+              : 'mdi-calendar'
           }}
         </v-icon>
       </v-btn>
-
-      <!-- <v-btn icon>
-        <v-icon>mdi-bookmark-plus-outline</v-icon>
-      </v-btn>-->
-      <!-- <template v-slot:extension>
-          <v-toolbar-title>MENU</v-toolbar-title>
-      <v-spacer></v-spacer>
-      </template>-->
     </v-app-bar>
-
     <v-content ref="content">
       <template v-if="isLoaded">
         <sideDrawer></sideDrawer>
         <transition name="component-fade" appear mode="out-in">
           <component :is="viewMain" :key="viewMain"></component>
-          <!-- <Calendar></Calendar> -->
         </transition>
       </template>
     </v-content>
-    <v-footer color="primary" app dark clipped-right>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-help-circle-outline</v-icon>
-      </v-btn>
-      <v-btn icon @click="viewMain = 'settings'">
-        <v-icon>mdi-settings-outline</v-icon>
-      </v-btn>
-    </v-footer>
+    <footerApp></footerApp>
     <Snackbar :key="$store.state.snackbarState"></Snackbar>
   </v-app>
 </template>
 
 <script>
+import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 import Snackbar from '@/components/global/snackbar'
+import footerApp from '@/components/global/footer'
 
 export default {
   name: 'App',
   components: {
+    btnWithTooltip,
     calendar: () => import('@/components/calendar/Calendar'),
     catalog: () => import('@/components/catalog/catalog'),
+    customFields: () => import('@/components/catalog/customFields'),
+    footerApp,
+    help: () => import('@/components/help/help'),
+    patron: () => import('@/components/patron/patron'),
     settings: () => import('@/views/settings'),
     sideDrawer: () => import('@/components/filterDrawer/FilterDrawer'),
     Snackbar
@@ -68,6 +57,17 @@ export default {
       set(v) {
         this.$store.dispatch('setStateValue', {
           key: 'viewMain',
+          value: v
+        })
+      }
+    },
+    viewSub: {
+      get() {
+        return this.$store.state.viewSub
+      },
+      set(v) {
+        this.$store.dispatch('setStateValue', {
+          key: 'viewSub',
           value: v
         })
       }
