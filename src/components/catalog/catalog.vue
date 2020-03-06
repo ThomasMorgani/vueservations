@@ -68,7 +68,7 @@
     <v-dialog
       v-model="modalCatalogitemEdit"
       persistent
-      max-width="500px"
+      max-width="600px"
       transition="dialog-transition"
       :key="
         `ciEdit${String(
@@ -94,9 +94,7 @@
         )}`
       "
     >
-      <catalogItemEditFields
-        :key="modalEditCatalogItemFields + ''"
-      ></catalogItemEditFields>
+      <catalogItemEditFields :key="modalEditCatalogItemFields + ''"></catalogItemEditFields>
     </v-dialog>
     <!-- Catalog Custom Fields Mgmtm Modal  -->
     <!-- <v-dialog

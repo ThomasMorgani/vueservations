@@ -50,7 +50,14 @@
                   <v-list-item-title v-text="item.text"></v-list-item-title>
                 </v-list-item-content>
               </template>
-              <template v-slot:selection="{ item }">{{item.text}}</template>
+              <template v-slot:selection="{ item }">
+                <v-list-item>
+                  <v-list-item-action>
+                    <v-icon :color="item.color" v-text="item.icon"></v-icon>
+                  </v-list-item-action>
+                  <v-list-item-title v-text="item.text"></v-list-item-title>
+                </v-list-item>
+              </template>
             </v-select>
           </v-col>
 
@@ -265,7 +272,6 @@ export default {
     name: null,
     originalValues: {},
     status: null,
-    statusOptions: ['blocked', 'enabled', 'disabled']
   }),
   computed: {
     ...mapState({

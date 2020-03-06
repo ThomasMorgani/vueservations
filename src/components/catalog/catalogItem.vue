@@ -14,9 +14,11 @@
         <v-col cols="10">
           <v-row dense class="display-flex align-center justify-start">
             <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
-            <span class="font-weight-medium title primary--text">{{
+            <span class="font-weight-medium title primary--text">
+              {{
               item.name
-            }}</span>
+              }}
+            </span>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-chip
@@ -37,9 +39,7 @@
                   <strong>Color:</strong>
                   {{ item.color }}
                 </p>
-                <div
-                  :style="{ height: '10px', 'background-color': item.color }"
-                ></div>
+                <div :style="{ height: '10px', 'background-color': item.color }"></div>
               </span>
             </v-tooltip>
           </v-row>
@@ -48,28 +48,20 @@
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <div v-on="on">
-                  <v-avatar
-                    size="10"
-                    :color="categoriesById[item.category].color"
-                    class="mr-1"
-                  >
-                  </v-avatar>
+                  <v-avatar size="10" :color="categoriesById[item.category].color" class="mr-1"></v-avatar>
                   <p
                     v-html="item.categoryName"
-                    class=" font-italic subheading text-capitalize"
+                    class="font-italic subheading text-capitalize"
                     style="display: inline;"
                   ></p>
                 </div>
               </template>
               <span>
-                <p class="mb-1"><strong>Category</strong></p>
-                <v-avatar
-                  size="15"
-                  :color="categoriesById[item.category].color"
-                  class="mr-1"
-                >
-                </v-avatar
-                >{{ item.categoryName }}
+                <p class="mb-1">
+                  <strong>Category</strong>
+                </p>
+                <v-avatar size="15" :color="categoriesById[item.category].color" class="mr-1"></v-avatar>
+                {{ item.categoryName }}
               </span>
             </v-tooltip>
           </v-row>
@@ -98,11 +90,7 @@
             </v-tooltip>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card
-                  flat
-                  class="d-flex align-center text-left mx-3"
-                  v-on="on"
-                >
+                <v-card flat class="d-flex align-center text-left mx-3" v-on="on">
                   <v-icon color="primary" v-text="'mdi-history'"></v-icon>
                   <p
                     v-text="
@@ -158,12 +146,12 @@
           </v-tooltip>
         </v-col>
       </v-row>
-      <v-row justify="end">
-        <v-col cols="10">
+      <v-row justify="start">
+        <v-col cols="10" offset="2">
           <v-divider></v-divider>
           <p class="title font-weight-bold primary--text">DETAILS</p>
         </v-col>
-        <v-col cols="10" text-center>
+        <v-col cols="8" offset="2" class="text-center">
           <customFieldsList :items="item.customFields"></customFieldsList>
         </v-col>
       </v-row>
