@@ -1,9 +1,13 @@
 <template>
   <v-card flat width="100%">
     <template v-if="!items">
-      <v-row class="flex-column" dense align="center">
+      <v-row class="flex-column" dense align="center" justify="center">
         <p>No additional details.</p>
-        <p>Click the "edit" icon above to modify custom fields.</p>
+        <!-- <p class="mt-4">
+          <v-btn text large color="primary">
+            <v-icon color="primary">mdi-plus</v-icon>ADD
+          </v-btn>
+        </p>-->
       </v-row>
     </template>
     <template v-else>

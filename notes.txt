@@ -1,0 +1,3 @@
+// /?combine view's toolbar to single comp. 
+//come back to details tab in ccatalog item
+//on new ci save, close modal, setCis to id="id" scroll to new item in list and expand

@@ -1,189 +1,175 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text">{{
+    <v-card-title class="justify-center title primary--text">
+      {{
       id ? 'EDIT ITEM' : 'ADD ITEM'
-    }}</v-card-title>
+      }}
+    </v-card-title>
     <v-card-text class="modalBody">
-      <form>
-        <v-row align="center" justify="center" dense>
-          <v-col cols="12">
-            <v-text-field
-              v-model="name"
-              label="Name"
-              name="name"
-              textarea
-              :error-messages="nameAvailable"
-            ></v-text-field>
-          </v-col>
+      <v-tabs v-model="tab" background-color="transparent" color="primary" grow>
+        <v-tab key="0">INFO</v-tab>
+        <v-tab key="1">DETAILS</v-tab>
+      </v-tabs>
 
-          <v-col cols="3" class="text-left">
-            <v-text-field
-              v-model="abbreviation"
-              label="Abbreviation"
-              name="abbr"
-              textarea
-              filled
-              maxlength="4"
-              :error-messages="abbreviationAvailable"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="9">
-            <v-select
-              v-model="category"
-              :items="orderBy(categories, 'name')"
-              item-text="name"
-              item-value="id"
-              label="Category"
-            ></v-select>
-          </v-col>
-          <v-col cols="12">
-            <v-select
-              label="Status"
-              :items="statusOptions"
-              item-text="text"
-              item-value="value"
-              v-model="status"
-            >
-              <template v-slot:item="{ item }">
-                <v-list-item-action>
-                  <v-icon :color="item.color" v-text="item.icon"></v-icon>
-                </v-list-item-action>
-                <v-list-item-content>
-                  <v-list-item-title v-text="item.text"></v-list-item-title>
-                </v-list-item-content>
-              </template>
-              <template v-slot:selection="{ item }">
-                <v-list-item>
-                  <v-list-item-action class="mr-4">
-                    <v-icon :color="item.color" v-text="item.icon"></v-icon>
-                  </v-list-item-action>
-                  <v-list-item-title v-text="item.text"></v-list-item-title>
-                </v-list-item>
-              </template>
-            </v-select>
-          </v-col>
-
-          <v-col cols="12">
-            <v-row dense>
-              <v-col cols="6">
-                <v-card outlined class="d-flex flex-column pa-2">
-                  <p>Color</p>
-                  <div>
-                    <v-menu
-                      :close-on-content-click="false"
-                      :nudge-width="200"
-                      offset-x
-                    >
-                      <template v-slot:activator="{ on }">
-                        <v-avatar
-                          tile
-                          v-on="on"
-                          :color="color"
-                          class="hoverPointer"
-                        >
-                          <v-icon color="white">mdi-palette</v-icon>
-                        </v-avatar>
-                      </template>
-                      <v-color-picker
-                        v-model="color"
-                        class="ma-2"
-                        hide-inputs
-                      ></v-color-picker>
-                    </v-menu>
-                  </div>
-                </v-card>
+      <v-tabs-items v-model="tab">
+        <v-tab-item key="0">
+          <form>
+            <v-row align="center" justify="center" dense>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="name"
+                  label="Name"
+                  name="name"
+                  textarea
+                  :error-messages="nameAvailable"
+                ></v-text-field>
               </v-col>
-              <v-col cols="6">
-                <v-card outlined class="d-flex flex-column pa-2">
-                  <p>Image</p>
-                  <!-- <p class="mb-0"></p> -->
-                  <v-img
-                    :src="imageDisplayed"
-                    height="48"
-                    width="48"
-                    hover
-                    @click="modalEditImage = !modalEditImage"
-                    class="hoverPointer"
-                  ></v-img>
-                  <!-- <v-file-input formatsend-inner-icon="mdi-image" formatsend-icon label="Select Image"></v-file-input> -->
-                </v-card>
+
+              <v-col cols="3" class="text-left">
+                <v-text-field
+                  v-model="abbreviation"
+                  label="Abbreviation"
+                  name="abbr"
+                  textarea
+                  filled
+                  maxlength="4"
+                  :error-messages="abbreviationAvailable"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="9">
+                <v-select
+                  v-model="category"
+                  :items="orderBy(categories, 'name')"
+                  item-text="name"
+                  item-value="id"
+                  label="Category"
+                ></v-select>
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  label="Status"
+                  :items="statusOptions"
+                  item-text="text"
+                  item-value="value"
+                  v-model="status"
+                >
+                  <template v-slot:item="{ item }">
+                    <v-list-item-action>
+                      <v-icon :color="item.color" v-text="item.icon"></v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                      <v-list-item-title v-text="item.text"></v-list-item-title>
+                    </v-list-item-content>
+                  </template>
+                  <template v-slot:selection="{ item }">
+                    <v-list-item>
+                      <v-list-item-action class="mr-4">
+                        <v-icon :color="item.color" v-text="item.icon"></v-icon>
+                      </v-list-item-action>
+                      <v-list-item-title v-text="item.text"></v-list-item-title>
+                    </v-list-item>
+                  </template>
+                </v-select>
+              </v-col>
+
+              <v-col cols="12">
+                <v-row dense>
+                  <v-col cols="6">
+                    <v-card outlined class="d-flex flex-column pa-2">
+                      <p>Color</p>
+                      <div>
+                        <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
+                          <template v-slot:activator="{ on }">
+                            <v-avatar tile v-on="on" :color="color" class="hoverPointer">
+                              <v-icon color="white">mdi-palette</v-icon>
+                            </v-avatar>
+                          </template>
+                          <v-color-picker v-model="color" class="ma-2" hide-inputs></v-color-picker>
+                        </v-menu>
+                      </div>
+                    </v-card>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-card outlined class="d-flex flex-column pa-2">
+                      <p>Image</p>
+                      <!-- <p class="mb-0"></p> -->
+                      <v-img
+                        :src="imageDisplayed"
+                        height="48"
+                        width="48"
+                        hover
+                        @click="modalEditImage = !modalEditImage"
+                        class="hoverPointer"
+                      ></v-img>
+                      <!-- <v-file-input formatsend-inner-icon="mdi-image" formatsend-icon label="Select Image"></v-file-input> -->
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-col>
+
+              <v-col cols="12">
+                <v-textarea
+                  v-model="description"
+                  label="Decription"
+                  auto-grow
+                  dense
+                  outlined
+                  rows="4"
+                  class="mt-2"
+                ></v-textarea>
               </v-col>
             </v-row>
-          </v-col>
-
-          <v-col cols="12">
-            <v-textarea
-              v-model="description"
-              label="Decription"
-              auto-grow
-              dense
-              outlined
-              rows="4"
-              class="mt-2"
-            ></v-textarea>
-          </v-col>
-
-          <v-col cols="12">
-            <v-card flat class="pa-2">
-              <v-row justify="space-between" no-gutters>
-                <v-col cols="8">
-                  <span class="title primary--text">DETAILS</span>
-                </v-col>
-                <v-col class="text-right">
-                  <v-tooltip top>
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        text
-                        icon
-                        color="warning"
-                        @click="editCustomFields"
-                        v-on="on"
-                      >
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                    </template>
-                    <span>Edit details</span>
-                  </v-tooltip>
-                </v-col>
-                <v-col cols="12">
-                  <v-divider></v-divider>
-                  <customFieldsList
-                    :items="customFieldsDisplayed"
-                  ></customFieldsList>
-                </v-col>
-              </v-row>
-            </v-card>
-          </v-col>
-        </v-row>
-      </form>
+          </form>
+        </v-tab-item>
+        <v-tab-item key="1">
+          <v-row>
+            <v-col cols="12">
+              <v-card flat class="pa-2">
+                <v-card-text>
+                  <v-row justify="space-between" no-gutters>
+                    <v-col cols="12">
+                      <customFieldsList :items="customFieldsDisplayed"></customFieldsList>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+      </v-tabs-items>
     </v-card-text>
     <v-card-actions>
+      <!-- 
+  tab == 'info' ?
+  tab == 'details' ?
+
+      -->
+
       <v-tooltip top :disabled="!id">
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
               text
               small
-              color="error"
-              :disabled="!id"
+              :color="tab === 0 ? 'error' : 'warning'"
+              :disabled="tab === 0 && !id"
               :loading="loading === 'delete'"
-              @click="deletePrompt"
-              >DELETE</v-btn
-            >
+              @click="tab === 0 ? deletePrompt() : editCustomFields()"
+            >{{tab === 0 ? 'DELETE' : 'EDIT'}}</v-btn>
           </div>
         </template>
-        <span>Delete catalog item</span>
+        <span>{{tab === 0 ? 'Delete catalog item' : 'Edit Details'}}</span>
       </v-tooltip>
+
       <v-tooltip top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
-            <v-btn text small :disabled="!isChanged" @click="resetChanges"
-              >RESET</v-btn
-            >
+            <v-btn text small :disabled="!id || !isChanged" @click="resetChanges">RESET</v-btn>
           </div>
         </template>
         <span>Revert all unsaved changes</span>
       </v-tooltip>
+
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="cancel">CLOSE</v-btn>
       <v-tooltip top :disabled="!saveDisabled && !isChanged">
@@ -203,15 +189,15 @@
                   color="warning"
                   class="mr-1"
                   v-if="isChanged && !saveDisabled"
-                  >mdi-content-save-alert</v-icon
-                > </transition
-              >SAVE
+                >mdi-content-save-alert</v-icon>
+              </transition>SAVE
             </v-btn>
           </div>
         </template>
         <span>{{ saveTooltipText }}</span>
       </v-tooltip>
     </v-card-actions>
+
     <!-- DIALOGS -->
     <!-- DIALOGS -->
     <!-- DIALOGS -->
@@ -232,47 +218,26 @@
     </v-dialog>
 
     <!-- DELETE ITEM -->
-    <v-dialog
-      v-model="modalConfirmDelete"
-      max-width="500px"
-      transition="dialog-transition"
-    >
+    <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
       <!--TODO: Move to Component -->
       <v-card>
-        <v-card-title class="justify-center title error--text"
-          >CONFIRM DELETE</v-card-title
-        >
+        <v-card-title class="justify-center title error--text">CONFIRM DELETE</v-card-title>
         <v-card-text>
           <v-row class="justify-center align-center">
             <v-col cols="12" class="align-center">
-              <p class="font-weight-bold text-center">
-                WARNING: You are about to delete catalog item:
-              </p>
+              <p class="font-weight-bold text-center">WARNING: You are about to delete catalog item:</p>
               <p class="font-weight-bold text-center">"{{ name }}"</p>
-              <template
-                v-if="affectedEventData && affectedEventData.items.length > 0"
-              >
-                <p class="text-center">
-                  The following reservations for this item will be removed.
-                </p>
+              <template v-if="affectedEventData && affectedEventData.items.length > 0">
+                <p class="text-center">The following reservations for this item will be removed.</p>
                 <eventTableSimple v-bind="affectedEventData"></eventTableSimple>
               </template>
-              <p class="text-center" v-else>
-                (There are no events associated with this item)
-              </p>
+              <p class="text-center" v-else>(There are no events associated with this item)</p>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions class="d-flex justify-space-around">
-          <v-btn
-            color="primary"
-            text
-            @click="modalConfirmDelete = !modalConfirmDelete"
-            >CANCEL</v-btn
-          >
-          <v-btn color="error" text @click="deleteCatalogitem"
-            >CONFIRM DELETE</v-btn
-          >
+          <v-btn color="primary" text @click="modalConfirmDelete = !modalConfirmDelete">CANCEL</v-btn>
+          <v-btn color="error" text @click="deleteCatalogitem">CONFIRM DELETE</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -319,7 +284,8 @@ export default {
     modalEditImage: false,
     name: null,
     originalValues: {},
-    status: null
+    status: null,
+    tab: null
   }),
   computed: {
     ...mapState({
@@ -373,10 +339,12 @@ export default {
               this[field].id &&
               this[field].id !== this.originalValues[field].id
             ) {
+              console.log(field)
               isChanged = true
             }
           } else {
             if (this.originalValues[field] !== this[field]) {
+              console.log(field)
               isChanged = true
             }
           }
@@ -615,7 +583,7 @@ p {
   margin-bottom: 4px !important;
 }
 .modalBody {
-  max-height: 65vh;
+  height: 65vh;
   overflow-y: scroll;
 }
 

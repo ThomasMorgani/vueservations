@@ -118,7 +118,7 @@
         <v-col class="text-right flex-grow-0 flex-shrink-1">
           <v-tooltip top>
             <template v-slot:activator="{ on }">
-              <v-btn text icon color="primary" @click="edit" v-on="on">
+              <v-btn text icon color="primary" @click="showNotes" v-on="on">
                 <v-icon color="primary">mdi-note-text-outline</v-icon>
               </v-btn>
             </template>
@@ -138,8 +138,8 @@
         <v-col class="text-right flex-grow-0 flex-shrink-1">
           <v-tooltip top>
             <template v-slot:activator="{ on }">
-              <v-btn text icon color="warning" @click="edit" v-on="on">
-                <v-icon color="warning">mdi-square-edit-outline</v-icon>
+              <v-btn text icon color="primary" @click="edit" v-on="on">
+                <v-icon color="primary">mdi-square-edit-outline</v-icon>
               </v-btn>
             </template>
             <span>Edit Item</span>
@@ -278,6 +278,9 @@ export default {
           this.$emit('reserve', e)
         }
       }
+    },
+    showNotes() {
+      this.$emit('showItemNotes', this.item)
     },
     showReservations() {
       this.$emit('showItemReservations', this.item)
