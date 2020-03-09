@@ -6,9 +6,11 @@
       <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
       <v-icon left color="primary">mdi-filter</v-icon>
-      <span class="body-1 font-weight-bold">{{
+      <span class="body-1 font-weight-bold">
+        {{
         `${itemList.length} of ${catalogItems.length}`
-      }}</span>
+        }}
+      </span>
     </v-card-title>
     <v-card-text :style="styleCiList">
       <v-expansion-panels popout v-model="panel" class="py-1">
@@ -19,6 +21,7 @@
             :item="item"
             @reserve="onReserve"
             @showItemReservations="onShowReservations"
+            @showItemNotes="onShowNotes"
           ></catalogItem>
           <!-- <catalogItem :key="item.id" :item="item" :isActivePanel="key === panel"></catalogItem> -->
         </template>
@@ -41,12 +44,13 @@ import Vue2Filters from 'vue2-filters'
 import filters from '@/modules/filters'
 import * as formats from '@/modules/formats.js'
 
-import catalogItem from '@/components/catalog/catalogItem'
+import catalogItem from '@/components/catalog/catalogItem/catalogItem'
 export default {
   name: 'catalogList',
   components: {
     catalogItem,
     eventEdit: () => import('@/components/calendar/eventEdit'),
+    ciNotes: () => import('@/components/catalog/catalogItem/ciNotes'),
     eventTableSimple: () => import('@/components/calendar/eventTableSimple')
   },
   mixins: [Vue2Filters.mixin],
@@ -190,6 +194,31 @@ export default {
       } else {
         console.log('error: ci not found')
       }
+    },
+    onShowNotes(ci) {
+      this.modalCompData = {
+        catalogItem: ci,
+        tableData: {
+          headers: [
+            {
+              value: 'note',
+              text: 'NOTE'
+            },
+            {
+              value: 'createdDate',
+              text: 'CREATED'
+            },
+            {
+              value: 'updatedDate',
+              text: 'UPDATED'
+            }
+          ],
+          items: this.orderBy(formats.noteListSimple(ci.notes), 'createdDate'),
+          height: 400
+        }
+      }
+      this.modalComp = 'ciNotes'
+      this.modal = true
     },
     onShowReservations(ci) {
       this.modalCompData = {

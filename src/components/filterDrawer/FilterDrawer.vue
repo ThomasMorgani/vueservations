@@ -7,6 +7,7 @@
     stateless
     @input="$emit('input')"
     width="350"
+    height="contentHeight"
   >
     <v-sheet height="40" class="d-flex align-center justify-space-between pa-2">
       <span class="title font-weight-bold align-center primary--text">FILTERS</span>
@@ -27,7 +28,9 @@
       </v-tooltip>
     </v-sheet>
     <v-sheet :style="styleFiltersSheet">
-      <component :is="filterComp"></component>
+      <v-expand-transition hide-on-leave origin="bottom center 0">
+        <component :is="filterComp"></component>
+      </v-expand-transition>
     </v-sheet>
   </v-navigation-drawer>
 </template>

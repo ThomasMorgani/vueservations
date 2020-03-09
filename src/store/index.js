@@ -191,9 +191,17 @@ export default new Vuex.Store({
       //data expects: {key: state key, value: state value}
       state[data.key].push(data.value)
     },
+    pushStateValueByKey(state, data) {
+      //data expects: {key: state key, value: state value}
+      state[data.stateItem][data.key].push(data.value)
+    },
     setStateValue(state, data) {
       //data expects: {key: state key, value: state value}
       state[data.key] = data.value
+    },
+    setStateValueByKey(state, data) {
+      //data expects: {key: state key, value: state value}
+      state[data.stateItem][data.key] = data.value
     },
     toggleModalCatalogCustomfield(state, data) {
       state.modalCatalogCustomfield = data
@@ -397,7 +405,7 @@ export default new Vuex.Store({
         commit('setStateValue', { key: f, value: filterDefaults[f] })
       })
     },
-    reservationAdd() {},
+    reservationAdd() { },
     settingsNew({ commit, dispatch }, data) {
       return new Promise((resolve, reject) => {
         dispatch('apiCall', {
@@ -425,6 +433,14 @@ export default new Vuex.Store({
         commit('pushStateValue', { key: data.key, value: data.value })
       } else {
         commit('setStateValue', { key: data.key, value: data.value })
+      }
+    },
+    setStateValueByKey({ commit }, data) {
+      console.log(data)
+      if (data.isPush) {
+        commit('pushStateValueByKey', { stateItem: data.stateItem, key: data.key, value: data.value })
+      } else {
+        commit('setStateValueByKey', { stateItem: data.stateItem, key: data.key, value: data.value })
       }
     },
     toggleStateValue({ commit, state }, data) {

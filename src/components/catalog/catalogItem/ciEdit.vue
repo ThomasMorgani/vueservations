@@ -150,7 +150,7 @@
           <div v-on="on">
             <v-btn
               text
-              small
+              large
               :color="tab === 0 ? 'error' : 'warning'"
               :disabled="tab === 0 && !id"
               :loading="loading === 'delete'"
@@ -164,20 +164,20 @@
       <v-tooltip top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
-            <v-btn text small :disabled="!id || !isChanged" @click="resetChanges">RESET</v-btn>
+            <v-btn text large :disabled="!id || !isChanged" @click="resetChanges">RESET</v-btn>
           </div>
         </template>
         <span>Revert all unsaved changes</span>
       </v-tooltip>
 
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" @click="cancel">CLOSE</v-btn>
+      <v-btn text large color="primary" @click="cancel">CLOSE</v-btn>
       <v-tooltip top :disabled="!saveDisabled && !isChanged">
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
               text
-              small
+              large
               color="primary"
               :disabled="saveDisabled"
               :loading="loading === 'save'"
@@ -185,7 +185,6 @@
             >
               <transition name="bounce-top">
                 <v-icon
-                  small
                   color="warning"
                   class="mr-1"
                   v-if="isChanged && !saveDisabled"
@@ -246,7 +245,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import customFieldsList from '@/components/catalog/catalogItemCustomFieldsList'
+import customFieldsList from '@/components/catalog/catalogItem/ciCustomFieldsList'
 import * as formats from '@/modules/formats.js'
 import Vue2Filters from 'vue2-filters'
 
@@ -254,7 +253,8 @@ export default {
   name: 'catalogItemEdit',
   components: {
     customFieldsList,
-    editImageModal: () => import('@/components/catalog/catalogItemEditImage'),
+    editImageModal: () =>
+      import('@/components/catalog/catalogItem/ciEditImage'),
     eventTableSimple: () => import('@/components/global/tableSimple')
   },
   mixins: [Vue2Filters.mixin],
@@ -541,7 +541,7 @@ export default {
               //   data: this.image_data
               // })
               this.setItemeditingValues(itemData)
-              this.cancel()
+              // this.cancel()
             }
           }
           //set originalItem to item

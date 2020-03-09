@@ -3,14 +3,11 @@
     <v-app-bar color="primary" app dark clipped-right>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon @click="setView">
-        <v-icon>
-          {{
-            viewMain === 'calendar'
-              ? 'mdi-format-list-bulleted-type'
-              : 'mdi-calendar'
-          }}
-        </v-icon>
+      <v-btn icon @click="setView('catalog')">
+        <v-icon>mdi-format-list-bulleted-type</v-icon>
+      </v-btn>
+      <v-btn icon @click="setView('calendar')">
+        <v-icon>mdi-calendar</v-icon>
       </v-btn>
     </v-app-bar>
     <v-content ref="content">
@@ -37,7 +34,8 @@ export default {
     btnWithTooltip,
     calendar: () => import('@/components/calendar/Calendar'),
     catalog: () => import('@/components/catalog/catalog'),
-    customFields: () => import('@/components/catalog/customFields'),
+    customFields: () =>
+      import('@/components/catalog/customFields/customFields'),
     footerApp,
     help: () => import('@/components/help/help'),
     patron: () => import('@/components/patron/patron'),
@@ -85,8 +83,8 @@ export default {
       })
       this.isLoaded = true
     },
-    setView() {
-      this.viewMain = this.viewMain === 'catalog' ? 'calendar' : 'catalog'
+    setView(view) {
+      this.viewMain = view
       localStorage.setItem('lastView', this.viewMain)
     }
   },

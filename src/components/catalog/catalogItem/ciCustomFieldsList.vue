@@ -11,7 +11,12 @@
       </v-row>
     </template>
     <template v-else>
-      <v-row dense v-for="(field, key) in items" :key="key + 'cfrow'" align="center">
+      <v-row
+        dense
+        v-for="(field, key) in orderBy(items, 'name')"
+        :key="key + 'cfrow'"
+        align="center"
+      >
         <v-col class="subheading primary--text font-weight-bold d-flex flex-grow-1">
           {{
           field.name
@@ -40,6 +45,7 @@
 </template>
 
 <script>
+import Vue2Filters from 'vue2-filters'
 export default {
   name: 'ciCfList',
   props: {
@@ -48,7 +54,8 @@ export default {
       required: false,
       default: () => []
     }
-  }
+  },
+  mixins: [Vue2Filters.mixin]
 }
 </script>
 

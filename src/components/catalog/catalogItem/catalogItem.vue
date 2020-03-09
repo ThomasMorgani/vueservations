@@ -163,7 +163,7 @@
 import { mapGetters, mapState } from 'vuex'
 import { timestampHuman } from '@/modules/formats.js'
 
-import customFieldsList from '@/components/catalog/catalogItemCustomFieldsList'
+import customFieldsList from '@/components/catalog/catalogItem/ciCustomFieldsList'
 export default {
   name: 'catalogItem',
   components: {

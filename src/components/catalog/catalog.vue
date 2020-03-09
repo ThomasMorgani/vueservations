@@ -130,9 +130,9 @@
 <script>
 import { mapState } from 'vuex'
 import catalog from '@/views/catalog/catalog'
-import catalogItemEdit from '@/components/catalog/catalogItemEdit'
-import catalogItemEditFields from '@/components/catalog/catalogItemEditFields'
-import categoryEdit from '@/components/catalog/categoryEdit'
+import catalogItemEdit from '@/components/catalog/catalogItem/ciEdit'
+import catalogItemEditFields from '@/components/catalog/catalogItem/ciEditFields'
+import categoryEdit from '@/components/catalog/category/categoryEdit'
 import category from '@/views/catalog/category'
 import filterBtn from '@/components/global/buttons/filterDrawerToggle'
 import imagePreviewModal from '@/components/images/imagePreviewModal'
@@ -141,7 +141,7 @@ export default {
   components: {
     catalog,
     catalogCustomfield: () =>
-      import('@/components/catalog/catalogCustomfieldManagement'),
+      import('@/components/catalog/customFields/cfManagement'),
     catalogItemEdit,
     catalogItemEditFields,
     category,

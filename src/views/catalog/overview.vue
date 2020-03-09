@@ -10,9 +10,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import categoryList from '@/components/catalog/categoryList';
-import catalogItemList from '@/components/catalog/catalogItemList';
+import { mapState } from 'vuex'
+import categoryList from '@/components/catalog/category/categoryList'
+import catalogItemList from '@/components/catalog/catalogItem/ciList'
 export default {
   components: {
     categoryList,
@@ -23,7 +23,7 @@ export default {
       sideDrawer: 'sideDrawer'
     })
   }
-};
+}
 </script>
 
 <style></style>

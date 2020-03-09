@@ -7,32 +7,23 @@
       transition="dialog-transition"
       :key="`cinewfEdit${String(fieldAddingNew ? fieldAddingNew : 'none')}`"
     >
-      <catalogCustomfield
-        @customFieldCreated="updateField(fieldAddingNew, $event)"
-      ></catalogCustomfield>
+      <catalogCustomfield @customFieldCreated="updateField(fieldAddingNew, $event)"></catalogCustomfield>
     </v-dialog>
-    <v-card-title class="justify-center title primary--text outlined">
-      {{ catalogItemediting.id ? `EDIT DETAILS` : 'ADD FIELDS' }}
-    </v-card-title>
+    <v-card-title
+      class="justify-center title primary--text outlined"
+    >{{ catalogItemediting.id ? `EDIT DETAILS` : 'ADD FIELDS' }}</v-card-title>
     <v-card-text class="modalBody">
       <template v-if="fieldsDisplayed.length < 1">
-        <p class="mt-6 text-center">
-          No custom fields set for this catalog item.
-        </p>
+        <p class="mt-6 text-center">No custom fields set for this catalog item.</p>
         <p class="text-center">Use the "ADD" button below to add new fields.</p>
       </template>
       <template v-for="(field, index) in fieldsDisplayed">
-        <v-card
-          elevation="3"
-          outlined
-          :key="field.objectKey + 'row'"
-          class="pa-3 mb-1"
-        >
+        <v-card elevation="3" outlined :key="field.objectKey + 'row'" class="pa-3 mb-1">
           <v-row dense align="center">
             <v-col cols="8" class="pt-0">
-              <p class="title font-weight-bold primary--text mb-0">
-                {{ fields[field.objectKey].name || 'New Field' }}
-              </p>
+              <p
+                class="title font-weight-bold primary--text mb-0"
+              >{{ fields[field.objectKey].name || 'New Field' }}</p>
             </v-col>
             <v-col cols="4" class="text-right pt-0">
               <v-btn
@@ -45,17 +36,12 @@
               >
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
-              <v-btn
-                small
-                icon
-                color="warning"
-                @click="editField(field.objectKey)"
-              >
+              <v-btn small icon color="warning" @click="editField(field.objectKey)">
                 <v-icon>
                   {{
-                    isediting(field.objectKey)
-                      ? 'mdi-pencil-off'
-                      : 'mdi-pencil'
+                  isediting(field.objectKey)
+                  ? 'mdi-pencil-off'
+                  : 'mdi-pencil'
                   }}
                 </v-icon>
               </v-btn>
@@ -64,10 +50,7 @@
           <v-row dense v-if="!isediting(field.objectKey)">
             <v-col cols="12">
               <v-row align="center" dense>
-                <v-col
-                  class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                  >Value:</v-col
-                >
+                <v-col class="subheading primary--text font-weight-bold d-flex shrink py-0">Value:</v-col>
                 <v-col>{{ fields[field.objectKey].value }}</v-col>
               </v-row>
               <!-- <v-row align="center" dense>
@@ -80,13 +63,12 @@
               <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                  >Visibility:</v-col
-                >
+                >Visibility:</v-col>
                 <v-col>
                   {{
-                    fields[field.objectKey].internal === '1'
-                      ? 'Internal'
-                      : 'Public'
+                  fields[field.objectKey].internal === '1'
+                  ? 'Internal'
+                  : 'Public'
                   }}
                 </v-col>
               </v-row>
@@ -122,16 +104,10 @@
                 autocomplete="off"
                 label="Name"
                 @change="updateField(field.objectKey, $event)"
-              ></v-autocomplete> -->
+              ></v-autocomplete>-->
             </v-col>
             <v-col cols="1">
-              <v-btn
-                large
-                text
-                icon
-                color="primary"
-                @click="createNewField(index)"
-              >
+              <v-btn large text icon color="primary" @click="createNewField(index)">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
             </v-col>
@@ -156,13 +132,12 @@
               <v-row align="center" dense>
                 <v-col
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
-                  >Visibility:</v-col
-                >
+                >Visibility:</v-col>
                 <v-col>
                   {{
-                    fields[field.objectKey].internal === '1'
-                      ? 'Internal'
-                      : 'Public'
+                  fields[field.objectKey].internal === '1'
+                  ? 'Internal'
+                  : 'Public'
                   }}
                 </v-col>
               </v-row>
@@ -197,42 +172,35 @@
     <v-card-actions>
       <v-tooltip top>
         <template v-slot:activator="{ on }">
-          <v-btn text small color="primary" v-on="on" @click="addField"
-            >ADD</v-btn
-          >
+          <v-btn text color="primary" v-on="on" @click="addField">ADD</v-btn>
         </template>
         <span>Add new custom field</span>
       </v-tooltip>
       <v-tooltip top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
-            <v-btn text small :disabled="!isChanged" @click="restoreValues"
-              >RESET</v-btn
-            >
+            <v-btn text :disabled="!isChanged" @click="restoreValues">RESET</v-btn>
           </div>
         </template>
         <span>Revert all unsaved changes</span>
       </v-tooltip>
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" @click="cancel">CANCEL</v-btn>
+      <v-btn text color="primary" @click="cancel">CANCEL</v-btn>
       <v-tooltip top :disabled="!saveDisabled && !isChanged">
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
               text
-              small
               color="primary"
               :disabled="saveDisabled"
               :loading="loading === 'save'"
               @click="saveFields"
             >
               <v-icon
-                small
                 color="warning"
                 class="mr-1"
                 v-if="isChanged && !saveDisabled"
-                >mdi-content-save-alert</v-icon
-              >SAVE
+              >mdi-content-save-alert</v-icon>SAVE
             </v-btn>
           </div>
         </template>
@@ -251,7 +219,7 @@ export default {
   name: 'catalogItemEditFields',
   components: {
     catalogCustomfield: () =>
-      import('@/components/catalog/catalogCustomfieldManagement')
+      import('@/components/catalog/customFields/cfManagement')
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({

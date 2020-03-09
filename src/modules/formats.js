@@ -19,23 +19,12 @@ const catalogItem = item => {
         ? item.lastReservation['0']
         : null,
     name: item.name || '',
+    notes: item.notes || [],
     status: item.status || ''
   }
 }
 
-const eventListSimple = (events, patrons) => {
-  return events.map(e => {
-    const patron = patrons.find(p => p.id === e.patron_id)
-    const newEvent = {
-      patron: patron
-        ? `${patron.last_name}, ${patron.first_name}`
-        : 'UNK PATRON',
-      startDate: timestampHuman(e.start_date, false, false),
-      endDate: timestampHuman(e.end_date, false, false)
-    }
-    return newEvent
-  })
-}
+
 
 const dateDifference = (date1, date2) => {
   //TODO: need to extend? pass units needed, days, hours, etc
@@ -55,9 +44,33 @@ const dateDifference = (date1, date2) => {
 
   return total_days
 }
+const eventListSimple = (events, patrons) => {
+  return events.map(e => {
+    const patron = patrons.find(p => p.id === e.patron_id)
+    const newEvent = {
+      patron: patron
+        ? `${patron.last_name}, ${patron.first_name}`
+        : 'UNK PATRON',
+      startDate: timestampHuman(e.start_date, false, false),
+      endDate: timestampHuman(e.end_date, false, false)
+    }
+    return newEvent
+  })
+}
+
+const noteListSimple = (notes) => {
+  return notes.map(e => {
+    const newNote = {
+      note: e.note,
+      createdDate: timestampHuman(e.date_created, false, false),
+      updatedDate: timestampHuman(e.date_updated, false, false)
+    }
+    return newNote
+  })
+}
 
 const timestampHuman = (timestamp, withYear = true, withTime = true) => {
-  const asDate = new Date(timestamp)
+  const asDate = typeof timestamp.getMonth === 'function' ? timestamp : new Date(timestamp)
   let human = ''
   let D = asDate.getDate()
   if (D < 10) {
@@ -91,4 +104,4 @@ const timestampHuman = (timestamp, withYear = true, withTime = true) => {
   // return timestamp`
 }
 
-export { catalogItem, dateDifference, eventListSimple, timestampHuman }
+export { catalogItem, dateDifference, eventListSimple, noteListSimple, timestampHuman }

@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import catalogItemList from '@/components/catalog/catalogItemList'
+import catalogItemList from '@/components/catalog/catalogItem/ciList'
 
 export default {
   components: {

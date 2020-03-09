@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import categoryList from '@/components/catalog/categoryList';
+import { mapState } from 'vuex'
+import categoryList from '@/components/catalog/category/categoryList'
 export default {
   components: {
     categoryList
@@ -19,7 +19,7 @@ export default {
       filterCategorySelect: state => state.filterCategorySelect
     })
   }
-};
+}
 </script>
 
 <style></style>
