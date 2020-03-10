@@ -7,9 +7,7 @@
       <v-spacer></v-spacer>
       <v-icon left color="primary">mdi-filter</v-icon>
       <span class="body-1 font-weight-bold">
-        {{
-        `${itemList.length} of ${catalogItems.length}`
-        }}
+        {{ `${itemList.length} of ${catalogItems.length}` }}
       </span>
     </v-card-title>
     <v-card-text :style="styleCiList">
@@ -205,15 +203,15 @@ export default {
               text: 'NOTE'
             },
             {
-              value: 'createdDate',
+              value: 'date_created',
               text: 'CREATED'
             },
             {
-              value: 'updatedDate',
+              value: 'date_updated',
               text: 'UPDATED'
             }
           ],
-          items: this.orderBy(formats.noteListSimple(ci.notes), 'createdDate'),
+          items: this.orderBy(formats.noteListSimple(ci.notes), 'date_created'),
           height: 400
         }
       }

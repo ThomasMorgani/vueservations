@@ -1,38 +1,92 @@
 <template>
   <v-card>
-    <v-card-title class="title justify-center primary--text">NOTES</v-card-title>
-    <v-card-title class="title primary--text pt-0">
-      {{ catalogItem.name }}
-      <v-chip
-        label
-        small
-        :color="catalogItem.color ? catalogItem.color : 'grey'"
-        v-text="catalogItem.abbreviation"
-        class="font-weight-bold white--text mx-2"
-      ></v-chip>
-    </v-card-title>
+    <v-card-title class="title justify-center primary--text"
+      >NOTES LOG</v-card-title
+    >
     <v-card-text>
-      <tableSimple v-bind="tableData"></tableSimple>
+      <v-data-table
+        :headers="[
+          ...tableData.headers,
+          { text: '', value: 'action', sortable: false, align: 'right' }
+        ]"
+        :items="tableData.items"
+        options.sync="paginitation"
+        :hide-default-footer="true"
+      >
+        <template v-slot:top>
+          <v-toolbar flat color="white">
+            <v-toolbar-title class="headline primary--text">
+              {{ catalogItem.name }}
+              <v-chip
+                label
+                small
+                :color="catalogItem.color ? catalogItem.color : 'grey'"
+                v-text="catalogItem.abbreviation"
+                class="font-weight-bold white--text mx-2"
+              ></v-chip>
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+          </v-toolbar>
+        </template>
+        <template v-slot:item.action="{ item }">
+          <v-menu
+            v-model="menuConfDelete"
+            :close-on-content-click="false"
+            top
+            offset-y
+          >
+            <template v-slot:activator="{ on }">
+              <v-icon small color="error" class="mx-2" v-on="on">
+                mdi-delete
+              </v-icon>
+            </template>
+            <v-card>
+              <v-card-title class="title primary--text">
+                CONFIRM DELETE
+              </v-card-title>
+              <v-card-actions>
+                <v-btn text color="primary">CANCEL</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn text color="error" @click="noteDelete(item)"
+                  >CONFIRM</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-menu>
+
+          <v-icon small color="warning" class="mx-2" @click="noteEdit(item)">
+            mdi-pencil
+          </v-icon>
+        </template>
+        <template v-slot:no-data>
+          NO NOTES
+        </template>
+      </v-data-table>
     </v-card-text>
     <v-card-actions>
-      <v-btn text color="primary" @click="modalEditNote = true">ADD</v-btn>
+      <v-dialog v-model="modalEditNote" persistent max-width="500">
+        <template v-slot:activator="{ on }">
+          <v-btn text color="primary" class="mb-2" v-on="on">+ ADD</v-btn>
+        </template>
+        <editNote
+          :key="modalEditNote"
+          :catalogItem="catalogItem"
+          :noteEditing="noteEditing"
+          @close="onEditNoteClose"
+          @saveNote="onSaveNote"
+        ></editNote>
+      </v-dialog>
       <v-spacer></v-spacer>
       <v-btn text color="primary" @click="$emit('close')">CLOSE</v-btn>
     </v-card-actions>
-    <v-dialog v-model="modalEditNote" persistent max-width="500">
-      <editNote :key="modalEditNote" @close="modalEditNote = false" @saveNote="onSaveNote"></editNote>
-    </v-dialog>
   </v-card>
 </template>
 
 <script>
-// import filters from '@/modules/filters.js'
-import tableSimple from '@/components/global/tableSimple'
 export default {
-  name: 'eventTableSimple',
+  name: 'ciNotes',
   components: {
-    editNote: () => import('@/components/catalog/catalogItem/ciNoteEdit'),
-    tableSimple
+    editNote: () => import('@/components/catalog/catalogItem/ciNoteEdit')
   },
   props: {
     tableData: {
@@ -45,33 +99,69 @@ export default {
     }
   },
   data: () => ({
-    modalEditNote: false
+    modalEditNote: false,
+    noteDeleting: null,
+    menuConfDelete: null,
+    noteEditing: null,
+    options: {
+      itemsPerPage: 0,
+      sortBy: 'date_created'
+    }
   }),
   methods: {
+    noteAdd(note) {
+      this.tableData.items.push(note)
+      this.catalogItem.notes.push(note)
+    },
+    noteDelete(note) {
+      this.saveLoading = true
+      this.$store
+        .dispatch('apiCall', {
+          endpoint: '/note/' + note.id
+        })
+        .then(resp => {
+          if (resp.status == 'success') {
+            const noteKeyCi = this.catalogItem.notes.findIndex(
+              n => n.id == note.id
+            )
+            const noteKeyTi = this.tableData.items.findIndex(
+              n => n.id == note.id
+            )
+            this.$delete(this.catalogItem.notes, noteKeyCi)
+            this.$delete(this.tableData.items, noteKeyTi)
+            this.noteDeletingLoading = null
+          }
+        })
+        .catch(err => console.log(err))
+    },
+    noteEdit(item) {
+      this.noteEditing = item
+      setTimeout(() => (this.modalEditNote = true), 500)
+    },
+    noteUpdate(note) {
+      const ciNoteKey = this.catalogItem.notes.findIndex(n => n.id == note.id)
+      if (ciNoteKey > -1) {
+        this.$set(this.catalogItem.notes, ciNoteKey, note)
+      } else {
+        console.log('ERROR UPDATING NOTE. MATCHING KEYS NOT FOUND')
+      }
+      const tableItemNoteKey = this.tableData.items.findIndex(
+        ti => ti.id == note.id
+      )
+      this.$set(this.tableData.items, tableItemNoteKey, note)
+    },
+    onEditNoteClose() {
+      this.modalEditNote = false
+      this.noteEditing = null
+    },
     onSaveNote(note) {
       console.log('onSaveNote')
-      console.log(note)
-      console.log(this.catalogItem)
-      const ciIndex = this.$store.state.catalogItems.indexOf(ci => ci.id)
       if (note.isNew) {
-        this.tableData.items.push(note.note)
-        this.$store.dispatch('setStateValueByKey', {
-          isPush: true,
-          key: ciIndex,
-          stateItem: 'catalogItems',
-          value: note.note
-        })
+        this.noteAdd(note.note)
       } else {
-        console.log('update')
+        this.noteUpdate(note.note)
       }
-
       this.modalEditNote = false
-      // if (note.isNew) {
-      //   this.$store.dispatch('setStateValue', {
-      //     isPush: true,
-      //     key:
-      //   })
-      // }
     }
   }
 }

@@ -24,8 +24,6 @@ const catalogItem = item => {
   }
 }
 
-
-
 const dateDifference = (date1, date2) => {
   //TODO: need to extend? pass units needed, days, hours, etc
   //need choice return string or number?
@@ -58,19 +56,21 @@ const eventListSimple = (events, patrons) => {
   })
 }
 
-const noteListSimple = (notes) => {
+const noteListSimple = notes => {
   return notes.map(e => {
     const newNote = {
+      id: e.id || null,
       note: e.note,
-      createdDate: timestampHuman(e.date_created, false, false),
-      updatedDate: timestampHuman(e.date_updated, false, false)
+      date_created: timestampHuman(e.date_created, true, false),
+      date_updated: timestampHuman(e.date_updated, true, false)
     }
     return newNote
   })
 }
 
 const timestampHuman = (timestamp, withYear = true, withTime = true) => {
-  const asDate = typeof timestamp.getMonth === 'function' ? timestamp : new Date(timestamp)
+  const asDate =
+    typeof timestamp.getMonth === 'function' ? timestamp : new Date(timestamp)
   let human = ''
   let D = asDate.getDate()
   if (D < 10) {
@@ -104,4 +104,10 @@ const timestampHuman = (timestamp, withYear = true, withTime = true) => {
   // return timestamp`
 }
 
-export { catalogItem, dateDifference, eventListSimple, noteListSimple, timestampHuman }
+export {
+  catalogItem,
+  dateDifference,
+  eventListSimple,
+  noteListSimple,
+  timestampHuman
+}
