@@ -10,8 +10,10 @@
           { text: '', value: 'action', sortable: false, align: 'right' }
         ]"
         :items="tableData.items"
+        fixed-header
         options.sync="paginitation"
         :hide-default-footer="true"
+        :height="tableData.height"
       >
         <template v-slot:top>
           <v-toolbar flat color="white">

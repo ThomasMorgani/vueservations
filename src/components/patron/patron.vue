@@ -1,10 +1,14 @@
 <template>
-  <h1>PATRON MANAGEMENT</h1>
+  <patronList></patronList>
 </template>
 
 <script>
+import patronList from '@/components/patron/patronList'
 export default {
-  name: 'patron'
+  name: 'patron',
+  components: {
+    patronList
+  }
 }
 </script>
 

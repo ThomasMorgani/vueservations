@@ -7,9 +7,7 @@
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on" color="primary">
               <span class="title font-weight-bold">
-                {{
-                typeToLabel[type]
-                }}
+                {{ typeToLabel[type] }}
               </span>
               <v-icon right>mdi-menu-down</v-icon>
             </v-btn>
@@ -54,15 +52,17 @@
           </template>
 
           <v-card>
-            <v-card-title class="title primary--text">Calendar Height</v-card-title>
+            <v-card-title class="title primary--text"
+              >Calendar Height</v-card-title
+            >
             <v-card-text>
               <v-slider
                 v-model="calendarMonthHeight"
                 :color="color"
                 track-color="grey"
                 hide-details
-                min="1000"
-                max="3000"
+                :min="styleCal.height || 800"
+                max="3500"
               ></v-slider>
             </v-card-text>
           </v-card>
@@ -119,7 +119,11 @@
           <v-tooltip top v-model="tooltipEvent" v-bind="toptipPosition">
             <span>HELLO</span>
           </v-tooltip>
-          <v-dialog v-model="modalDetailsShow" max-width="800px" transition="dialog-transition">
+          <v-dialog
+            v-model="modalDetailsShow"
+            max-width="800px"
+            transition="dialog-transition"
+          >
             <component
               :key="modalDetailsShow + modalDetailsComp"
               :is="modalDetailsComp"
