@@ -57,26 +57,40 @@
   <el-table
     :data="tableData.items"
     :height="tableData.height"
-    :default-sort="{prop: 'last_name', order: 'ascending'}"
+    :default-sort="{ prop: 'last_name', order: 'ascending' }"
   >
+    <!-- //:width="header.width"  doesnt update on window resize -->
     <el-table-column
       v-for="(header, key) in tableData.headers"
       :key="`C${key}`"
       :prop="header.value"
       :label="header.text"
+      :width="colProps.width"
       :sortable="header.sortable"
-      :width="header.width"
     ></el-table-column>
-    <el-table-column v-if="tableData.actions" :label="'ACTIONS'" align="right" width="180">
+    <el-table-column
+      v-if="tableData.actions"
+      :label="'ACTIONS'"
+      align="right"
+      width="180"
+    >
       <template slot-scope="scope">
         <v-btn
           v-for="(action, key) in tableData.actions"
           :key="`A${key}`"
           icon
           :color="actionsData[action].color"
-          @click="actionBtn(scope.$index, scope.row)"
+          @click="
+            $emit('actionBtn', {
+              action: action,
+              rowIndex: scope.$index,
+              item: scope.row
+            })
+          "
         >
-          <v-icon :color="actionsData[action].color">{{actionsData[action].icon}}</v-icon>
+          <v-icon :color="actionsData[action].color">{{
+            actionsData[action].icon
+          }}</v-icon>
         </v-btn>
       </template>
     </el-table-column>
@@ -109,9 +123,26 @@ export default {
         color: 'warning',
         icon: 'mdi-pencil',
         action: 'edit'
+      },
+      history: {
+        color: 'primary',
+        icon: 'mdi-history',
+        action: 'history'
       }
     }
   }),
+  computed: {
+    colProps() {
+      const contentWidth = this.$store.state.content.main.x
+      const numColumns =
+        this.tableData.actions.length > 0
+          ? this.tableData.headers.length + 1
+          : this.tableData.headers.length
+      return {
+        width: contentWidth / numColumns
+      }
+    }
+  },
   methods: {
     actionBtn(a, b) {
       console.log('action')

@@ -65,7 +65,7 @@ export default new Vuex.Store({
       'multi-line': true,
       bottom: true,
       right: true,
-      timeout: 7000,
+      timeout: 5000,
       vertical: true
     },
     snackbarState: false,
@@ -405,7 +405,7 @@ export default new Vuex.Store({
         commit('setStateValue', { key: f, value: filterDefaults[f] })
       })
     },
-    reservationAdd() { },
+    reservationAdd() {},
     settingsNew({ commit, dispatch }, data) {
       return new Promise((resolve, reject) => {
         dispatch('apiCall', {
@@ -438,9 +438,17 @@ export default new Vuex.Store({
     setStateValueByKey({ commit }, data) {
       console.log(data)
       if (data.isPush) {
-        commit('pushStateValueByKey', { stateItem: data.stateItem, key: data.key, value: data.value })
+        commit('pushStateValueByKey', {
+          stateItem: data.stateItem,
+          key: data.key,
+          value: data.value
+        })
       } else {
-        commit('setStateValueByKey', { stateItem: data.stateItem, key: data.key, value: data.value })
+        commit('setStateValueByKey', {
+          stateItem: data.stateItem,
+          key: data.key,
+          value: data.value
+        })
       }
     },
     toggleStateValue({ commit, state }, data) {

@@ -68,6 +68,19 @@ const noteListSimple = notes => {
   })
 }
 
+const patronHistorySimple = (events, catalogItems) => {
+  return events.map(e => {
+    const ci = catalogItems.find(ci => ci.id == e.item_id)
+    const newHistory = {
+      id: e.id || null,
+      catalog_item: ci.name,
+      start_date: timestampHuman(e.start_date, true, false),
+      end_date: timestampHuman(e.end_date, true, false)
+    }
+    return newHistory
+  })
+}
+
 const timestampHuman = (timestamp, withYear = true, withTime = true) => {
   const asDate =
     typeof timestamp.getMonth === 'function' ? timestamp : new Date(timestamp)
@@ -109,5 +122,6 @@ export {
   dateDifference,
   eventListSimple,
   noteListSimple,
+  patronHistorySimple,
   timestampHuman
 }

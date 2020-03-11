@@ -51,7 +51,7 @@ export default {
   },
   mounted() {
     if (this.state) {
-      const timeoff = Math.abs(this.sbSettings.timeout / 100)
+      const timeoff = Math.abs(this.sbSettings.timeout / 110)
       this.progInterval = setInterval(() => {
         this.progress -= 1
       }, timeoff)

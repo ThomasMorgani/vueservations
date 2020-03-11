@@ -330,6 +330,7 @@ export default {
         : this.categoriesById[item.category].color
     },
     eventLabel(v) {
+      console.log(v)
       let start = timestampHuman(v.input.start_date, false, false)
       let end = timestampHuman(v.input.end_date, false, false)
       let label = `
