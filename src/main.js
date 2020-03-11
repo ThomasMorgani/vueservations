@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import store from './store' //vuex
 import vuetify from './plugins/vuetify'
+import { Table, TableColumn } from 'element-ui'
 
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -17,6 +18,8 @@ import { apiSettings } from './.env.local.js'
 
 Vue.prototype.$apiSettings = apiSettings
 
+Vue.use(Table)
+Vue.use(TableColumn)
 Vue.use(VueAxios, axios)
 
 Vue.config.productionTip = false

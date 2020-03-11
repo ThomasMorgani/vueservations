@@ -53,6 +53,7 @@ export default {
           key: 'viewMain',
           value: v
         })
+        localStorage.setItem('lastView', v)
       }
     },
     viewSub: {

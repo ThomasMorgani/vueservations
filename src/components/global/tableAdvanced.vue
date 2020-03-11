@@ -1,5 +1,5 @@
 <template>
-  <v-data-table
+  <!-- <v-data-table
     :headers="[
       ...tableData.headers,
       { text: '', value: 'action', sortable: false, align: 'right' }
@@ -11,24 +11,18 @@
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
-        <v-toolbar-title class="headline primary--text">
-          {{ tableData.title }}
-        </v-toolbar-title>
+        <v-toolbar-title class="headline primary--text">{{ tableData.title }}</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
     </template>
     <template v-slot:body="{ items }">
-      <v-responsive
-        :style="{ height: tableData.height + 'px', 'overflow-y': 'scroll' }"
-      >
-        <tbody>
-          <tr v-for="(item, key) in items" :key="key">
-            <td>{{ item.first_name }}</td>
-          </tr>
-        </tbody>
-      </v-responsive>
+      <tbody>
+        <tr v-for="(item, key) in items" :key="key">
+          <td>{{ item.first_name }}</td>
+        </tr>
+      </tbody>
     </template>
-    <!-- <template v-slot:item.action="{ item }">
+    <template v-slot:item.action="{ item }">
           <v-menu
             v-model="menuConfDelete"
             :close-on-content-click="false"
@@ -57,11 +51,38 @@
           <v-icon small color="warning" class="mx-2" @click="noteEdit(item)">
             mdi-pencil
           </v-icon>
-        </template> -->
-    <template v-slot:no-data>
-      NO DATA
     </template>
-  </v-data-table>
+    <template v-slot:no-data>NO DATA</template>
+  </v-data-table>-->
+  <el-table
+    :data="tableData.items"
+    :height="tableData.height"
+    :default-sort="{prop: 'last_name', order: 'ascending'}"
+  >
+    <el-table-column
+      v-for="(header, key) in tableData.headers"
+      :key="`C${key}`"
+      :prop="header.value"
+      :label="header.text"
+      :sortable="header.sortable"
+      :width="header.width"
+    ></el-table-column>
+    <el-table-column v-if="tableData.actions" :label="'ACTIONS'" align="right" width="180">
+      <template slot-scope="scope">
+        <v-btn
+          v-for="(action, key) in tableData.actions"
+          :key="`A${key}`"
+          icon
+          :color="actionsData[action].color"
+          @click="actionBtn(scope.$index, scope.row)"
+        >
+          <v-icon :color="actionsData[action].color">{{actionsData[action].icon}}</v-icon>
+        </v-btn>
+      </template>
+    </el-table-column>
+    <!-- <el-table-column prop="first_name" label="Name" width="180"></el-table-column>
+    <el-table-column prop="barcode" label="Address"></el-table-column>-->
+  </el-table>
 </template>
 
 <script>
@@ -78,12 +99,37 @@ export default {
     }
   },
   data: () => ({
-    options: {
-      itemsPerPage: -1,
-      sortBy: 'date_created'
+    actionsData: {
+      delete: {
+        color: 'error',
+        icon: 'mdi-delete',
+        action: 'delete'
+      },
+      edit: {
+        color: 'warning',
+        icon: 'mdi-pencil',
+        action: 'edit'
+      }
     }
   }),
-  methods: {}
+  methods: {
+    actionBtn(a, b) {
+      console.log('action')
+      console.log(a)
+      console.log(b)
+    }
+  },
+  created() {
+    const test = {
+      isOk: false,
+      setting: {
+        isOn: true
+      }
+    }
+    if (test?.setting?.isOn) {
+      console.log('it works')
+    }
+  }
 }
 </script>
 

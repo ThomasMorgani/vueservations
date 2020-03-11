@@ -6,9 +6,7 @@
       <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
       <v-icon left color="primary">mdi-filter</v-icon>
-      <span class="body-1 font-weight-bold">
-        {{ `${itemList.length} of ${catalogItems.length}` }}
-      </span>
+      <span class="body-1 font-weight-bold">{{ `${itemList.length} of ${catalogItems.length}` }}</span>
     </v-card-title>
     <v-card-text :style="styleCiList">
       <v-expansion-panels popout v-model="panel" class="py-1">

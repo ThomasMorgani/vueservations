@@ -38,7 +38,7 @@ export default {
       import('@/components/catalog/customFields/customFields'),
     footerApp,
     help: () => import('@/components/help/help'),
-    patron: () => import('@/components/patron/patron'),
+    patron: () => import('@/components/patron/patronList'),
     settings: () => import('@/views/settings'),
     sideDrawer: () => import('@/components/filterDrawer/FilterDrawer'),
     Snackbar
