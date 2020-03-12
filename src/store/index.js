@@ -56,6 +56,7 @@ export default new Vuex.Store({
     modalCatalogitemEdit: false,
     modalCatalogitemEditCustomfields: false,
     modalCategoryEdit: false,
+    patronEditing: null,
     patrons: [],
     settings: [],
     sideDrawer: false,

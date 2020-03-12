@@ -38,7 +38,7 @@
       v-model="modalAction"
       scrollable
       persistent=""
-      max-width="500px"
+      max-width="700px"
       transition="dialog-transition"
     >
       <component
@@ -47,6 +47,7 @@
         v-bind="modalCompData"
         @actionBtn="onAction"
         @cancel="modalAction = false"
+        @close="modalAction = false"
       ></component>
     </v-dialog>
   </v-card>
@@ -65,6 +66,7 @@ export default {
   components: {
     btnWithTooltip,
     patronDelete: () => import('@/components/patron/patronDelete'),
+    patronEdit: () => import('@/components/patron/patronDetails'),
     patronHistory: () => import('@/components/patron/patronHistory'),
     tableAdvanced
   },
@@ -131,26 +133,28 @@ export default {
     // onAction({ action, rowIndex, item }) {
     onAction({ action, item }) {
       switch (action) {
+        case 'add':
+          this.addPatron()
+          break
         case 'delete':
           this.patronDeletePrompt(item)
           break
         case 'deleteConfirm':
           this.patronDelete(this.modalCompData.patron.id)
           break
-        case 'add':
-          this.addPatron()
+        case 'edit':
+          this.patronEdit(item)
           break
         case 'history':
           this.historyShow(item)
           break
         default:
-          console.log('defautl reached')
+          console.log('default reached')
           console.log(action)
           console.log(item)
       }
     },
     patronAdd(e) {
-      console.log('addPatron')
       console.log(e)
     },
     patronDelete(patron) {
@@ -181,6 +185,14 @@ export default {
         events: this.events.filter(e => e.patron_id == patron.id)
       }
       this.modalComp = 'patronDelete'
+      this.modalAction = true
+    },
+    patronEdit(patron) {
+      this.$store.dispatch('setStateValue', {
+        key: 'patronEditing',
+        value: patron
+      })
+      this.modalComp = 'patronEdit'
       this.modalAction = true
     },
     tableData() {

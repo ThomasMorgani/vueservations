@@ -11,6 +11,7 @@
               v-model="first_name"
               label="First Name"
               required
+              clearable
               prepend-icon="mdi-account"
               hint="(required)"
               persistent-hint
@@ -21,6 +22,7 @@
               v-model="last_name"
               label="Last Name"
               required
+              clearable
               prepend-icon="mdi-account"
               hint="(required)"
               persistent-hint
@@ -30,7 +32,7 @@
             ><v-text-field
               v-model="email"
               label="Email"
-              required
+              clearable
               prepend-icon="mdi-email"
             ></v-text-field
           ></v-col>
@@ -38,7 +40,7 @@
             ><v-text-field
               v-model="phone"
               label="Telephone"
-              required
+              clearable
               prepend-icon="mdi-phone"
               mask="###-###-####"
             ></v-text-field
@@ -47,7 +49,7 @@
             ><v-text-field
               v-model="barcode"
               label="Barcode"
-              required
+              clearable
               prepend-icon="mdi-barcode"
             ></v-text-field
           ></v-col>
@@ -68,7 +70,7 @@
       <v-btn text color="primary" disabled>RESET</v-btn>
       <v-spacer></v-spacer>
       <v-btn text color="primary" @click="$emit('close')">CLOSE</v-btn>
-      <v-btn text color="primary" @click="savePatron" :disabled="!valid"
+      <v-btn text color="primary" @click="savePatron" :disabled="saveDisabled"
         >SAVE</v-btn
       >
     </v-card-actions>
@@ -76,33 +78,78 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'patronDetails',
   data: () => ({
     barcode: null,
+    id: null,
     email: null,
     first_name: null,
     last_name: null,
     notes: null,
-    phone: null
+    phone: null,
+    originalData: {
+      barcode: null,
+      id: null,
+      email: null,
+      first_name: null,
+      last_name: null,
+      notes: null,
+      phone: null
+    }
   }),
   computed: {
-    valid() {
-      return this.first_name && this.last_name
+    ...mapState({
+      patronEditing: state => state.patronEditing,
+      patrons: state => state.patrons
+    }),
+    fieldsRequired() {
+      const required = ['first_name', 'last_name']
+      const fields = []
+      required.forEach(r => {
+        if (!this[r]) {
+          fields.push(r)
+        }
+      })
+      return fields
+    },
+    isChanged() {
+      let isChanged = false
+      Object.keys(this.originalData).forEach(v => {
+        if (this[v] && v !== 'id') {
+          if (this.originalData[v] !== this[v].trim()) {
+            isChanged = true
+          }
+        }
+      })
+      return isChanged
+    },
+    saveDisabled() {
+      return !this.isChanged || this.fieldsRequired.length > 0
     }
+    // valid() {
+    //   let message = false
+    //   if (!this.first_name) {
+    //     message =
+    //   }
+    //   return this.first_name && this.last_name
+    // }
   },
   methods: {
     savePatron() {
       console.log('save patron method')
+      const patronData = {
+        id: this.id,
+        barcode: this.barcode,
+        first_name: this.first_name,
+        last_name: this.last_name,
+        phone: this.phone
+      }
       this.$store
         .dispatch('apiCall', {
-          endpoint: '/patron_add',
-          postData: {
-            barcode: this.barcode,
-            first_name: this.first_name,
-            last_name: this.last_name,
-            phone: this.phone
-          }
+          endpoint: '/patron',
+          postData: patronData
         })
         .then(res => {
           if (res.status) {
@@ -116,11 +163,24 @@ export default {
                 key: 'snackbarState',
                 value: true
               })
-              this.$store.dispatch('setStateValue', {
-                isPush: true,
-                key: 'patrons',
-                value: res.data
-              })
+              if (this.id) {
+                const pKey = this.patrons.findIndex(p => p.id == this.id)
+                console.log(pKey)
+                console.log(patronData)
+                if (pKey > -1) {
+                  this.$store.dispatch('setStateValueByKey', {
+                    stateItem: 'patrons',
+                    key: pKey,
+                    value: patronData
+                  })
+                }
+              } else {
+                this.$store.dispatch('setStateValue', {
+                  isPush: true,
+                  key: 'patrons',
+                  value: res.data
+                })
+              }
               this.$emit('patronAdded', res.data)
               //TODO: START HERE, SET PATRON AS SELECTED PATRON
               //CLOSE MODAL
@@ -130,6 +190,16 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    }
+  },
+  mounted() {
+    if (this.patronEditing) {
+      Object.keys(this.originalData).forEach(v => {
+        if (this.patronEditing[v]) {
+          this[v] = this.patronEditing[v]
+          this.originalData[v] = this.patronEditing[v]
+        }
+      })
     }
   }
 }

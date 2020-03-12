@@ -134,6 +134,7 @@ export default {
   computed: {
     colProps() {
       const contentWidth = this.$store.state.content.main.x
+      console.log(contentWidth)
       const numColumns =
         this.tableData.actions.length > 0
           ? this.tableData.headers.length + 1
