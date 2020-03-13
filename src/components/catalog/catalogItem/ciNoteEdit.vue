@@ -69,7 +69,7 @@ export default {
       }
     },
     saveNote() {
-      console.log('save')
+      //console.log('save')
       this.saveLoading = true
       this.$store
         .dispatch('apiCall', {
@@ -96,7 +96,7 @@ export default {
             })
             this.close()
 
-            console.log(resp)
+            //console.log(resp)
           }
         })
         .catch(err => console.log(err))

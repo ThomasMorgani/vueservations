@@ -203,7 +203,7 @@ export default {
     },
     saveImage() {
       this.loading = 'save'
-      console.log('saveimage')
+      //console.log('saveimage')
       //emit save image
       this.$emit('updateImage', { ...this.currentImageData, src: this.image })
       this.reset()

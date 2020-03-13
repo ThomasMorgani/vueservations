@@ -80,7 +80,7 @@
 <script>
 import { mapState } from 'vuex'
 export default {
-  name: 'patronDetails',
+  name: 'patronEdit',
   data: () => ({
     barcode: null,
     id: null,
@@ -138,13 +138,15 @@ export default {
   },
   methods: {
     savePatron() {
-      console.log('save patron method')
+      //console.log('save patron method')
       const patronData = {
         id: this.id,
-        barcode: this.barcode,
-        first_name: this.first_name,
-        last_name: this.last_name,
-        phone: this.phone
+        barcode: this.barcode.trim() || this.barcode,
+        email: this.email.trim() || this.email,
+        first_name: this.first_name.trim() || this.first_name,
+        last_name: this.last_name.trim() || this.last_name,
+        notes: this.notes.trim() || this.notes,
+        phone: this.phone.trim() || this.phone
       }
       this.$store
         .dispatch('apiCall', {
@@ -165,23 +167,26 @@ export default {
               })
               if (this.id) {
                 const pKey = this.patrons.findIndex(p => p.id == this.id)
-                console.log(pKey)
-                console.log(patronData)
+                //console.log(pKey)
+                //console.log(patronData)
                 if (pKey > -1) {
                   this.$store.dispatch('setStateValueByKey', {
                     stateItem: 'patrons',
                     key: pKey,
                     value: patronData
                   })
+                  this.setValues(patronData)
                 }
               } else {
+                patronData.id = res.data
                 this.$store.dispatch('setStateValue', {
                   isPush: true,
                   key: 'patrons',
-                  value: res.data
+                  value: patronData
                 })
+                this.setValues(patronData)
+                this.$emit('patronAdded', patronData)
               }
-              this.$emit('patronAdded', res.data)
               //TODO: START HERE, SET PATRON AS SELECTED PATRON
               //CLOSE MODAL
             }
@@ -190,16 +195,21 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+    setValues(newValues) {
+      Object.keys(newValues).forEach(v => {
+        if (this[v] !== undefined) {
+          this[v] = newValues[v]
+        }
+        if (this.originalData[v] !== undefined) {
+          this.originalData[v] = newValues[v]
+        }
+      })
     }
   },
   mounted() {
     if (this.patronEditing) {
-      Object.keys(this.originalData).forEach(v => {
-        if (this.patronEditing[v]) {
-          this[v] = this.patronEditing[v]
-          this.originalData[v] = this.patronEditing[v]
-        }
-      })
+      this.setValues(this.patronEditing)
     }
   }
 }

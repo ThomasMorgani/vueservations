@@ -111,7 +111,6 @@
             <eventMenu
               :event="selectedEvent"
               @closeDetails="selectedOpen = false"
-              @deleteEvent="eventDelete"
               @editEvent="eventEdit"
               @showDetails="showDetails"
             ></eventMenu>
@@ -157,7 +156,7 @@ export default {
     eventDetails: () => import('@/components/calendar/eventDetails'),
     eventMenu,
     filterBtn,
-    patronDetails: () => import('@/components/patron/patronDetails')
+    patronEdit: () => import('@/components/patron/patronEdit')
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({
@@ -199,8 +198,8 @@ export default {
     ...mapGetters(['categoriesById']),
     eventsList() {
       let eventsFiltered = []
-      let modalVis = this.modalDetailsShow
-      console.log(modalVis)
+      // let modalVis = this.modalDetailsShow
+      //console.log(modalVis)
       const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
       let filtersSet = {}
       filterNames.forEach(f =>
@@ -330,7 +329,7 @@ export default {
         : this.categoriesById[item.category].color
     },
     eventLabel(v) {
-      console.log(v)
+      //console.log(v)
       let start = timestampHuman(v.input.start_date, false, false)
       let end = timestampHuman(v.input.end_date, false, false)
       let label = `
@@ -347,11 +346,11 @@ export default {
     },
     initializeApp() {
       //MOVE THIS TO APP.js
-      console.log('get events method')
+      //console.log('get events method')
       this.axios
         .get(`${this.$apiSettings.baseUrl}/initialize_page_data`)
         .then(response => {
-          console.log(response)
+          //console.log(response)
           if (response.data && response.data.reservations) {
             // response.data.reservations.forEach(res => this.events.push({...res, name: res.title, start: res.startDate, end: res.end_date}))
             this.events = response.data.reservations
@@ -362,15 +361,11 @@ export default {
         })
     },
     eventAdd() {
-      console.log('eventAdd')
+      //console.log('eventAdd')
       this.showDetails({ type: 'edit' })
     },
-    eventDelete(eid) {
-      //expects event id
-      console.log(eid)
-    },
     eventEdit(e) {
-      console.log(this.$refs)
+      //console.log(this.$refs)
       if (e) {
         this.$store.dispatch('setStateValue', {
           key: 'eventediting',
@@ -378,21 +373,21 @@ export default {
         })
         this.modalDetailsComp = 'eventEdit'
         setTimeout(() => (this.modalDetailsShow = true), 19)
-        console.log('event found open modal')
+        //console.log('event found open modal')
       } else {
-        console.log('error: event not found')
+        //console.log('error: event not found')
       }
     },
     contextDay(e) {
       //right click day
-      console.log(e)
+      return e
     },
     formatEventPreview(e) {
       //TODO: move to module
       //this will format each reservation until we do so in backend
-      console.log(e)
-      let test = formats.dateDifference(e.start_date, e.end_date)
-      console.log(test)
+      //console.log(e)
+      // let test = formats.dateDifference(e.start_date, e.end_date)
+      // console.log(test)
       const data = {
         details: {
           color: this.eventColor(e),
@@ -428,7 +423,7 @@ export default {
       this.$refs.calendar.next()
     },
     onDetailsAction(a) {
-      console.log(a)
+      return a
     },
     onDetailsClose(e) {
       this.modalDetailsShow = false
@@ -441,24 +436,24 @@ export default {
       }
     },
     showDetails(e) {
-      console.log(e)
+      //console.log(e)
       switch (e.type) {
         case 'ci':
           this.modalDetailsComp = 'ciDetails'
           break
         case 'edit':
-          console.log('is vent')
+          //console.log('is vent')
           this.modalDetailsComp = 'eventEdit'
           break
         case 'event':
-          console.log('is vent')
+          //console.log('is vent')
           this.modalDetailsComp = 'eventDetails'
           break
         case 'patron':
-          this.modalDetailsComp = 'patronDetails'
+          this.modalDetailsComp = 'patronEdit'
           break
         default:
-          console.log('err: no match')
+          //console.log('err: no match')
           this.modalDetailsComp = null
           //TODO: maybe set no match for generic error
           break
@@ -468,7 +463,7 @@ export default {
       }
     },
     showEvent({ nativeEvent, event }) {
-      console.log('show')
+      //console.log('show')
       const open = () => {
         this.selectedEvent = this.formatEventPreview(event)
         this.selectedElement = nativeEvent.target
@@ -509,7 +504,7 @@ export default {
   mounted() {
     // this.initializeApp()
     // this.$vuetify.theme.isDark = true
-    // console.log(this.$vuetify)
+    // //console.log(this.$vuetify)
   }
 }
 </script>

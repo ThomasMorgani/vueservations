@@ -14,7 +14,7 @@ export default {
     catalogItemList
   },
   created() {
-    console.log(this)
+    //console.log(this)
   }
 }
 </script>

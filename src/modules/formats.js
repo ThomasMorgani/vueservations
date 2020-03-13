@@ -24,6 +24,23 @@ const catalogItem = item => {
   }
 }
 
+const cfCiValuesSimple = (fieldId, catalogItems) => {
+  const items = []
+  catalogItems.forEach(ci => {
+    if (ci.custom_fields && ci.custom_fields.length > 0) {
+      let fieldMatch = ci.custom_fields.find(f => f.field_id == fieldId)
+      if (fieldMatch !== undefined) {
+        items.push({
+          ci_id: ci.id,
+          ci_name: ci.name,
+          field_value: fieldMatch.value || ''
+        })
+      }
+    }
+  })
+  return items
+}
+
 const dateDifference = (date1, date2) => {
   //TODO: need to extend? pass units needed, days, hours, etc
   //need choice return string or number?
@@ -119,6 +136,7 @@ const timestampHuman = (timestamp, withYear = true, withTime = true) => {
 
 export {
   catalogItem,
+  cfCiValuesSimple,
   dateDifference,
   eventListSimple,
   noteListSimple,

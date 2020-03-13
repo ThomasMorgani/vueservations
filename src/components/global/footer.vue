@@ -28,7 +28,7 @@
     <btnWithTooltip
       :btnClass="['mx-2']"
       :btnProps="{ icon: true }"
-      :iconProps="{ icon: 'mdi-settings-outline' }"
+      :iconProps="{ icon: 'mdi-cogs' }"
       :tooltipProps="{ disabled: false, top: true }"
       :tooltipText="'Settings'"
       @click="viewMain = 'settings'"

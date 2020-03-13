@@ -18,6 +18,7 @@
               item-text="name"
               item-value="name"
               item-disabled="isDisabled"
+              :disabled="id !== null"
               outlined
               clearable
               prepend-icon="mdi-format-list-bulleted-type"
@@ -90,6 +91,7 @@
               v-model="patronSelected"
               outlined
               clearable
+              :disabled="id !== null"
               :items="orderBy(patronList, 'last_name', 1)"
               item-text="last_name"
               item-value="id"
@@ -409,7 +411,7 @@ export default {
   name: 'eventEdit',
   components: {
     // ciListMenu: () => import('@/components/global/listTiles')
-    patronEdit: () => import('@/components/patron/patronDetails')
+    patronEdit: () => import('@/components/patron/patronEdit')
   },
   props: [],
   mixins: [Vue2Filters.mixin],
@@ -480,17 +482,17 @@ export default {
       if (this.endDate && this.startDate) {
         let end = new Date(this.endDate)
         let start = new Date(this.startDate)
-        console.log(end)
-        console.log(start)
+        //console.log(end)
+        //console.log(start)
         if (end < start) {
           errors.endDate = ['End date must come after start.']
         }
         if (this.ciSelected) {
-          console.log(this.events)
-          console.log(this.ciSelected)
+          //console.log(this.events)
+          //console.log(this.ciSelected)
 
           const reservationsBetween = this.events.filter(e => {
-            console.log(this.e)
+            //console.log(this.e)
 
             return (
               e.item_id == this.ciSelected.id &&
@@ -503,7 +505,7 @@ export default {
               )
             )
           })
-          console.log(reservationsBetween)
+          //console.log(reservationsBetween)
           if (reservationsBetween.length > 0) {
             errors.endDate = ['Existing reservations between start/end date.']
             errors.startDate = ['Existing reservations between start/end date.']
@@ -589,7 +591,7 @@ export default {
       } else {
         const id = this.ciSelected.id
         const item = filters.customfieldById(id, this.itemList)
-        console.log(item)
+        //console.log(item)
         return item.status
       }
     }
@@ -663,17 +665,17 @@ export default {
       if (month < 10) {
         month = '0' + month
       }
-      //console.log(year + '-' + month + '-' + day)
+      ////console.log(year + '-' + month + '-' + day)
       return year + '-' + month + '-' + day
     },
     deleteEvent() {
-      console.log('deleteEvent')
+      //console.log('deleteEvent')
       this.$store
         .dispatch('apiCall', {
           endpoint: '/reservation_delete/' + this.id
         })
         .then(resp => {
-          console.log(resp)
+          //console.log(resp)
           if (resp.status === 'success') {
             this.$store.dispatch('setStateValue', {
               key: 'events',
@@ -717,7 +719,7 @@ export default {
     },
     modalAction() {
       const event = this.formattedEvent()
-      console.log(event)
+      //console.log(event)
       if (Object.keys(this.formErrors).length < 1) {
         this.$store
           .dispatch('apiCall', {
@@ -726,12 +728,12 @@ export default {
           })
           .then(resp => {
             if (resp.status === 'error') {
-              console.log('eventEditResp ERROR', resp)
+              //console.log('eventEditResp ERROR', resp)
               //TODO SETUP ERROR HANDLING + FEEDBACK
             }
             if (resp.status === 'success') {
-              console.log(this.id)
-              console.log(this.id == false)
+              //console.log(this.id)
+              //console.log(this.id == false)
               if (!this.id) {
                 this.id = resp.data
                 event.id = resp.data
@@ -771,11 +773,11 @@ export default {
     }
   },
   mounted() {
-    // console.log('mounted')
+    // //console.log('mounted')
     if (this.eventediting) {
       const event = this.eventediting
 
-      console.log('ciEditing:', event)
+      //console.log('ciEditing:', event)
       const valPairs = {
         id: 'id',
         ciData: 'ciSelected',
@@ -788,7 +790,7 @@ export default {
       Object.keys(valPairs).forEach(k => {
         if (k == 'start_date' && event[k]) {
           const splitStart = event.start_date.split(' ')
-          console.log(splitStart)
+          //console.log(splitStart)
           this.startDate = splitStart[0]
           this.startTime = splitStart[1] || '00:00:00'
           this.$set(this.originalValues, 'startDate', this.startDate)

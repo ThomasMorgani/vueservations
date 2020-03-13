@@ -23,7 +23,9 @@
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <v-btn text icon color="warning" v-on="on" @click="setMode('edit')">
-              <v-icon v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"></v-icon>
+              <v-icon
+                v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"
+              ></v-icon>
             </v-btn>
           </template>
           <span>Toggle Edit Mode</span>
@@ -39,7 +41,10 @@
           active-class="primary lighten-5"
           @click="selectItem(category)"
         >
-          <v-list-item-avatar size="20" :color="category.color"></v-list-item-avatar>
+          <v-list-item-avatar
+            size="20"
+            :color="category.color"
+          ></v-list-item-avatar>
           <v-list-item-content class="py-2">
             <v-list-item-title class="headline text-capitalize primary--text">
               {{ category.name }}
@@ -64,7 +69,9 @@
             <div v-else>
               <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                  <span v-on="on" class="mb-0 subheading-1">({{ categoryCounts[category.id] || 0 }})</span>
+                  <span v-on="on" class="mb-0 subheading-1"
+                    >({{ categoryCounts[category.id] || 0 }})</span
+                  >
                 </template>
                 <span
                   v-text="
@@ -175,7 +182,7 @@ export default {
     },
     categoryAdd() {
       this.editCategoryModal = true
-      console.log('categoryAdd')
+      //console.log('categoryAdd')
       this.$store.dispatch('categoryEdit', null)
       this.$store.dispatch('toggleModalEditCategory')
     },
@@ -189,10 +196,11 @@ export default {
       }
     },
     details(id) {
-      console.log('details', id)
+      //console.log('details', id)
+      return id
     },
     edit(id) {
-      console.log('edit', id)
+      //console.log('edit', id)
       this.$store.dispatch('categoryEdit', id)
       this.$store.dispatch('toggleModalEditCategory')
     },
@@ -207,17 +215,19 @@ export default {
       )
     },
     selectItem(c) {
-      if (this.filterCategory.includes(c.id)) {
-        this.$store.dispatch('setStateValue', {
-          key: 'filterCategory',
-          value: this.filterCategory.filter(e => e !== c.id)
-        })
-      } else {
-        this.$store.dispatch('setStateValue', {
-          key: 'filterCategory',
-          value: c.id,
-          isPush: true
-        })
+      if (this.catalogView !== 'category') {
+        if (this.filterCategory.includes(c.id)) {
+          this.$store.dispatch('setStateValue', {
+            key: 'filterCategory',
+            value: this.filterCategory.filter(e => e !== c.id)
+          })
+        } else {
+          this.$store.dispatch('setStateValue', {
+            key: 'filterCategory',
+            value: c.id,
+            isPush: true
+          })
+        }
       }
     },
     selectNone() {
@@ -232,7 +242,7 @@ export default {
     }
   },
   created() {
-    console.log('category list created')
+    //console.log('category list created')
     //set category filter back to array if overview to statisfy multiselect requirement
     if (!Array.isArray(this.categorySelect)) {
       this.categorySelect = []

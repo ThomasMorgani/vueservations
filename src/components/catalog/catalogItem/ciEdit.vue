@@ -1,9 +1,7 @@
 <template>
   <v-card>
     <v-card-title class="justify-center title primary--text">
-      {{
-      id ? 'EDIT ITEM' : 'ADD ITEM'
-      }}
+      {{ id ? 'EDIT ITEM' : 'ADD ITEM' }}
     </v-card-title>
     <v-card-text class="modalBody">
       <v-tabs v-model="tab" background-color="transparent" color="primary" grow>
@@ -78,13 +76,26 @@
                     <v-card outlined class="d-flex flex-column pa-2">
                       <p>Color</p>
                       <div>
-                        <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
+                        <v-menu
+                          :close-on-content-click="false"
+                          :nudge-width="200"
+                          offset-x
+                        >
                           <template v-slot:activator="{ on }">
-                            <v-avatar tile v-on="on" :color="color" class="hoverPointer">
+                            <v-avatar
+                              tile
+                              v-on="on"
+                              :color="color"
+                              class="hoverPointer"
+                            >
                               <v-icon color="white">mdi-palette</v-icon>
                             </v-avatar>
                           </template>
-                          <v-color-picker v-model="color" class="ma-2" hide-inputs></v-color-picker>
+                          <v-color-picker
+                            v-model="color"
+                            class="ma-2"
+                            hide-inputs
+                          ></v-color-picker>
                         </v-menu>
                       </div>
                     </v-card>
@@ -128,7 +139,9 @@
                 <v-card-text>
                   <v-row justify="space-between" no-gutters>
                     <v-col cols="12">
-                      <customFieldsList :items="customFieldsDisplayed"></customFieldsList>
+                      <customFieldsList
+                        :items="customFieldsDisplayed"
+                      ></customFieldsList>
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -139,7 +152,7 @@
       </v-tabs-items>
     </v-card-text>
     <v-card-actions>
-      <!-- 
+      <!--
   tab == 'info' ?
   tab == 'details' ?
 
@@ -155,16 +168,23 @@
               :disabled="tab === 0 && !id"
               :loading="loading === 'delete'"
               @click="tab === 0 ? deletePrompt() : editCustomFields()"
-            >{{tab === 0 ? 'DELETE' : 'EDIT'}}</v-btn>
+              >{{ tab === 0 ? 'DELETE' : 'EDIT' }}</v-btn
+            >
           </div>
         </template>
-        <span>{{tab === 0 ? 'Delete catalog item' : 'Edit Details'}}</span>
+        <span>{{ tab === 0 ? 'Delete catalog item' : 'Edit Details' }}</span>
       </v-tooltip>
 
       <v-tooltip top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
-            <v-btn text large :disabled="!id || !isChanged" @click="resetChanges">RESET</v-btn>
+            <v-btn
+              text
+              large
+              :disabled="!id || !isChanged"
+              @click="resetChanges"
+              >RESET</v-btn
+            >
           </div>
         </template>
         <span>Revert all unsaved changes</span>
@@ -188,8 +208,9 @@
                   color="warning"
                   class="mr-1"
                   v-if="isChanged && !saveDisabled"
-                >mdi-content-save-alert</v-icon>
-              </transition>SAVE
+                  >mdi-content-save-alert</v-icon
+                > </transition
+              >SAVE
             </v-btn>
           </div>
         </template>
@@ -217,26 +238,47 @@
     </v-dialog>
 
     <!-- DELETE ITEM -->
-    <v-dialog v-model="modalConfirmDelete" max-width="500px" transition="dialog-transition">
+    <v-dialog
+      v-model="modalConfirmDelete"
+      max-width="500px"
+      transition="dialog-transition"
+    >
       <!--TODO: Move to Component -->
       <v-card>
-        <v-card-title class="justify-center title error--text">CONFIRM DELETE</v-card-title>
+        <v-card-title class="justify-center title error--text"
+          >CONFIRM DELETE</v-card-title
+        >
         <v-card-text>
           <v-row class="justify-center align-center">
             <v-col cols="12" class="align-center">
-              <p class="font-weight-bold text-center">WARNING: You are about to delete catalog item:</p>
+              <p class="font-weight-bold text-center">
+                WARNING: You are about to delete catalog item:
+              </p>
               <p class="font-weight-bold text-center">"{{ name }}"</p>
-              <template v-if="affectedEventData && affectedEventData.items.length > 0">
-                <p class="text-center">The following reservations for this item will be removed.</p>
+              <template
+                v-if="affectedEventData && affectedEventData.items.length > 0"
+              >
+                <p class="text-center">
+                  The following reservations for this item will be removed.
+                </p>
                 <eventTableSimple v-bind="affectedEventData"></eventTableSimple>
               </template>
-              <p class="text-center" v-else>(There are no events associated with this item)</p>
+              <p class="text-center" v-else>
+                (There are no events associated with this item)
+              </p>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions class="d-flex justify-space-around">
-          <v-btn color="primary" text @click="modalConfirmDelete = !modalConfirmDelete">CANCEL</v-btn>
-          <v-btn color="error" text @click="deleteCatalogitem">CONFIRM DELETE</v-btn>
+          <v-btn
+            color="primary"
+            text
+            @click="modalConfirmDelete = !modalConfirmDelete"
+            >CANCEL</v-btn
+          >
+          <v-btn color="error" text @click="deleteCatalogitem"
+            >CONFIRM DELETE</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -329,7 +371,7 @@ export default {
       let isChanged = false
       // let origStr = this.originalValues.toString()
       // let loadingState = this.loading
-      console.log(this.originalValues)
+      //console.log(this.originalValues)
       Object.keys(this.defaultItem).forEach(field => {
         if (field !== 'customFields' && field !== 'categoryName') {
           if (field === 'image_data') {
@@ -339,12 +381,12 @@ export default {
               this[field].id &&
               this[field].id !== this.originalValues[field].id
             ) {
-              console.log(field)
+              //console.log(field)
               isChanged = true
             }
           } else {
             if (this.originalValues[field] !== this[field]) {
-              console.log(field)
+              //console.log(field)
               isChanged = true
             }
           }
@@ -422,11 +464,11 @@ export default {
       this.$store.dispatch('toggleModalCatalogitemEdit')
     },
     deleteCatalogitem() {
-      console.log('delete')
+      //console.log('delete')
       this.$store
         .dispatch('catalogitemDelete', { id: this.id })
         .then(resp => {
-          console.log(resp)
+          //console.log(resp)
           if (resp.status === 'success') {
             this.$store.dispatch('setStateValue', {
               key: 'events',
@@ -527,7 +569,7 @@ export default {
               //SET CATALOG ITEM editing ID
             } else {
               const itemData = { ...postData, image_data: this.image_data }
-              console.log(itemData)
+              //console.log(itemData)
               Object.keys(itemData).forEach(key => {
                 this.$store.dispatch('catalogitemSetValue', {
                   id: this.id,
@@ -557,20 +599,20 @@ export default {
       }
     },
     updateImage(imageData) {
-      console.log(imageData)
+      //console.log(imageData)
       this.$set(this, 'image_data', imageData)
     }
   },
   created() {
-    // console.log('catItemEdititing created')
+    // //console.log('catItemEdititing created')
   },
   mounted() {
-    // console.log('hh')
+    // //console.log('hh')
     if (this.catalogItemediting.id) {
-      console.log(this.catalogItemediting)
+      //console.log(this.catalogItemediting)
       this.setItemeditingValues(this.catalogItemediting)
     } else {
-      console.log(this.$vuetify)
+      //console.log(this.$vuetify)
       const theme = this.$vuetify.theme.isDark ? 'dark' : 'light'
       this.color = this.$vuetify.theme.themes[theme].primary
     }

@@ -1,49 +1,49 @@
-import axios from 'axios';
-import { apiSettings } from '@/.env.local.js';
+import axios from 'axios'
+import { apiSettings } from '@/.env.local.js'
 
 export default {
   callApi(uri, postData) {
-    console.log(uri);
-    console.log(postData);
-    let url = apiSettings.baseUrl + uri;
+    //console.log(uri);
+    //console.log(postData);
+    let url = apiSettings.baseUrl + uri
     if (postData) {
       //MOVE THIS TO A SEPERATE API CALL FUNCTION: uploadApi
       // const params = new URLSearchParams();
       // for (let key in postData) {
       //   params.append(key, postData[key]);
       // }
-      axios.defaults.withCredentials = true;
+      axios.defaults.withCredentials = true
       return (
         axios
           // .post(url, params, this.axiosDefaultPostOptions)
           .post(url, { data: postData }, this.axiosDefaultOptions)
           .then(data => {
-            // console.log(data)
+            // //console.log(data)
             //TODO: CHANGE
             if (data.data === 'unfound19') {
               // router.push({ name: 'Login' })
             } else {
-              return data.data;
+              return data.data
             }
           })
           .catch(err => {
-            return err;
+            return err
           })
-      );
+      )
     } else {
       return axios
         .get(url, this.axiosDefaultPostOptions)
         .then(response => {
           if (response) {
             if (this.isHttpError(response.status)) {
-              console.log('request error');
-              console.log(response);
-              return false;
+              //console.log('request error');
+              //console.log(response);
+              return false
             } else {
-              return response.data;
+              return response.data
             }
           }
-          // console.log(data)
+          // //console.log(data)
           // if (response.data === 'unfound19') {
           //   // router.push({ name: 'Login' })
           // } else {
@@ -51,44 +51,44 @@ export default {
           // }
         })
         .catch(err => {
-          return err;
-        });
+          return err
+        })
     }
   },
   postApi(uri, postData) {
-    console.log(uri);
-    console.log(postData);
-    let url = apiSettings.baseUrl + uri;
-      //MOVE THIS TO A SEPERATE API CALL FUNCTION: uploadApi
-      // const params = new URLSearchParams();
-      // for (let key in postData) {
-      //   params.append(key, postData[key]);
-      // }
-      axios.defaults.withCredentials = true;
-      return (
-        axios
-          // .post(url, params, this.axiosDefaultPostOptions)
-          .post(url,  postData, this.axiosPostOptions)
-          .then(data => {
-            // console.log(data)
-            //TODO: CHANGE
-            if (data.data === 'unfound19') {
-              // router.push({ name: 'Login' })
-            } else {
-              return data.data;
-            }
-          })
-          .catch(err => {
-            return err;
-          })
-      );
+    //console.log(uri);
+    //console.log(postData);
+    let url = apiSettings.baseUrl + uri
+    //MOVE THIS TO A SEPERATE API CALL FUNCTION: uploadApi
+    // const params = new URLSearchParams();
+    // for (let key in postData) {
+    //   params.append(key, postData[key]);
+    // }
+    axios.defaults.withCredentials = true
+    return (
+      axios
+        // .post(url, params, this.axiosDefaultPostOptions)
+        .post(url, postData, this.axiosPostOptions)
+        .then(data => {
+          // //console.log(data)
+          //TODO: CHANGE
+          if (data.data === 'unfound19') {
+            // router.push({ name: 'Login' })
+          } else {
+            return data.data
+          }
+        })
+        .catch(err => {
+          return err
+        })
+    )
   },
   isHttpError(statusCode) {
-    const acceptedStatusCodes = [200, 304];
-    return !acceptedStatusCodes.includes(statusCode);
+    const acceptedStatusCodes = [200, 304]
+    return !acceptedStatusCodes.includes(statusCode)
   },
   axiosPostOptions() {
-    axios.defaults.withCredentials = true;
+    axios.defaults.withCredentials = true
     var options = {
       mode: 'no-cors',
       headers: {
@@ -97,11 +97,11 @@ export default {
       },
       withCredentials: true,
       credentials: 'include'
-    };
-    return options;
+    }
+    return options
   },
   axiosUploadOptions() {
-    axios.defaults.withCredentials = true;
+    axios.defaults.withCredentials = true
     var options = {
       mode: 'no-cors',
       headers: {
@@ -110,7 +110,7 @@ export default {
       },
       withCredentials: true,
       credentials: 'include'
-    };
-    return options;
+    }
+    return options
   }
-};
+}

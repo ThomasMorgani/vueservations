@@ -6,7 +6,10 @@
           contain
           height="100%"
           max-height="250"
-          :src="imageUrl || 'https://eipl.org/reservations/images/uploads/458d8cab268259a7e676eadc42ec2c6d.gif'"
+          :src="
+            imageUrl ||
+              'https://eipl.org/reservations/images/uploads/458d8cab268259a7e676eadc42ec2c6d.gif'
+          "
         ></v-img>
       </v-card>
       <v-file-input
@@ -28,7 +31,8 @@
         :disabled="uploadDisabled"
         :loading="loading === 'loading'"
         @click="uploadImage"
-      >UPLOAD</v-btn>
+        >UPLOAD</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>
@@ -50,14 +54,14 @@ export default {
       this.$emit('closeUploadModal')
     },
     async fileInputChanged(e) {
-      console.log(e)
+      //console.log(e)
       if (e) {
         const fr = new FileReader()
         fr.readAsDataURL(e)
         await fr.addEventListener('load', () => {
           this.imageUrl = fr.result
           // this.imageFile = e // this is an image file that can be sent to server...
-          // console.log(this.$refs.imagePreview)
+          // //console.log(this.$refs.imagePreview)
         })
       } else {
         this.imageUrl = null
@@ -71,12 +75,12 @@ export default {
     uploadImage() {
       this.loading = 'upload'
       let pData = new FormData()
-      console.log(this.fileUpload)
+      //console.log(this.fileUpload)
       pData.append('img', this.fileUpload)
       this.$store
         .dispatch('apiPost', { endpoint: '/images_upload', postData: pData })
         .then(resp => {
-          console.log(resp)
+          //console.log(resp)
           if (resp.status === 'success') {
             this.$emit('uploadSuccess', resp.data)
             this.resetForm()
@@ -93,5 +97,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>

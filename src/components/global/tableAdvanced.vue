@@ -58,6 +58,7 @@
     :data="tableData.items"
     :height="tableData.height"
     :default-sort="{ prop: 'last_name', order: 'ascending' }"
+    empty-text="No results found"
   >
     <!-- //:width="header.width"  doesnt update on window resize -->
     <el-table-column
@@ -67,6 +68,7 @@
       :label="header.text"
       :width="colProps.width"
       :sortable="header.sortable"
+      ref="table"
     ></el-table-column>
     <el-table-column
       v-if="tableData.actions"
@@ -119,6 +121,11 @@ export default {
         icon: 'mdi-delete',
         action: 'delete'
       },
+      details: {
+        color: 'primary',
+        icon: 'mdi-information-outline',
+        action: 'details'
+      },
       edit: {
         color: 'warning',
         icon: 'mdi-pencil',
@@ -134,7 +141,7 @@ export default {
   computed: {
     colProps() {
       const contentWidth = this.$store.state.content.main.x
-      console.log(contentWidth)
+      //console.log(contentWidth)
       const numColumns =
         this.tableData.actions.length > 0
           ? this.tableData.headers.length + 1
@@ -146,9 +153,10 @@ export default {
   },
   methods: {
     actionBtn(a, b) {
-      console.log('action')
-      console.log(a)
-      console.log(b)
+      //console.log('action')
+      //console.log(a)
+      //console.log(b)
+      return { a, b }
     }
   },
   created() {
@@ -159,8 +167,11 @@ export default {
       }
     }
     if (test?.setting?.isOn) {
-      console.log('it works')
+      //console.log('it works')
     }
+  },
+  mounted() {
+    // //console.log(this.$refs.table)
   }
 }
 </script>

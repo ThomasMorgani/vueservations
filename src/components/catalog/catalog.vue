@@ -94,7 +94,9 @@
         )}`
       "
     >
-      <catalogItemEditFields :key="modalEditCatalogItemFields + ''"></catalogItemEditFields>
+      <catalogItemEditFields
+        :key="modalEditCatalogItemFields + ''"
+      ></catalogItemEditFields>
     </v-dialog>
     <!-- Catalog Custom Fields Mgmtm Modal  -->
     <!-- <v-dialog
@@ -188,7 +190,7 @@ export default {
   },
   methods: {
     catalogItemAdd() {
-      console.log('catalogItemAdd')
+      //console.log('catalogItemAdd')
       this.$store.dispatch('setStateValue', {
         key: 'catalogitemediting',
         value: { ...this.$store.state.defaultCatalogItem }
@@ -199,7 +201,7 @@ export default {
     },
     categoryAdd() {
       this.editCategoryModal = true
-      console.log('categoryAdd')
+      //console.log('categoryAdd')
       this.$store.dispatch('setStateValue', {
         key: 'categoryEditing',
         value: null

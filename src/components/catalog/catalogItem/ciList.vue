@@ -6,7 +6,9 @@
       <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
       <v-icon left color="primary">mdi-filter</v-icon>
-      <span class="body-1 font-weight-bold">{{ `${itemList.length} of ${catalogItems.length}` }}</span>
+      <span class="body-1 font-weight-bold">{{
+        `${itemList.length} of ${catalogItems.length}`
+      }}</span>
     </v-card-title>
     <v-card-text :style="styleCiList">
       <v-expansion-panels popout v-model="panel" class="py-1">
@@ -164,12 +166,12 @@ export default {
 
         return formats.catalogItem(catalogItem)
       } else {
-        console.log('no cat')
+        //console.log('no cat')
         return formats.catalogItem(catalogItem)
       }
     },
     onModalClose() {
-      console.log('ci list modal closed')
+      //console.log('ci list modal closed')
       this.modal = false
       this.$store.dispatch('setStateValue', {
         key: 'eventediting',
@@ -177,8 +179,8 @@ export default {
       })
     },
     onReserve(e) {
-      console.log('onReserve')
-      console.log(e)
+      //console.log('onReserve')
+      //console.log(e)
       if (e) {
         this.$store.dispatch('setStateValue', {
           key: 'eventediting',
@@ -186,9 +188,9 @@ export default {
         })
         this.modalComp = 'eventEdit'
         setTimeout(() => (this.modal = true), 19)
-        console.log('event found open modal')
+        //console.log('event found open modal')
       } else {
-        console.log('error: ci not found')
+        //console.log('error: ci not found')
       }
     },
     onShowNotes(ci) {

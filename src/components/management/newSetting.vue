@@ -16,7 +16,7 @@
         label="Desciption"
         v-model="setting_description"
       ></v-text-field>
-      <v-btn color="success" @click="saveSetting" class="self-right"
+      <v-btn disabled color="success" @click="saveSetting" class="self-right"
         >SAVE</v-btn
       >
     </v-card-text>

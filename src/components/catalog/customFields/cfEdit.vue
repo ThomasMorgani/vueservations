@@ -1,6 +1,8 @@
 <template>
   <v-card>
-    <v-card-title>NEW FIELD</v-card-title>
+    <v-card-title>{{
+      this.id ? 'EDIT CUSTOM FIELD' : 'NEW FIELD'
+    }}</v-card-title>
     <v-card-text>
       <v-row dense>
         <v-col cols="12">
@@ -10,6 +12,7 @@
                 v-model="name"
                 label="Name"
                 :messages="messagesName"
+                :error="messagesName.length > 0"
                 name="Name"
                 type="text"
               ></v-text-field>
@@ -43,7 +46,7 @@
               </template>
               <template v-else>
                 <v-text-field
-                  v-model="value"
+                  v-model="default_value"
                   outlined
                   label="Default Value"
                   :type="type === 'int' ? 'number' : 'text'"
@@ -69,7 +72,13 @@
     <v-card-actions>
       <v-btn text small color="primary" @click="cancel">cancel</v-btn>
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" :disabled="isDisabled" @click="save"
+      <v-btn
+        text
+        small
+        color="primary"
+        :disabled="saveDisabled"
+        :loading="loading"
+        @click="save"
         >save</v-btn
       >
     </v-card-actions>
@@ -79,6 +88,7 @@
 <script>
 import { mapState } from 'vuex'
 export default {
+  name: 'cfEdit',
   data: () => ({
     alertText: null,
     alertVisible: false,
@@ -92,10 +102,7 @@ export default {
         text: 'True'
       }
     ],
-    name: null,
-    internal: true,
-    type: null,
-    value: null,
+    default_value: null,
     fieldTypes: [
       {
         value: 'int',
@@ -110,7 +117,16 @@ export default {
         text: 'True/False'
       }
     ],
+    id: null,
+    internal: 0,
     loading: false,
+    name: null,
+    original_values: {
+      name: null,
+      internal: 0,
+      default_value: null
+    },
+    type: 'text',
     visibilityTypes: [
       {
         value: '0',
@@ -124,15 +140,28 @@ export default {
   }),
   computed: {
     ...mapState({
+      customFieldEditing: state => state.customFieldEditing,
       customFields: state => state.customFields
     }),
-    isDisabled() {
-      return false
+    isChanged() {
+      let isChanged = false
+      Object.keys(this.original_values).forEach(k => {
+        if (this[k] != this.original_values[k]) {
+          isChanged = true
+        }
+      })
+      return isChanged
+    },
+    saveDisabled() {
+      // return this.messagesName.length > 0
       // let disabled = false
       // disabled =
-      //   this.messagesName.length > 0 ||
-      //   this.type === null ||
-      //   this.visibility === null
+      return (
+        this.messagesName.length > 0 ||
+        this.type === null ||
+        this.visibility === null ||
+        !this.isChanged
+      )
       // return disabled
     },
     messagesName() {
@@ -140,9 +169,11 @@ export default {
         .trim()
         .toLowerCase()
       const nameExists = this.customFields.findIndex(field => {
-        return String(field.name).toLowerCase() === nameLower
+        return (
+          String(field.name).toLowerCase() === nameLower && this.id != field.id
+        )
       })
-      const nameMatch = nameExists > -1 ? false : nameLower
+      const nameMatch = nameExists > -1
       let messages = []
 
       switch (nameMatch) {
@@ -155,7 +186,7 @@ export default {
         case 'new field':
           messages.push('Select Unique Name')
           break
-        case false:
+        case true:
           messages.push('Name already exists')
           break
         default:
@@ -166,41 +197,81 @@ export default {
   },
   methods: {
     cancel() {
-      this.$store.dispatch('toggleModalCatalogCustomfield')
+      // this.$store.dispatch('toggleModalCatalogCustomfield')
+      this.resetFields()
+      this.$emit('cancel')
     },
     resetFields() {
       this.alertText = null
       this.name = null
+      this.id = null
       this.internal = true
       this.type = null
       this.value = null
       this.loading = false
     },
     save() {
+      this.loading = true
+      let fieldData = {
+        id: this.id,
+        name: this.name,
+        internal: this.internal,
+        type: this.type,
+        default_value: this.default_value
+      }
       this.$store
         .dispatch('apiCall', {
-          endpoint: '/customfield_new',
-          postData: {
-            name: this.name,
-            internal: this.internal,
-            type: this.type,
-            default_value: this.value
-          }
+          endpoint: '/customfield',
+          postData: fieldData
         })
         .then(resp => {
-          //console.log(resp)
           if (resp.status === 'success') {
-            if (resp.data) {
-              this.$store.dispatch('customfieldsAddField', resp.data)
-              this.$store.dispatch('toggleModalCatalogCustomfield')
-              this.$emit('customFieldCreated', resp.data)
-              this.resetFields
+            if (this.id) {
+              //console.log('id, updating field')
+              const cfKey = this.customFields.findIndex(
+                f => f.id == fieldData.id
+              )
+              if (cfKey > -1) {
+                this.$store.dispatch('setStateValueByKey', {
+                  stateItem: 'customFields',
+                  key: cfKey,
+                  value: fieldData
+                })
+              }
+            } else {
+              //console.log('no id, inserting field')
+              fieldData.id = resp.data
+              this.$store.dispatch('setStateValue', {
+                isPush: true,
+                key: 'customFields',
+                value: fieldData
+              })
             }
+            this.setValues(fieldData)
+            this.$emit('actionBtn', {
+              action: 'customFieldCreated',
+              item: fieldData
+            })
+            this.loading = false
           } else {
             this.alertText = resp.message
             this.alertVisible = true
+            this.loading = false
           }
         })
+    },
+    setValues(values) {
+      Object.keys(values).forEach(k => {
+        if (this[k] !== undefined) {
+          this[k] = values[k]
+          this.original_values[k] = values[k]
+        }
+      })
+    }
+  },
+  created() {
+    if (this.customFieldEditing) {
+      this.setValues(this.customFieldEditing)
     }
   }
 }

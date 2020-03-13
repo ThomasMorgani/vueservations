@@ -15,9 +15,7 @@
           <v-row dense class="display-flex align-center justify-start">
             <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
             <span class="font-weight-medium title primary--text">
-              {{
-              item.name
-              }}
+              {{ item.name }}
             </span>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
@@ -39,7 +37,9 @@
                   <strong>Color:</strong>
                   {{ item.color }}
                 </p>
-                <div :style="{ height: '10px', 'background-color': item.color }"></div>
+                <div
+                  :style="{ height: '10px', 'background-color': item.color }"
+                ></div>
               </span>
             </v-tooltip>
           </v-row>
@@ -48,7 +48,11 @@
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <div v-on="on">
-                  <v-avatar size="10" :color="categoriesById[item.category].color" class="mr-1"></v-avatar>
+                  <v-avatar
+                    size="10"
+                    :color="categoriesById[item.category].color"
+                    class="mr-1"
+                  ></v-avatar>
                   <p
                     v-html="item.categoryName"
                     class="font-italic subheading text-capitalize"
@@ -60,7 +64,11 @@
                 <p class="mb-1">
                   <strong>Category</strong>
                 </p>
-                <v-avatar size="15" :color="categoriesById[item.category].color" class="mr-1"></v-avatar>
+                <v-avatar
+                  size="15"
+                  :color="categoriesById[item.category].color"
+                  class="mr-1"
+                ></v-avatar>
                 {{ item.categoryName }}
               </span>
             </v-tooltip>
@@ -90,7 +98,11 @@
             </v-tooltip>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card flat class="d-flex align-center text-left mx-3" v-on="on">
+                <v-card
+                  flat
+                  class="d-flex align-center text-left mx-3"
+                  v-on="on"
+                >
                   <v-icon color="primary" v-text="'mdi-history'"></v-icon>
                   <p
                     v-text="
@@ -234,7 +246,7 @@ export default {
   },
   methods: {
     edit() {
-      console.log('edit', this.item)
+      //console.log('edit', this.item)
       this.$store.dispatch('setStateValue', {
         key: 'catalogitemediting',
         value: { ...this.item }

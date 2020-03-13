@@ -144,9 +144,9 @@ export default {
       if (!this.name) {
         return 'Name Required'
       }
-      console.log(nameMatches)
-      console.log(this.categoryeditingData)
-      console.log(this.name)
+      //console.log(nameMatches)
+      //console.log(this.categoryeditingData)
+      //console.log(this.name)
       if (nameMatches !== undefined) {
         if (
           !this.id ||
@@ -183,13 +183,13 @@ export default {
           id: this.id
         })
         .then(res => {
-          console.log(res)
+          //console.log(res)
           if (res.status) {
             if (res.status === 'success') {
               this.$store.dispatch('toggleModalEditCategory')
             } else {
               //display error message returned from backend
-              console.log('res.status!= success', res)
+              //console.log('res.status!= success', res)
             }
             this.loading = null
           }
@@ -209,7 +209,7 @@ export default {
           isNew: this.id === null
         })
         .then(res => {
-          console.log(res)
+          //console.log(res)
           if (res.status) {
             if (res.status === 'success') {
               //alert success
@@ -217,8 +217,7 @@ export default {
               this.$store.dispatch('toggleModalEditCategory')
             } else {
               //display error message returned from backend
-
-              console.log('res.status!= success', res)
+              //console.log('res.status!= success', res)
             }
             this.loading = null
           }

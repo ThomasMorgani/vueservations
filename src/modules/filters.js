@@ -33,16 +33,22 @@ export default {
   getObjectFromArray(arr, key, val, returnVal = false) {
     //return item from obj where key === val
     if (!Array.isArray(arr)) {
-      console.log('error: expected array as first paramater. Received:')
-      console.log(arr)
+      //console.log('error: expected array as first paramater. Received:')
+      //console.log(arr)
       return false
     } else {
       const result = arr.find(el => el[key] === val)
-      // console.log(result)
+      // //console.log(result)
       return returnVal ? result[returnVal] : result
     }
   },
-  testRangeOverlap(startDate1, endDate1, startDate2, endDate2, withBuffer = true) {
+  testRangeOverlap(
+    startDate1,
+    endDate1,
+    startDate2,
+    endDate2,
+    withBuffer = true
+  ) {
     let searchStartDate1 =
       typeof startDate1.getMonth === 'function'
         ? startDate1
@@ -66,10 +72,10 @@ export default {
 
     const searchRange2 = moment.range(searchStartDate2, searchEndDate2)
 
-    // console.log(searchStartDate1)
-    // console.log(searchStartDate2)
-    // console.log(searchEndDate1)
-    // console.log(searchEndDate2)
+    // //console.log(searchStartDate1)
+    // //console.log(searchStartDate2)
+    // //console.log(searchEndDate1)
+    // //console.log(searchEndDate2)
 
     return searchRange1.overlaps(searchRange2, { adjacent: true })
   }

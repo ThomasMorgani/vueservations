@@ -40,7 +40,10 @@
           <v-list-item-title v-text="item.name"></v-list-item-title>
         </v-list-item-content>
         <v-list-item-action>
-          <v-icon :color="item.color" v-text="'mdi-checkbox-blank-circle'"></v-icon>
+          <v-icon
+            :color="item.color"
+            v-text="'mdi-checkbox-blank-circle'"
+          ></v-icon>
         </v-list-item-action>
       </template>
       <template v-slot:selection="{ item }">
@@ -131,12 +134,7 @@ export default {
       }
     }
   },
-  methods: {
-    test(e) {
-      console.log(e)
-      return 'primary'
-    }
-  }
+  methods: {}
 }
 </script>
 

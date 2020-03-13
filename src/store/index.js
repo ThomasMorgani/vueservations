@@ -20,6 +20,7 @@ export default new Vuex.Store({
       test: 2
     },
     customFields: [],
+    customFieldEditing: null,
     defaultCatalogItem: {
       abbreviation: null,
       categoryName: null,
@@ -156,7 +157,7 @@ export default new Vuex.Store({
     },
     catalogitemSetValue(state, data) {
       //data : {key: value editing, data: value of item }
-      console.log(data)
+      //console.log(data)
       state.catalogItems[data.index][data.key] = data.data
     },
     catalogView(state, data) {
@@ -178,6 +179,11 @@ export default new Vuex.Store({
     },
     customfieldsAddField(state, field) {
       state.customFields.push(field)
+    },
+    deleteStateValueByKey(state, data) {
+      //data expects: {key: state key, value: state value}
+      // state[data.stateItem][data.key] = data.value
+      Vue.delete(state[data.stateItem], data.key)
     },
     eventsFilterCategorySelect(state, val) {
       state.eventsFilterCategorySelect = val
@@ -202,7 +208,8 @@ export default new Vuex.Store({
     },
     setStateValueByKey(state, data) {
       //data expects: {key: state key, value: state value}
-      state[data.stateItem][data.key] = data.value
+      // state[data.stateItem][data.key] = data.value
+      Vue.set(state[data.stateItem], data.key, data.value)
     },
     toggleModalCatalogCustomfield(state, data) {
       state.modalCatalogCustomfield = data
@@ -222,7 +229,7 @@ export default new Vuex.Store({
   },
   actions: {
     apiCall({ dispatch }, data) {
-      // console.log(data)
+      // //console.log(data)
       return new Promise((resolve, reject) => {
         apiFunctions.callApi(data.endpoint, data.postData || null).then(
           resp => {
@@ -245,7 +252,7 @@ export default new Vuex.Store({
       })
     },
     apiPost(context, data) {
-      console.log(data)
+      //console.log(data)
       return new Promise((resolve, reject) => {
         apiFunctions.postApi(data.endpoint, data.postData).then(
           response => {
@@ -263,7 +270,7 @@ export default new Vuex.Store({
           endpoint: `/initialize_page_data`
         })
           .then(data => {
-            // console.log(data)
+            // //console.log(data)
             if (data) {
               Object.keys(data).forEach(key => {
                 commit('setStateValue', { key: key, value: data[key] })
@@ -288,7 +295,7 @@ export default new Vuex.Store({
           endpoint: '/catalogItem_delete/' + data.id
         })
           .then(res => {
-            console.log(res)
+            //console.log(res)
             if (res.status === 'success') {
               commit(
                 'catalogitemDelete',
@@ -306,7 +313,7 @@ export default new Vuex.Store({
     catalogitemSetValue({ commit, state }, data) {
       //data : {id: id of cat item, item: key of value updating, data: value of item}
       const ciIndex = state.catalogItems.findIndex(el => el.id === data.id)
-      console.log(ciIndex)
+      //console.log(ciIndex)
       if (ciIndex > -1) {
         commit('catalogitemSetValue', { ...data, index: ciIndex })
       } else {
@@ -329,7 +336,7 @@ export default new Vuex.Store({
           endpoint: '/category_delete/' + data.id
         })
           .then(res => {
-            console.log(res)
+            //console.log(res)
             if (res.status === 'success') {
               commit(
                 'categoryDelete',
@@ -363,14 +370,14 @@ export default new Vuex.Store({
       })
     },
     categoryEditSave({ commit, dispatch, state }, data) {
-      // console.log('data', data)
+      // //console.log('data', data)
       return new Promise((resolve, reject) => {
         dispatch('apiCall', {
           endpoint: '/category_edit',
           postData: data
         })
           .then(res => {
-            console.log('res', res)
+            //console.log('res', res)
             if (res.status === 'success') {
               if (data.isNew) {
                 data.id = res.data
@@ -382,7 +389,7 @@ export default new Vuex.Store({
                 commit('categoryUpdate', { key: catKey, value: data })
               }
             }
-            console.log(res)
+            //console.log(res)
             resolve(res)
           })
           .catch(err => {
@@ -393,6 +400,9 @@ export default new Vuex.Store({
     },
     customfieldsAddField({ commit }, data) {
       commit('customfieldsAddField', data)
+    },
+    deleteStateValueByKey({ commit }, data) {
+      commit('deleteStateValueByKey', data)
     },
     filtersClearAll({ commit }) {
       const filterDefaults = {
@@ -414,11 +424,11 @@ export default new Vuex.Store({
           postData: data
         })
           .then(res => {
-            console.log('res', res)
+            //console.log('res', res)
             if (res.status === 'success') {
               commit('pushStateValue', { key: 'settings', value: data })
             }
-            console.log(res)
+            //console.log(res)
             resolve(res)
           })
           .catch(err => {
@@ -428,16 +438,16 @@ export default new Vuex.Store({
       })
     },
     setStateValue({ commit }, data) {
-      console.log(data)
+      //console.log(data)
       if (data.isPush) {
-        console.log('is push')
+        //console.log('is push')
         commit('pushStateValue', { key: data.key, value: data.value })
       } else {
         commit('setStateValue', { key: data.key, value: data.value })
       }
     },
     setStateValueByKey({ commit }, data) {
-      console.log(data)
+      //console.log(data)
       if (data.isPush) {
         commit('pushStateValueByKey', {
           stateItem: data.stateItem,

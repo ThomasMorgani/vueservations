@@ -145,7 +145,7 @@ export default {
       if (ciNoteKey > -1) {
         this.$set(this.catalogItem.notes, ciNoteKey, note)
       } else {
-        console.log('ERROR UPDATING NOTE. MATCHING KEYS NOT FOUND')
+        //console.log('ERROR UPDATING NOTE. MATCHING KEYS NOT FOUND')
       }
       const tableItemNoteKey = this.tableData.items.findIndex(
         ti => ti.id == note.id
@@ -157,7 +157,7 @@ export default {
       this.noteEditing = null
     },
     onSaveNote(note) {
-      console.log('onSaveNote')
+      //console.log('onSaveNote')
       if (note.isNew) {
         this.noteAdd(note.note)
       } else {

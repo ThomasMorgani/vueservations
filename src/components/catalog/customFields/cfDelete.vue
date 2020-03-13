@@ -6,16 +6,16 @@
     <v-card-text class="d-flex flex-column justify-center align-center">
       <p>Confirm deletion of:</p>
       <p class="font-weight-bold">
-        {{ `${patron.last_name}, ${patron.first_name}` }}
+        {{ `${field.name}` }}
       </p>
-      <template v-if="affectedEvents.items && affectedEvents.items.length > 0">
+      <template v-if="affectedItems.items && affectedItems.items.length > 0">
         <p class="text-center mt-4">
-          The following reservations for this patron will be removed.
+          This field will be removed from the following items:
         </p>
-        <eventTableSimple v-bind="affectedEvents"></eventTableSimple>
+        <eventTableSimple v-bind="affectedItems"></eventTableSimple>
       </template>
       <p class="text-center" v-else>
-        (There are no events associated with this patron)
+        (There are no items associated with this field)
       </p>
     </v-card-text>
     <v-card-actions>
@@ -26,7 +26,8 @@
         color="error"
         @click="
           $emit('actionBtn', {
-            action: 'deleteConfirm'
+            action: 'deleteConfirm',
+            item: field
           })
         "
         >CONFIRM</v-btn
@@ -37,16 +38,16 @@
 
 <script>
 export default {
-  name: 'patronDelete',
+  name: 'cfDelete',
   components: {
     eventTableSimple: () => import('@/components/global/tableSimple')
   },
   props: {
-    patron: {
+    field: {
       type: Object,
       required: true
     },
-    affectedEvents: {
+    affectedItems: {
       type: Object,
       required: false,
       default: () => {}

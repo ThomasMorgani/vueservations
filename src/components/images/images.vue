@@ -83,12 +83,12 @@ export default {
       this.modalUploadForm = false
     },
     getImages() {
-      console.log('get images')
+      //console.log('get images')
       this.$store
         .dispatch('apiCall', { endpoint: '/images_get_all' })
         .then(resp => {
           this.images = resp
-          console.log('images received')
+          //console.log('images received')
         })
         .catch(err => {
           console.log('err:', err)
