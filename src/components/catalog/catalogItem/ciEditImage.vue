@@ -56,9 +56,10 @@
       </v-row>
     </v-card-text>
     <v-expand-transition>
-      <v-card flat v-show="method !== null" class="expansionCard">
+      <v-card flat v-show="method !== null" class="expansionCard pa-5">
         <v-card-text v-if="method === 'select'" class="pt-0">
           <imageGallery
+            :showAdd="true"
             @imageClicked="selectImage"
             @newImageAdded="selectImage"
           ></imageGallery>
@@ -98,7 +99,7 @@
 </template>
 
 <script>
-import imageGallery from '@/components/images/images'
+import imageGallery from '@/components/images/imagesTiles'
 
 export default {
   name: 'CIEditImage',

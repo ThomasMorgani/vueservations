@@ -20,6 +20,14 @@
     <btnWithTooltip
       :btnClass="['mx-2']"
       :btnProps="{ icon: true }"
+      :iconProps="{ icon: 'mdi-image-multiple' }"
+      :tooltipProps="{ disabled: false, top: true }"
+      :tooltipText="'Image Management'"
+      @click="viewMain = 'images'"
+    ></btnWithTooltip>
+    <btnWithTooltip
+      :btnClass="['mx-2']"
+      :btnProps="{ icon: true }"
       :iconProps="{ icon: 'mdi-format-columns' }"
       :tooltipProps="{ disabled: false, top: true }"
       :tooltipText="'Catalog Fields Management'"

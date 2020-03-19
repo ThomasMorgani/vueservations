@@ -38,6 +38,7 @@ export default {
       import('@/components/catalog/customFields/customFields'),
     footerApp,
     help: () => import('@/components/help/help'),
+    images: () => import('@/components/images/images'),
     patron: () => import('@/components/patron/patronList'),
     settings: () => import('@/views/settings'),
     sideDrawer: () => import('@/components/filterDrawer/FilterDrawer'),
@@ -117,7 +118,8 @@ body::-webkit-scrollbar {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(102, 102, 102, 0.26);
+  background: rgba(102, 102, 102, 0);
+  border-radius: 10px;
 }
 
 .component-fade-enter-active,
