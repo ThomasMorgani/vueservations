@@ -10,7 +10,7 @@
         <v-icon>mdi-calendar</v-icon>
       </v-btn>
     </v-app-bar>
-    <v-content ref="content">
+    <v-content ref="content" v-resize="setDimmensions">
       <template v-if="isLoaded">
         <sideDrawer></sideDrawer>
         <transition name="component-fade" appear mode="out-in">
@@ -74,7 +74,7 @@ export default {
   methods: {
     setDimmensions() {
       // let contentLocal = this.$refs.content.$el.offsetHeight
-      let contentState = this.$store.state.content
+      let contentState = { ...this.$store.state.content }
       contentState.main.x = this.$refs.content.$el.offsetWidth
       contentState.main.y = this.$refs.content.$el.offsetHeight
       this.$store.dispatch('setStateValue', {
