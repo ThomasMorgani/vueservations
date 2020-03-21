@@ -142,6 +142,16 @@ export default new Vuex.Store({
           : null
       )
       return filters
+    },
+    styleContentHeight(state) {
+      let height = state.content.main.y || null
+      if (height) {
+        height = height - 200
+      }
+      return {
+        height: `${height}px`,
+        'overflow-y': 'auto'
+      }
     }
   },
   mutations: {

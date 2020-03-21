@@ -9,22 +9,21 @@
   >
     <v-col cols="12" class="pa-0 flex-shrink-1">
       <!-- <v-sheet height="10vh"> -->
-      <v-toolbar height="40" flat color="background">
+      <v-toolbar height="40" flat color="background" extended>
         <v-toolbar-title
           class="title primary--text font-weight-bold d-flex align-center pb-0"
-        >
-          IMAGES</v-toolbar-title
+          >IMAGES</v-toolbar-title
         >
         <v-spacer></v-spacer>
         <v-menu bottom>
           <template v-slot:activator="{ on: menu }">
             <v-tooltip top>
               <template v-slot:activator="{ on: tooltip }">
-                <v-btn icon v-on="{ ...tooltip, ...menu }"
-                  ><v-icon color="primary">{{
-                    viewData[view].icon
-                  }}</v-icon></v-btn
-                >
+                <v-btn icon v-on="{ ...tooltip, ...menu }">
+                  <v-icon color="primary">
+                    {{ viewData[view].icon }}
+                  </v-icon>
+                </v-btn>
               </template>
               <span>VIEW</span>
             </v-tooltip>
@@ -37,9 +36,7 @@
             >
               <v-tooltip left>
                 <template v-slot:activator="{ on }">
-                  <v-icon color="primary" v-on="on">
-                    {{ viewItem.icon }}</v-icon
-                  >
+                  <v-icon color="primary" v-on="on">{{ viewItem.icon }}</v-icon>
                 </template>
                 <span>{{ viewItem.text }}</span>
               </v-tooltip>
@@ -57,14 +54,33 @@
       </v-toolbar>
     </v-col>
     <v-col cols="12" class="pa-0 flex-grow-1">
-      <component :is="view" :view="view"></component>
+      <component
+        :is="view"
+        :view="view"
+        @imageClicked="onImageClicked"
+        :style="styleContentHeight"
+      ></component>
     </v-col>
-
+    <!--
+  move these dialogs to single, dynamic
+    -->
+    <v-dialog
+      v-model="modalVisible"
+      transition="dialog-transition"
+      :key="'m' + modalVisible"
+      max-width="800"
+    >
+      <component
+        :is="modalComp"
+        v-bind="modalCompData"
+        @imageClicked="onImageClicked"
+        @closeModal="modalVisible = false"
+      ></component>
+    </v-dialog>
     <v-dialog
       :value="modalImageFullPreview"
       transition="dialog-transition"
-      :key="modalImageFullPreview"
-      @input="$store.dispatch('toggleModalImageFullPreview')"
+      :key="'ip' + modalImageFullPreview"
     >
       <imagePreviewModal></imagePreviewModal>
     </v-dialog>
@@ -72,21 +88,21 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
+import imageEdit from '@/components/images/imageEdit'
 import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 
 export default {
   components: {
     btnWithTooltip,
+    imageEdit,
     imagePreviewModal: () => import('@/components/images/imagePreviewModal'),
     tiles: () => import('@/components/images/imagesTiles')
   },
   data: () => ({
-    editCategoryData: {
-      id: null,
-      color: 'primary',
-      name: null
-    },
+    modalComp: null,
+    modalCompData: null,
+    modalVisible: false,
     search: null,
     view: 'tiles',
     viewData: {
@@ -109,11 +125,20 @@ export default {
     }
   }),
   computed: {
+    ...mapGetters(['styleContentHeight']),
     ...mapState({
       modalImageFullPreview: state => state.modalImageFullPreview
     })
   },
-  methods: {},
+  methods: {
+    onImageClicked(image) {
+      console.log(image)
+      console.log('image')
+      this.modalComp = 'imageEdit'
+      this.modalCompData = { imageData: image }
+      this.modalVisible = true
+    }
+  },
   created() {
     this.view = localStorage.getItem('lastViewImages')
       ? localStorage.getItem('lastViewImages')

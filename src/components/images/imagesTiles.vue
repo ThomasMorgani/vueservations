@@ -126,7 +126,7 @@ export default {
 .previewIcon {
   position: absolute;
   top: 0px;
-  left: 0px;
+  left: -20px;
   z-index: 5;
 }
 </style>

@@ -84,7 +84,7 @@
     <v-dialog
       v-model="modalEditCatalogItemFields"
       persistent
-      max-width="500px"
+      max-width="700px"
       transition="dialog-transition"
       :key="
         `cifEdit${String(
@@ -210,6 +210,7 @@ export default {
     }
   },
   created() {
+    console.log(this.view)
     this.view = localStorage.getItem('lastViewCatalog')
       ? localStorage.getItem('lastViewCatalog')
       : 'overview'

@@ -14,7 +14,11 @@
       <template v-if="isLoaded">
         <sideDrawer></sideDrawer>
         <transition name="component-fade" appear mode="out-in">
-          <component :is="viewMain" :key="viewMain"></component>
+          <component
+            :is="viewMain"
+            :key="viewMain"
+            class="mainView"
+          ></component>
         </transition>
       </template>
     </v-content>
@@ -101,11 +105,20 @@ export default {
 }
 </script>
 <style>
+html {
+  overflow: scroll;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  width: 0px; /* Remove scrollbar space */
+  background: transparent; /* Optional: just make scrollbar invisible */
+}
+
 .hoverPointer:hover {
   cursor: pointer;
 }
 
-body::-webkit-scrollbar {
+.mainView::-webkit-scrollbar {
   display: none;
 }
 ::-webkit-scrollbar {

@@ -3,13 +3,13 @@
     <v-card-title class="justify-center title primary--text">
       {{ id ? 'EDIT ITEM' : 'ADD ITEM' }}
     </v-card-title>
-    <v-card-text class="modalBody">
+    <v-card-text>
       <v-tabs v-model="tab" background-color="transparent" color="primary" grow>
         <v-tab key="0">INFO</v-tab>
         <v-tab key="1">DETAILS</v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="tab">
+      <v-tabs-items v-model="tab" class="modalBody">
         <v-tab-item key="0">
           <form>
             <v-row align="center" justify="center" dense>

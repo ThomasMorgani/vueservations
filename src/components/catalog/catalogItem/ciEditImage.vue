@@ -1,60 +1,8 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text"
-      >EDIT IMAGE</v-card-title
-    >
-    <v-card-text class="modalBody pb-0">
-      <v-row class="d-flex align-center justify-center">
-        <v-col class="d-flex align-center justify-center flex-shrink-1">
-          <v-img
-            :src="image"
-            max-width="200"
-            ref="imagePreview"
-            @click="showPreview"
-          ></v-img>
-        </v-col>
-        <v-col class="d-flex flex-column justify-start flex-grow-1">
-          <p class="primary--text mb-4">
-            Details
-            <!-- TODO: v-for -->
-          </p>
-          <p
-            v-for="name in Object.keys(imagePreviewProperties)"
-            :key="name"
-            class="mb-2"
-          >
-            <span class="primary--text font-weight-bold"
-              >{{ name.toUpperCase() }}:</span
-            >
-            <span>{{ imagePreviewProperties[name] }}</span>
-          </p>
-        </v-col>
-        <!-- <v-col cols="12">
-          <p class="primary--text">Change</p>
-        </v-col>
-        <v-col cols="12" class="options d-flex justify-space-around">
-          <v-btn
-            cols="6"
-            color="primary"
-            dark
-            :outlined="method !== 'select'"
-            @click="method = method === 'select' ? null : 'select'"
-          >
-            <v-icon small left>mdi-image-multiple</v-icon>SELECT
-            EXISITING
-          </v-btn>
-          <v-btn
-            cols="6"
-            color="primary"
-            dark
-            :outlined="method !== 'upload'"
-            @click="method = method === 'upload' ? null : 'upload'"
-          >
-            <v-icon small left>mdi-file-upload</v-icon>UPLOAD NEW
-          </v-btn>
-        </v-col>-->
-      </v-row>
-    </v-card-text>
+    <imageDetails
+      :imageData="imageFile ? imageFile : currentImageData"
+    ></imageDetails>
     <v-expand-transition>
       <v-card flat v-show="method !== null" class="expansionCard pa-5">
         <v-card-text v-if="method === 'select'" class="pt-0">
@@ -71,10 +19,13 @@
         cols="6"
         color="primary"
         dark
-        :outlined="method !== 'select'"
+        text
         @click="method = method === 'select' ? null : 'select'"
       >
-        <v-icon small left>mdi-image-multiple</v-icon>CHANGE IMAGE
+        <v-icon small left>{{
+          method !== 'select' ? 'mdi-image-multiple' : 'mdi-chevron-up'
+        }}</v-icon
+        >{{ method !== 'select' ? 'CHANGE IMAGE' : 'CANCEL' }}
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="close">CLOSE</v-btn>
@@ -99,11 +50,12 @@
 </template>
 
 <script>
+import imageDetails from '@/components/images/imageDetails'
 import imageGallery from '@/components/images/imagesTiles'
 
 export default {
   name: 'CIEditImage',
-  components: { imageGallery },
+  components: { imageDetails, imageGallery },
   props: {
     originalImageData: {
       type: Object,
