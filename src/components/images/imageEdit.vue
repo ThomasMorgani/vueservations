@@ -1,20 +1,44 @@
 <template>
   <v-card>
-    <imageDetails
-      :imageData="imageData"
-      @imageRename="onImageRename"
-    ></imageDetails>
+    <imageDetails :imageData="imageData"></imageDetails>
     <v-card-actions>
-      <v-btn color="error" dark text @click="imageDeletePrompt">
-        <v-icon small left>mdi-trash-can</v-icon>DELETE
-      </v-btn>
+      <btnWithTooltip
+        :btnClass="['mx-2']"
+        :btnProps="{ color: 'error', text: true }"
+        btnText="DELETE"
+        btnTextSide="right"
+        :iconProps="{
+          icon: 'mdi-trash-can',
+          color: 'error',
+          small: true,
+          left: true
+        }"
+        :tooltipProps="{ disabled: false, top: true }"
+        :tooltipText="'Delete Image'"
+        @click="imageDeletePrompt"
+      ></btnWithTooltip>
+      <btnWithTooltip
+        :btnClass="['mx-2']"
+        :btnProps="{ color: 'warning', text: true }"
+        btnText="EDIT"
+        btnTextSide="right"
+        :iconProps="{
+          icon: 'mdi-square-edit-outline',
+          color: 'warning',
+          small: true,
+          right: true
+        }"
+        :tooltipProps="{ disabled: false, top: true }"
+        :tooltipText="'Edit Image Properties'"
+        @click="imageEdit(imageData)"
+      ></btnWithTooltip>
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="close">CLOSE</v-btn>
     </v-card-actions>
     <!-- MERGE INTO DYNAMIC "SECONDARY MODAL -->
-    <!-- <MODAL RENAME -->
+    <!-- <MODAL EDIT -->
     <v-dialog
-      v-model="modalRename"
+      v-model="modalEdit"
       max-width="500px"
       transition="dialog-transition"
     >
@@ -27,25 +51,26 @@
             autofocus
             class="my-4"
           ></v-text-field>
-          <v-card-actions>
-            <v-btn text color="primary" @click="modalRename = false"
-              >CANCEL</v-btn
-            >
-            <v-spacer></v-spacer>
-
-            <v-btn
-              text
-              color="success"
-              :disabled="renameSaveDisabled"
-              :loading="renameSaveLoading"
-              @click="saveRename"
-              ><v-icon left>mdi-content-save</v-icon>SAVE</v-btn
-            >
-          </v-card-actions>
+          <v-select disabled label="Tags"></v-select>
+          <v-switch disabled label="Default Image"></v-switch>
         </v-card-text>
+
+        <v-card-actions>
+          <v-btn text color="primary" @click="modalEdit = false">CANCEL</v-btn>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            text
+            color="success"
+            :disabled="imageEditSaveDisabled"
+            :loading="imageEditSaveLoading"
+            @click="saveImageEdit"
+            ><v-icon left>mdi-content-save</v-icon>SAVE</v-btn
+          >
+        </v-card-actions>
       </v-card>
     </v-dialog>
-    <!-- <MODAL RENAME -->
+    <!-- <MODAL DELETE -->
     <v-dialog
       v-model="modalDelete"
       max-width="500px"
@@ -61,13 +86,15 @@
 
 <script>
 import Vue2Filters from 'vue2-filters'
+
+import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 import imageDetails from '@/components/images/imageDetails'
 import imageDelete from '@/components/images/imageDelete'
 
 export default {
-  name: 'CIEditImage',
+  name: 'imageEdit',
   mixins: [Vue2Filters.mixin],
-  components: { imageDetails, imageDelete },
+  components: { btnWithTooltip, imageDetails, imageDelete },
   props: {
     imageData: {
       type: Object,
@@ -77,13 +104,15 @@ export default {
   data: () => ({
     imageDeleteData: null,
     imageRename: null,
+    modalEdit: false,
     modalDelete: false,
-    modalRename: false,
-    renameSaveLoading: false
+    imageEditSaveLoading: false
   }),
   computed: {
-    renameSaveDisabled() {
-      return !this.imageRename && this.imageData.name == this.imageRename
+    imageEditSaveDisabled() {
+      return (
+        !this.imageRename || this.imageData.display_name == this.imageRename
+      )
     }
   },
   methods: {
@@ -114,12 +143,12 @@ export default {
       }
       this.modalDelete = true
     },
-    onImageRename(image) {
-      this.imageRename = image.name || null
-      this.modalRename = true
+    imageEdit(image) {
+      this.imageRename = image.display_name || null
+      this.modalEdit = true
     },
 
-    saveRename() {
+    saveImageEdit() {
       if (this.imageRename) {
         this.$store
           .dispatch('apiPost', {
@@ -132,11 +161,11 @@ export default {
           .then(resp => {
             if (resp.status === 'success') {
               // this.updateImageName()
-              this.$emit('imageRenamed', {
+              this.$emit('imageEditSaved', {
                 ...this.imageData,
                 display_name: this.imageRename
               })
-              this.modalRename = false
+              this.modalEdit = false
             }
           })
           .catch(err => console.log(err))

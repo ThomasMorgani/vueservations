@@ -7,8 +7,11 @@
         :class="btnClass"
         @click="$emit('click')"
       >
-        {{ btnText }}
-        <v-icon v-if="iconProps"> {{ iconProps.icon }}</v-icon>
+        <span v-if="btnTextSide === 'left'">{{ btnText }}</span>
+        <v-icon v-if="iconProps" v-bind="iconProps">
+          {{ iconProps.icon }}</v-icon
+        >
+        <span v-if="btnTextSide === 'right'">{{ btnText }}</span>
       </v-btn>
     </template>
     <span v-html="tooltipText"></span>
@@ -31,6 +34,11 @@ export default {
     btnText: {
       type: String,
       required: false
+    },
+    btnTextSide: {
+      type: String,
+      required: false,
+      default: () => 'left'
     },
     iconProps: {
       type: Object,

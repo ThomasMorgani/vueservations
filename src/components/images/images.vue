@@ -77,6 +77,7 @@
         v-bind="modalCompData"
         @closeModal="modalVisible = false"
         @imageClicked="onImageClicked"
+        @imageEditSaved="onImageEditSaved"
       ></component>
     </v-dialog>
 
@@ -168,6 +169,18 @@ export default {
         value: image
       })
       this.$store.dispatch('toggleModalImageFullPreview')
+    },
+    onImageEditSaved(image) {
+      this.updateImage(image)
+    },
+    updateImage(image) {
+      //TODO:ageData, display_name: this.imageRename })
+      //Will images be moved to state? prob not but keep for now
+      const key = this.images.findIndex(i => i.id === image.id)
+      if (key > -1) {
+        this.$set(this.images, key, image)
+      }
+      this.$set(this.modalCompData, 'imageData', image)
     }
   },
   created() {
