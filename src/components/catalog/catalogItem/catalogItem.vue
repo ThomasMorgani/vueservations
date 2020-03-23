@@ -286,9 +286,10 @@ export default {
         })
         this.$store.dispatch('toggleStateValue', 'snackbarState')
       } else {
-        if (this.item.isAvailable) {
-          this.$emit('reserve', e)
-        }
+        // if (this.item.isAvailable) {
+        //   this.$emit('reserve', e)
+        // }
+        this.$emit('reserve', e)
       }
     },
     showNotes() {

@@ -49,7 +49,7 @@
           :iconProps="{ icon: 'mdi-image-plus' }"
           :tooltipProps="{ disabled: false, top: true }"
           :tooltipText="'Add Image'"
-          @click="patronAdd()"
+          @click="newImage()"
         ></btnWithTooltip>
       </v-toolbar>
     </v-col>
@@ -57,7 +57,9 @@
       <component
         :is="view"
         :view="view"
+        :images="images"
         @imageClicked="onImageClicked"
+        @showPreview="onShowPreview"
         :style="styleContentHeight"
       ></component>
     </v-col>
@@ -73,14 +75,20 @@
       <component
         :is="modalComp"
         v-bind="modalCompData"
-        @imageClicked="onImageClicked"
         @closeModal="modalVisible = false"
+        @imageClicked="onImageClicked"
       ></component>
     </v-dialog>
+
+    <!-- MODAL IMAGE PREVIEW -->
     <v-dialog
       :value="modalImageFullPreview"
-      transition="dialog-transition"
       :key="'ip' + modalImageFullPreview"
+      height="unset"
+      width="unset"
+      transition="dialog-transition"
+      class="imagePreviewDialog"
+      @input="$store.dispatch('toggleModalImageFullPreview')"
     >
       <imagePreviewModal></imagePreviewModal>
     </v-dialog>
@@ -97,9 +105,11 @@ export default {
     btnWithTooltip,
     imageEdit,
     imagePreviewModal: () => import('@/components/images/imagePreviewModal'),
+    imageUplaod: () => import('@/components/images/imageUpload'),
     tiles: () => import('@/components/images/imagesTiles')
   },
   data: () => ({
+    images: [],
     modalComp: null,
     modalCompData: null,
     modalVisible: false,
@@ -131,20 +141,46 @@ export default {
     })
   },
   methods: {
+    getImages() {
+      //console.log('get images')
+      this.$store
+        .dispatch('apiCall', { endpoint: '/images_get_all' })
+        .then(resp => {
+          this.images = resp
+          //console.log('images received')
+        })
+        .catch(err => {
+          console.log('err:', err)
+        })
+    },
+    newImage() {
+      this.modalComp = 'imageUplaod'
+      this.modalVisible = true
+    },
     onImageClicked(image) {
-      console.log(image)
-      console.log('image')
       this.modalComp = 'imageEdit'
       this.modalCompData = { imageData: image }
       this.modalVisible = true
+    },
+    onShowPreview(image) {
+      this.$store.dispatch('setStateValue', {
+        key: 'imagePreviewData',
+        value: image
+      })
+      this.$store.dispatch('toggleModalImageFullPreview')
     }
   },
   created() {
     this.view = localStorage.getItem('lastViewImages')
       ? localStorage.getItem('lastViewImages')
       : 'tiles'
+  },
+  async mounted() {
+    this.loading = true
+    await this.getImages()
+    this.loading = false
   }
 }
 </script>
 
-<style></style>
+<style scoped></style>

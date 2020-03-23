@@ -261,12 +261,22 @@ export default new Vuex.Store({
         )
       })
     },
-    apiPost(context, data) {
-      //console.log(data)
+    apiPost({ dispatch }, data) {
+      console.log(data)
       return new Promise((resolve, reject) => {
         apiFunctions.postApi(data.endpoint, data.postData).then(
-          response => {
-            resolve(response)
+          resp => {
+            if (resp.status && resp.message) {
+              dispatch('setStateValue', {
+                key: 'snackbarData',
+                value: { status: resp.status, message: resp.message }
+              })
+              dispatch('setStateValue', {
+                key: 'snackbarState',
+                value: true
+              })
+            }
+            resolve(resp)
           },
           error => {
             reject(error)

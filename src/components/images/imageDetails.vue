@@ -6,9 +6,15 @@
       <span>{{
         imageData.display_name ? imageData.display_name : 'Name Here'
       }}</span>
-      <v-btn flat icon color="warning">
-        <v-icon>mdi-pencil</v-icon>
-      </v-btn>
+
+      <btnWithTooltip
+        :btnClass="['mx-2']"
+        :btnProps="{ icon: true, color: 'warning' }"
+        :iconProps="{ icon: 'mdi-square-edit-outline', color: 'warning' }"
+        :tooltipProps="{ disabled: false, top: true }"
+        :tooltipText="'Rename Image'"
+        @click="$emit('imageRename', imageData)"
+      ></btnWithTooltip>
     </v-card-title>
     <v-card-text>
       <v-row align="center">
@@ -41,8 +47,13 @@
   </v-card>
 </template>
 <script>
+import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
+
 export default {
   name: 'imageDetails',
+  components: {
+    btnWithTooltip
+  },
   props: {
     imageData: {
       type: Object,
@@ -79,6 +90,11 @@ export default {
           value: this.imageData.date_added || '-'
         }
       ]
+    }
+  },
+  methods: {
+    editName() {
+      console.log('edit name')
     }
   }
 }

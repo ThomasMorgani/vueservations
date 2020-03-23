@@ -1,0 +1,11 @@
+//CATALOG ITEM
+    =//when clicking reserve button
+        =//isAvailable ? start date = now : set values to current reservation or keep it new ? 
+
+
+//IMAGES
+    =//FOLDERS
+    =//TAGS
+    =//On upload
+        =//duplicateFound ? close modal, find image by hash, open edit dialog with existing image
+    

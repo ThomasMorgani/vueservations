@@ -626,7 +626,8 @@ p {
 }
 .modalBody {
   height: 65vh;
-  overflow-y: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .bounce-top-enter-active {

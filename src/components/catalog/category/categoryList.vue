@@ -201,7 +201,10 @@ export default {
     },
     edit(id) {
       //console.log('edit', id)
-      this.$store.dispatch('categoryEdit', id)
+      this.$store.dispatch('setStateValue', {
+        key: 'categoryediting',
+        value: id
+      })
       this.$store.dispatch('toggleModalEditCategory')
     },
     selectAll() {

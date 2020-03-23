@@ -1,8 +1,17 @@
 <template>
-  <v-card @click.left="onLeftClick" class="d-flex align-center justify-center">
-    <img :src="image.src" class="image" />
-    <!-- <v-img contain :src="image.src" max-height="500px"></v-img> -->
+  <v-card @click="onLeftClick">
+    <v-img
+      ref="imageDisplayed"
+      :src="image.src"
+      contain
+      max-height="90vh"
+      max-width="90vw"
+    ></v-img>
+    <v-card-actions v-if="imageScaled">
+      actions!
+    </v-card-actions>
   </v-card>
+  <!-- <v-img contain :src="image.src" max-height="500px"></v-img> -->
 </template>
 
 <script>
@@ -11,7 +20,10 @@ export default {
   computed: {
     ...mapState({
       image: state => state.imagePreviewData
-    })
+    }),
+    imageScaled() {
+      return false
+    }
   },
   methods: {
     onLeftClick() {
@@ -21,8 +33,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.image {
-  max-height: 500px;
-}
-</style>
+<style scoped></style>

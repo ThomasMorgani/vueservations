@@ -1,9 +1,10 @@
 <template>
-  <v-card text>
+  <v-card flat>
     <v-card-text class="d-flex flex-wrap align-center justify-start pt-0">
       <v-progress-circular
+        large
         indeterminate
-        v-if="loading && images.length > 0"
+        v-if="loading && images.length < 1"
       ></v-progress-circular>
       <template v-else>
         <v-col cols="3" v-if="showAdd">
@@ -13,7 +14,7 @@
                 hover
                 height="125"
                 color="primary"
-                @click="modalUploadForm = true"
+                @click="$emit('newImage')"
                 v-on="on"
                 class="d-flex align-center justify-center"
               >
@@ -37,11 +38,11 @@
               fab
               absolute
               small
-              color="primary"
+              color="secondary"
               @click.stop="showPreview(image)"
               class="previewIcon"
             >
-              <v-icon small>mdi-eye</v-icon>
+              <v-icon color="primary">mdi-eye</v-icon>
             </v-btn>
             <v-img
               :src="image.src"
@@ -53,36 +54,29 @@
         </v-col>
       </template>
     </v-card-text>
-    <v-dialog
-      v-model="modalUploadForm"
-      scrollable
-      persistent
-      max-width="500px"
-      transition="dialog-transition"
-    >
-      <uploadForm
-        @closeUploadModal="modalUploadForm = false"
-        @uploadSuccess="addNewImage"
-      ></uploadForm>
-    </v-dialog>
   </v-card>
 </template>
 
 <script>
-import uploadForm from '@/components/images/imageUpload'
 export default {
-  components: {
-    uploadForm
-  },
   props: {
+    images: {
+      type: Array,
+      required: false,
+      default: () => []
+    },
     showAdd: {
+      type: Boolean,
+      required: false,
+      default: () => false
+    },
+    showEdit: {
       type: Boolean,
       required: false,
       default: () => false
     }
   },
   data: () => ({
-    images: [],
     modalUploadForm: false,
     mouseOver: false,
     loading: false
@@ -90,34 +84,11 @@ export default {
   computed: {},
   methods: {
     addNewImage(e) {
-      this.images.push(e)
-      this.$emit('newImageAdded', e)
-      this.modalUploadForm = false
-    },
-    getImages() {
-      //console.log('get images')
-      this.$store
-        .dispatch('apiCall', { endpoint: '/images_get_all' })
-        .then(resp => {
-          this.images = resp
-          //console.log('images received')
-        })
-        .catch(err => {
-          console.log('err:', err)
-        })
+      this.$emit('add', e)
     },
     showPreview(image) {
-      this.$store.dispatch('setStateValue', {
-        key: 'imagePreviewData',
-        value: image
-      })
-      this.$store.dispatch('toggleModalImageFullPreview')
+      this.$emit('showPreview', image)
     }
-  },
-  async mounted() {
-    this.loading = true
-    await this.getImages()
-    this.loading = false
   }
 }
 </script>
