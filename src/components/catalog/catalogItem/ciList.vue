@@ -25,7 +25,12 @@
         </template>
       </v-expansion-panels>
     </v-card-text>
-    <v-dialog v-model="modal" max-width="800px" transition="dialog-transition">
+    <v-dialog
+      v-model="modal"
+      max-width="800px"
+      persistent
+      transition="dialog-transition"
+    >
       <component
         :key="modal + modalComp"
         :is="modalComp"

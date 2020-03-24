@@ -226,6 +226,7 @@
     <v-dialog
       v-model="modalEditImage"
       max-width="650px"
+      persistent
       transition="dialog-transition"
       :key="id + 'imgModal'"
     >
@@ -240,6 +241,7 @@
     <!-- DELETE ITEM -->
     <v-dialog
       v-model="modalConfirmDelete"
+      persistent
       max-width="500px"
       transition="dialog-transition"
     >

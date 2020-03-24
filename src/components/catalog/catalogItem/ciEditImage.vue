@@ -10,6 +10,7 @@
             :images="images"
             :showAdd="true"
             @imageClicked="selectImage"
+            @newImage="modalNewImage = true"
             @newImageAdded="selectImage"
             @showPreview="showPreview"
           ></imageGallery>
@@ -21,10 +22,10 @@
         <v-icon small left>{{
           method !== 'select' ? 'mdi-image-multiple' : 'mdi-chevron-up'
         }}</v-icon
-        >{{ method !== 'select' ? 'CHANGE IMAGE' : 'CANCEL' }}
+        >{{ method !== 'select' ? 'CHANGE IMAGE' : 'CLOSE' }}
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" @click="close">CLOSE</v-btn>
+      <v-btn text small color="primary" @click="close">CANCEL</v-btn>
       <v-tooltip top :disabled="!saveDisabled">
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -42,6 +43,18 @@
         <span>{{ saveDisabledText }}</span>
       </v-tooltip>
     </v-card-actions>
+    <v-dialog
+      v-model="modalNewImage"
+      persistent
+      transition="dialog-transition"
+      :key="'m' + modalNewImage"
+      max-width="800"
+    >
+      <imageUplaod
+        @closeModal="modalNewImage = false"
+        @imageAdded="onImageAdded"
+      ></imageUplaod>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -51,7 +64,11 @@ import imageGallery from '@/components/images/imagesTiles'
 
 export default {
   name: 'CIEditImage',
-  components: { imageDetails, imageGallery },
+  components: {
+    imageDetails,
+    imageGallery,
+    imageUplaod: () => import('@/components/images/imageUpload')
+  },
   props: {
     originalImageData: {
       type: Object,
@@ -75,6 +92,7 @@ export default {
     isLoaded: false,
     loading: false,
     method: null,
+    modalNewImage: false,
     modalFullImagePreview: false,
     saveDisabled: false,
     saveDisabledText: 'todo',
@@ -156,7 +174,13 @@ export default {
           console.log('err:', err)
         })
     },
-
+    onImageAdded(image) {
+      console.log('imageAdded')
+      console.log(image)
+      this.images.push(image)
+      this.selectedImageData = image
+      this.modalNewImage = false
+    },
     reset() {
       this.imageFile = null
       this.imageUrl = null

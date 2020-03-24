@@ -36,7 +36,11 @@
             >
               <v-tooltip left>
                 <template v-slot:activator="{ on }">
-                  <v-icon color="primary" v-on="on">{{ viewItem.icon }}</v-icon>
+                  <v-icon
+                    :color="viewItem.disabled ? 'disabled' : 'primary'"
+                    v-on="on"
+                    >{{ viewItem.icon }}</v-icon
+                  >
                 </template>
                 <span>{{ viewItem.text }}</span>
               </v-tooltip>
@@ -120,11 +124,13 @@ export default {
     view: 'tiles',
     viewData: {
       list: {
+        disabled: true,
         icon: 'mdi-format-list-bulleted-square',
         text: 'LIST',
         value: 'list'
       },
       details: {
+        disabled: true,
         icon: 'mdi-card-bulleted-outline',
         text: 'DETAILED',
         value: 'details'
