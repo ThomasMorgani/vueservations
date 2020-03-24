@@ -57,7 +57,7 @@
       <component
         :is="view"
         :view="view"
-        :images="images"
+        :images="images || []"
         @imageClicked="onImageClicked"
         @showPreview="onShowPreview"
         :style="styleContentHeight"
@@ -76,7 +76,9 @@
         :is="modalComp"
         v-bind="modalCompData"
         @closeModal="modalVisible = false"
+        @imageAdded="onImageAdded"
         @imageClicked="onImageClicked"
+        @imageDeleted="onImageDeleted"
         @imageEditSaved="onImageEditSaved"
       ></component>
     </v-dialog>
@@ -142,6 +144,12 @@ export default {
     })
   },
   methods: {
+    getDefaultImage() {
+      const setting = this.$store.state.settings.find(
+        s => s.name === 'Default_Image'
+      )
+      return this.images.find(i => i.id === setting.setting)
+    },
     getImages() {
       //console.log('get images')
       this.$store
@@ -158,10 +166,22 @@ export default {
       this.modalComp = 'imageUplaod'
       this.modalVisible = true
     },
+    onImageAdded(image) {
+      console.log(image)
+      this.images.push(image)
+      this.modalVisible = false
+    },
     onImageClicked(image) {
       this.modalComp = 'imageEdit'
-      this.modalCompData = { imageData: image }
+      this.modalCompData = {
+        defaultImage: this.getDefaultImage(),
+        imageData: image
+      }
       this.modalVisible = true
+    },
+    onImageDeleted(image) {
+      this.images = this.images.filter(i => i.id !== image.id)
+      this.modalVisible = false
     },
     onShowPreview(image) {
       this.$store.dispatch('setStateValue', {

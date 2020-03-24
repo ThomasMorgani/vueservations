@@ -4,7 +4,7 @@
     <v-card-actions>
       <btnWithTooltip
         :btnClass="['mx-2']"
-        :btnProps="{ color: 'error', text: true }"
+        :btnProps="{ color: 'error', text: true, disabled: isDefaultImage }"
         btnText="DELETE"
         btnTextSide="right"
         :iconProps="{
@@ -14,9 +14,12 @@
           left: true
         }"
         :tooltipProps="{ disabled: false, top: true }"
-        :tooltipText="'Delete Image'"
+        :tooltipText="
+          isDefaultImage ? 'Default image cant\'t be deleted' : 'Delete Image'
+        "
         @click="imageDeletePrompt"
       ></btnWithTooltip>
+      <v-spacer></v-spacer>
       <btnWithTooltip
         :btnClass="['mx-2']"
         :btnProps="{ color: 'warning', text: true }"
@@ -26,13 +29,12 @@
           icon: 'mdi-square-edit-outline',
           color: 'warning',
           small: true,
-          right: true
+          left: true
         }"
         :tooltipProps="{ disabled: false, top: true }"
         :tooltipText="'Edit Image Properties'"
         @click="imageEdit(imageData)"
       ></btnWithTooltip>
-      <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="close">CLOSE</v-btn>
     </v-card-actions>
     <!-- MERGE INTO DYNAMIC "SECONDARY MODAL -->
@@ -52,7 +54,11 @@
             class="my-4"
           ></v-text-field>
           <v-select disabled label="Tags"></v-select>
-          <v-switch disabled label="Default Image"></v-switch>
+          <v-switch
+            :input-value="isDefaultImage"
+            disabled
+            label="Default Image"
+          ></v-switch>
         </v-card-text>
 
         <v-card-actions>
@@ -73,12 +79,14 @@
     <!-- <MODAL DELETE -->
     <v-dialog
       v-model="modalDelete"
-      max-width="500px"
+      width="unset"
+      max-width="800px"
       transition="dialog-transition"
     >
       <imageDelete
         v-bind="imageDeleteData"
         @closeDelete="modalDelete = false"
+        @actionBtn="onDeleteConfirm"
       ></imageDelete>
     </v-dialog>
   </v-card>
@@ -96,6 +104,10 @@ export default {
   mixins: [Vue2Filters.mixin],
   components: { btnWithTooltip, imageDetails, imageDelete },
   props: {
+    defaultImage: {
+      type: Object,
+      required: true
+    },
     imageData: {
       type: Object,
       required: true
@@ -104,6 +116,7 @@ export default {
   data: () => ({
     imageDeleteData: null,
     imageRename: null,
+    isLoadingDelete: false,
     modalEdit: false,
     modalDelete: false,
     imageEditSaveLoading: false
@@ -113,6 +126,9 @@ export default {
       return (
         !this.imageRename || this.imageData.display_name == this.imageRename
       )
+    },
+    isDefaultImage() {
+      return this.defaultImage.id === this.imageData.id
     }
   },
   methods: {
@@ -127,7 +143,7 @@ export default {
             {
               value: 'name',
               text: 'CATALOG ITEM',
-              width: 200
+              width: 50
             }
           ],
           items: this.orderBy(
@@ -139,13 +155,33 @@ export default {
             'name'
           ),
           height: 200
-        }
+        },
+        defaultImage: this.defaultImage
       }
       this.modalDelete = true
     },
     imageEdit(image) {
       this.imageRename = image.display_name || null
       this.modalEdit = true
+    },
+    onDeleteConfirm() {
+      this.isLoadingDelete = true
+      this.$store
+        .dispatch('apiCall', {
+          endpoint: '/image_delete/' + this.imageData.id
+        })
+        .then(resp => {
+          if (resp.status === 'success') {
+            this.modalDelete = false
+            this.modalEdit = false
+            if (this.imageDeleteData.affectedItems.items.length > 0) {
+              this.updateCatalogItems()
+            }
+            this.$emit('imageDeleted', this.imageData)
+          } else {
+            this.isLoadingDelete = false
+          }
+        })
     },
 
     saveImageEdit() {
@@ -170,6 +206,21 @@ export default {
           })
           .catch(err => console.log(err))
       }
+    },
+    updateCatalogItems() {
+      const items = this.$store.state.catalogItems.map(ci => {
+        return ci.image === this.imageDeleteData.image.id
+          ? {
+              ...ci,
+              image: this.defaultImage.id,
+              image_data: this.defaultImage
+            }
+          : ci
+      })
+      this.$store.dispatch('setStateValue', {
+        key: 'catalogItems',
+        value: items
+      })
     },
     updateImageName() {
       //TODO:ageData, display_name: this.imageRename })

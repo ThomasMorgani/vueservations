@@ -6,6 +6,13 @@
       <span>{{
         imageData.display_name ? imageData.display_name : 'Name Here'
       }}</span>
+      <v-spacer></v-spacer>
+      <v-tooltip top v-if="isDefaultImage">
+        <template v-slot:activator="{ on }">
+          <v-icon color="primary" v-on="on">mdi-star</v-icon>
+        </template>
+        <span>This is the default image.</span>
+      </v-tooltip>
     </v-card-title>
     <v-card-text>
       <v-row align="center">
@@ -81,6 +88,12 @@ export default {
           value: this.imageData.date_added || '-'
         }
       ]
+    },
+    isDefaultImage() {
+      const setting = this.$store.state.settings.find(
+        s => s.name === 'Default_Image'
+      )
+      return setting?.setting && setting.setting === this.imageData.id
     }
   }
 }

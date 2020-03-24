@@ -7,21 +7,17 @@
       <v-card flat v-show="method !== null" class="expansionCard pa-5">
         <v-card-text v-if="method === 'select'" class="pt-0">
           <imageGallery
+            :images="images"
             :showAdd="true"
             @imageClicked="selectImage"
             @newImageAdded="selectImage"
+            @showPreview="showPreview"
           ></imageGallery>
         </v-card-text>
       </v-card>
     </v-expand-transition>
     <v-card-actions>
-      <v-btn
-        cols="6"
-        color="primary"
-        dark
-        text
-        @click="method = method === 'select' ? null : 'select'"
-      >
+      <v-btn cols="6" color="primary" dark text @click="showGallery">
         <v-icon small left>{{
           method !== 'select' ? 'mdi-image-multiple' : 'mdi-chevron-up'
         }}</v-icon
@@ -72,6 +68,7 @@ export default {
       file_name: 'catalogitem.png',
       file_type: 'PNG'
     },
+    images: null,
     imageDisplayed: null,
     imageUrl: null,
     imageFile: null,
@@ -147,12 +144,34 @@ export default {
     close() {
       this.$emit('closeImageModal')
     },
+    getImages() {
+      //console.log('get images')
+      this.$store
+        .dispatch('apiCall', { endpoint: '/images_get_all' })
+        .then(resp => {
+          this.images = resp
+          //console.log('images received')
+        })
+        .catch(err => {
+          console.log('err:', err)
+        })
+    },
 
     reset() {
       this.imageFile = null
       this.imageUrl = null
       this.loading = false
       this.method = null
+    },
+    async showGallery() {
+      if (this.method !== 'select') {
+        if (!this.images) {
+          await this.getImages()
+        }
+        this.method = 'select'
+      } else {
+        this.method = null
+      }
     },
     saveImage() {
       this.loading = 'save'
@@ -166,11 +185,11 @@ export default {
     selectImage(image) {
       this.selectedImageData = image
     },
-    showPreview() {
+    showPreview(image) {
       this.$store.dispatch('setStateValue', {
         key: 'imagePreviewData',
         value: {
-          src: this.image
+          src: image
         }
       })
       this.$store.dispatch('toggleModalImageFullPreview')

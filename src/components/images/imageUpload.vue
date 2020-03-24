@@ -76,6 +76,7 @@ export default {
     resetForm() {
       this.fileUpload = null
       this.loading = null
+      this.imageName = null
     },
     uploadImage() {
       this.loading = 'upload'
@@ -88,7 +89,7 @@ export default {
         .then(resp => {
           //console.log(resp)
           if (resp.status === 'success') {
-            this.$emit('uploadSuccess', resp.data)
+            this.$emit('imageAdded', resp.data)
             this.resetForm()
           } else {
             console.log('ERR: ', resp)
