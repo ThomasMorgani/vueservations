@@ -127,6 +127,7 @@
               :key="modalDetailsShow + modalDetailsComp"
               :is="modalDetailsComp"
               :event="selectedEvent"
+              v-bind="modalDetailsCompData"
               @close="onDetailsClose($event)"
               @eventModalAction="onDetailsAction"
               @eventUpdated="calendarcheckChanges"
@@ -176,6 +177,7 @@ export default {
     calendarMonthHeight: 2000,
     menuHeightSlider: false,
     modalDetailsComp: null,
+    modalDetailsCompData: null,
     modalDetailsShow: false,
     color: '#000066',
     currentlyEditing: null,
@@ -436,9 +438,12 @@ export default {
       }
     },
     showDetails(e) {
-      //console.log(e)
+      console.log(e)
       switch (e.type) {
         case 'ci':
+          this.modalDetailsCompData = {
+            item: this.selectedEvent?.eventData?.ciData || null
+          }
           this.modalDetailsComp = 'ciDetails'
           break
         case 'edit':
