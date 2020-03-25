@@ -139,6 +139,21 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
+      <v-dialog
+        v-model="modal"
+        persistent
+        max-width="600"
+        transition="dialog-transition"
+      >
+        <v-card flat>
+          <component
+            :key="modal + modalComp"
+            :is="modalComp"
+            v-bind="modalCompData"
+            @close="modal = false"
+          ></component>
+        </v-card>
+      </v-dialog>
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
@@ -149,25 +164,37 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import { timestampHuman } from '@/modules/formats.js'
-
+import Vue2Filters from 'vue2-filters'
+import * as formats from '@/modules/formats.js'
+const { timestampHuman } = formats
 import customFieldsList from '@/components/catalog/catalogItem/ciCustomFieldsList'
 
 export default {
   name: 'ciDetails',
   components: {
-    customFieldsList
+    customFieldsList,
+    ciNotes: () => import('@/components/catalog/catalogItem/ciNotes'),
+    ciReservations: () =>
+      import('@/components/catalog/catalogItem/ciReservations')
   },
+  mixins: [Vue2Filters.mixin],
   props: {
     item: {
       type: Object,
       required: true
     }
   },
+  data: () => ({
+    modal: false,
+    modalComp: null,
+    modalCompData: null
+  }),
   computed: {
     ...mapGetters(['categoriesById']),
     ...mapState({
       categories: state => state.categories,
+      events: state => state.events,
+      patrons: state => state.patrons,
       statusData: state => state.statusData
     }),
     isReserved() {
@@ -226,10 +253,63 @@ export default {
       }</p>`
     },
     showNotes() {
-      this.$emit('showItemNotes', this.item)
+      this.modalCompData = {
+        catalogItem: this.item,
+        tableData: {
+          headers: [
+            {
+              value: 'note',
+              text: 'NOTE'
+            },
+            {
+              value: 'date_created',
+              text: 'CREATED'
+            },
+            {
+              value: 'date_updated',
+              text: 'UPDATED'
+            }
+          ],
+          items: this.orderBy(
+            formats.noteListSimple(this.item.notes),
+            'date_created'
+          ),
+          height: 400
+        }
+      }
+      this.modalComp = 'ciNotes'
+      this.modal = true
     },
     showReservations() {
-      this.$emit('showItemReservations', this.item)
+      this.modalCompData = {
+        catalogItem: this.item,
+        tableData: {
+          headers: [
+            {
+              value: 'patron',
+              text: 'PATRON'
+            },
+            {
+              value: 'startDate',
+              text: 'START'
+            },
+            {
+              value: 'endDate',
+              text: 'END'
+            }
+          ],
+          items: this.orderBy(
+            formats.eventListSimple(
+              this.events.filter(e => e.item_id == this.item.id),
+              this.patrons
+            ),
+            'startDate'
+          ),
+          height: 400
+        }
+      }
+      this.modalComp = 'ciReservations'
+      this.modal = true
     }
   },
   created() {

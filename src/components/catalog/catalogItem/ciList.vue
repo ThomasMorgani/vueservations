@@ -54,7 +54,8 @@ export default {
     catalogItem,
     eventEdit: () => import('@/components/calendar/eventEdit'),
     ciNotes: () => import('@/components/catalog/catalogItem/ciNotes'),
-    eventTableSimple: () => import('@/components/calendar/eventTableSimple')
+    ciReservations: () =>
+      import('@/components/catalog/catalogItem/ciReservations')
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({
@@ -251,7 +252,7 @@ export default {
           height: 400
         }
       }
-      this.modalComp = 'eventTableSimple'
+      this.modalComp = 'ciReservations'
       this.modal = true
     }
   }

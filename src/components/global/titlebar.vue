@@ -35,7 +35,7 @@ export default {
         {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
-          iconProps: { icon: 'mdi-format-list-bulleted-type' },
+          iconProps: { icon: 'mdi-layers' },
           tooltipProps: { disabled: false, bottom: true },
           tooltipText: 'Item Catalog',
           value: 'catalog'
