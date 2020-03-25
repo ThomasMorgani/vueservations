@@ -10,7 +10,9 @@
     height="contentHeight"
   >
     <v-sheet height="40" class="d-flex align-center justify-space-between pa-2">
-      <span class="title font-weight-bold align-center primary--text">FILTERS</span>
+      <span class="title font-weight-bold align-center primary--text"
+        >FILTERS</span
+      >
       <v-tooltip top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -45,7 +47,8 @@ export default {
     ...mapGetters(['filtersApplied']),
     ...mapState({
       contentHeight: state => state.content.main.y,
-      show: state => state.sideDrawer
+      viewMain: state => state.viewMain,
+      sideDrawer: state => state.sideDrawer
     }),
     contentHeight() {
       return this.$store.state.content.main.y
@@ -62,18 +65,21 @@ export default {
       }
       return null
     },
+    show() {
+      return (
+        this.sideDrawer &&
+        (this.viewMain === 'calendar' || this.viewMain === 'catalog')
+      )
+    },
     styleFiltersSheet() {
       let height = this.contentHeight || null
       if (height) {
-        height = height - 160
+        height = height - 180
       }
       return {
         height: `${height}px`,
         'overflow-y': 'auto'
       }
-    },
-    viewMain() {
-      return this.$store.state.viewMain
     }
   }
 }

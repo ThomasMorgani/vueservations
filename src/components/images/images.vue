@@ -37,7 +37,7 @@
               <v-tooltip left>
                 <template v-slot:activator="{ on }">
                   <v-icon
-                    :color="viewItem.disabled ? 'disabled' : 'primary'"
+                    :color="viewItem.value === view ? 'primary' : 'disabled'"
                     v-on="on"
                     >{{ viewItem.icon }}</v-icon
                   >
@@ -113,6 +113,8 @@ export default {
     imageEdit,
     imagePreviewModal: () => import('@/components/images/imagePreviewModal'),
     imageUplaod: () => import('@/components/images/imageUpload'),
+    detailed: () => import('@/components/images/imagesDetailed'),
+    list: () => import('@/components/images/imagesList'),
     tiles: () => import('@/components/images/imagesTiles')
   },
   data: () => ({
@@ -129,11 +131,11 @@ export default {
         text: 'LIST',
         value: 'list'
       },
-      details: {
+      detailed: {
         disabled: true,
         icon: 'mdi-card-bulleted-outline',
         text: 'DETAILED',
-        value: 'details'
+        value: 'detailed'
       },
 
       tiles: {

@@ -307,7 +307,7 @@ export default {
     styleCal() {
       let height = this.$store.state.content.main.y || null
       if (height) {
-        height = height - 160
+        height = height - 180
       }
       return {
         height: `${height}px`,

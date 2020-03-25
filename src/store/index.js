@@ -146,7 +146,7 @@ export default new Vuex.Store({
     styleContentHeight(state) {
       let height = state.content.main.y || null
       if (height) {
-        height = height - 200
+        height = height - 220
       }
       return {
         height: `${height}px`,

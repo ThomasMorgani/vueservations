@@ -1,15 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar color="primary" app dark clipped-right>
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon @click="setView('catalog')">
-        <v-icon>mdi-format-list-bulleted-type</v-icon>
-      </v-btn>
-      <v-btn icon @click="setView('calendar')">
-        <v-icon>mdi-calendar</v-icon>
-      </v-btn>
-    </v-app-bar>
+    <titlebarApp></titlebarApp>
     <v-content ref="content" v-resize="setDimmensions">
       <template v-if="isLoaded">
         <sideDrawer></sideDrawer>
@@ -31,6 +22,7 @@
 import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 import Snackbar from '@/components/global/snackbar'
 import footerApp from '@/components/global/footer'
+import titlebarApp from '@/components/global/titlebar'
 
 export default {
   name: 'App',
@@ -46,11 +38,11 @@ export default {
     patron: () => import('@/components/patron/patronList'),
     settings: () => import('@/views/settings'),
     sideDrawer: () => import('@/components/filterDrawer/FilterDrawer'),
-    Snackbar
+    Snackbar,
+    titlebarApp
   },
   data: () => ({
-    isLoaded: false,
-    title: 'EIPL RESERVATIONS'
+    isLoaded: false
   }),
   computed: {
     viewMain: {
