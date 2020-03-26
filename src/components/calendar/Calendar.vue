@@ -118,11 +118,7 @@
           <v-tooltip top v-model="tooltipEvent" v-bind="toptipPosition">
             <span>HELLO</span>
           </v-tooltip>
-          <v-dialog
-            v-model="modalDetailsShow"
-            max-width="800px"
-            transition="dialog-transition"
-          >
+          <v-dialog v-model="modalDetailsShow" v-bind="modalDetailsProps">
             <component
               :key="modalDetailsShow + modalDetailsComp"
               :is="modalDetailsComp"
@@ -157,7 +153,7 @@ export default {
     eventDetails: () => import('@/components/calendar/eventDetails'),
     eventMenu,
     filterBtn,
-    patronEdit: () => import('@/components/patron/patronEdit')
+    patronDetails: () => import('@/components/patron/patronDetails')
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({
@@ -176,6 +172,12 @@ export default {
     end: null,
     calendarMonthHeight: 2000,
     menuHeightSlider: false,
+    modalDetailsProps: {
+      'max-width': '800',
+      persistent: true,
+      transition: 'dialog-transition',
+      width: 'unset'
+    },
     modalDetailsComp: null,
     modalDetailsCompData: null,
     modalDetailsShow: false,
@@ -438,7 +440,7 @@ export default {
       }
     },
     showDetails(e) {
-      console.log(e)
+      // console.log(e)
       switch (e.type) {
         case 'ci':
           this.modalDetailsCompData = {
@@ -455,7 +457,10 @@ export default {
           this.modalDetailsComp = 'eventDetails'
           break
         case 'patron':
-          this.modalDetailsComp = 'patronEdit'
+          this.modalDetailsCompData = {
+            patron: this.selectedEvent?.eventData?.patronData || null
+          }
+          this.modalDetailsComp = 'patronDetails'
           break
         default:
           //console.log('err: no match')

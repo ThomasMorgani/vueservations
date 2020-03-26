@@ -1,144 +1,124 @@
 <template>
-  <v-card>
+  <v-card width="800">
     <v-card-title class="title primary--text "> </v-card-title>
     <v-card-text>
-      <v-expansion-panels flat>
-        <v-expansion-panel ref="panel" flat>
-          <v-expansion-panel-header class="pa-2">
-            <v-row dense align="center" justify="center">
-              <v-col cols="2" align-self="center" class="d-flex justify-center">
-                <v-img
-                  contain
-                  :src="item.image_data.src"
-                  :max-width="$vuetify.breakpoint.smAndDown ? 75 : 100"
-                  :max-height="$vuetify.breakpoint.smAndDown ? 75 : 100"
-                  class="pa-0"
-                ></v-img>
-              </v-col>
-              <v-col cols="10">
-                <v-row dense class="display-flex align-center justify-start">
-                  <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
-                  <span class="font-weight-medium title primary--text">
-                    {{ item.name }}
-                  </span>
-                  <v-tooltip top>
-                    <template v-slot:activator="{ on }">
-                      <v-chip
-                        label
-                        small
-                        :color="item.color ? item.color : 'grey'"
-                        v-text="item.abbreviation"
-                        class="font-weight-bold white--text mx-2"
-                        v-on="on"
-                      ></v-chip>
-                    </template>
-                    <span>
-                      <p>
-                        <strong>Abbreviation:</strong>
-                        {{ item.abbreviation }}
-                      </p>
-                      <p>
-                        <strong>Color:</strong>
-                        {{ item.color }}
-                      </p>
-                      <div
-                        :style="{
-                          height: '10px',
-                          'background-color': item.color
-                        }"
-                      ></div>
-                    </span>
-                  </v-tooltip>
-                </v-row>
+      <v-row dense align="center" justify="center">
+        <v-col cols="2" align-self="center" class="d-flex justify-center">
+          <v-img
+            contain
+            :src="item.image_data.src"
+            :max-width="$vuetify.breakpoint.smAndDown ? 75 : 100"
+            :max-height="$vuetify.breakpoint.smAndDown ? 75 : 100"
+            class="pa-0"
+          ></v-img>
+        </v-col>
+        <v-col cols="10">
+          <v-row dense class="display-flex align-center justify-start">
+            <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
+            <span class="font-weight-medium title primary--text">
+              {{ item.name }}
+            </span>
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-chip
+                  label
+                  small
+                  :color="item.color ? item.color : 'grey'"
+                  v-text="item.abbreviation"
+                  class="font-weight-bold white--text mx-2"
+                  v-on="on"
+                ></v-chip>
+              </template>
+              <span>
+                <p>
+                  <strong>Abbreviation:</strong>
+                  {{ item.abbreviation }}
+                </p>
+                <p>
+                  <strong>Color:</strong>
+                  {{ item.color }}
+                </p>
+                <div
+                  :style="{
+                    height: '10px',
+                    'background-color': item.color
+                  }"
+                ></div>
+              </span>
+            </v-tooltip>
+          </v-row>
 
-                <v-row dense class="display-flex align-center justify-start">
-                  <v-tooltip top>
-                    <template v-slot:activator="{ on }">
-                      <div v-on="on">
-                        <v-avatar
-                          size="10"
-                          :color="categoriesById[item.category].color"
-                          class="mr-1"
-                        ></v-avatar>
-                        <p
-                          v-html="item.categoryName"
-                          class="font-italic subheading text-capitalize"
-                          style="display: inline;"
-                        ></p>
-                      </div>
-                    </template>
-                    <span>
-                      <p class="mb-1">
-                        <strong>Category</strong>
-                      </p>
-                      <v-avatar
-                        size="15"
-                        :color="categoriesById[item.category].color"
-                        class="mr-1"
-                      ></v-avatar>
-                      {{ item.categoryName }}
-                    </span>
-                  </v-tooltip>
-                </v-row>
-                <v-row
-                  dense
-                  class="display-flex align-start justify-start my-2"
-                >
-                  <v-col class="text-xs-left">
-                    <p
-                      class="caption body-1 pa-2"
-                      v-html="item.description"
-                    ></p>
-                  </v-col>
-                </v-row>
-                <v-row dense align="center" justify="start" class="my-2">
-                  <!-- STATUS -->
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-row dense justify="end">
-              <v-col class="flex-grow-1 flex-shrink-0"></v-col>
-              <v-col class="text-right flex-grow-0 flex-shrink-1">
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      text
-                      icon
-                      color="primary"
-                      @click="showNotes"
-                      v-on="on"
-                    >
-                      <v-icon color="primary">mdi-note-text-outline</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Notes</span>
-                </v-tooltip>
-              </v-col>
-              <v-col class="text-right flex-grow-0 flex-shrink-1">
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <v-btn text icon @click="showReservations" v-on="on">
-                      <v-icon color="primary">mdi-calendar-clock</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>View Reservations</span>
-                </v-tooltip>
-              </v-col>
-            </v-row>
-            <v-row justify="start">
-              <v-col cols="10" offset="2">
-                <v-divider></v-divider>
-                <p class="title font-weight-bold primary--text">DETAILS</p>
-              </v-col>
-              <v-col cols="8" offset="2" class="text-center">
-                <customFieldsList :items="item.customFields"></customFieldsList>
-              </v-col>
-            </v-row>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
+          <v-row dense class="display-flex align-center justify-start">
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <div v-on="on">
+                  <v-avatar
+                    size="10"
+                    :color="categoriesById[item.category].color"
+                    class="mr-1"
+                  ></v-avatar>
+                  <p
+                    v-html="categoriesById[item.category].name"
+                    class="font-italic subheading text-capitalize"
+                    style="display: inline;"
+                  ></p>
+                </div>
+              </template>
+              <span>
+                <p class="mb-1">
+                  <strong>Category</strong>
+                </p>
+                <v-avatar
+                  size="15"
+                  :color="categoriesById[item.category].color"
+                  class="mr-1"
+                ></v-avatar>
+                {{ categoriesById[item.category].name }}
+              </span>
+            </v-tooltip>
+          </v-row>
+          <v-row dense class="display-flex align-start justify-start my-2">
+            <v-col class="text-xs-left">
+              <p class="caption body-1 pa-2" v-html="item.description"></p>
+            </v-col>
+          </v-row>
+          <v-row dense align="center" justify="start" class="my-2">
+            <!-- STATUS -->
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row dense justify="end">
+        <v-col class="flex-grow-1 flex-shrink-0"></v-col>
+        <v-col class="text-right flex-grow-0 flex-shrink-1">
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn text icon color="primary" @click="showNotes" v-on="on">
+                <v-icon color="primary">mdi-note-text-outline</v-icon>
+              </v-btn>
+            </template>
+            <span>Notes</span>
+          </v-tooltip>
+        </v-col>
+        <v-col class="text-right flex-grow-0 flex-shrink-1">
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn text icon @click="showReservations" v-on="on">
+                <v-icon color="primary">mdi-calendar-clock</v-icon>
+              </v-btn>
+            </template>
+            <span>View Reservations</span>
+          </v-tooltip>
+        </v-col>
+      </v-row>
+      <v-row justify="start">
+        <v-col cols="10" offset="2">
+          <v-divider></v-divider>
+          <p class="title font-weight-bold primary--text">DETAILS</p>
+        </v-col>
+        <v-col cols="8" offset="2" class="text-center">
+          <customFieldsList :items="item.custom_fields"></customFieldsList>
+        </v-col>
+      </v-row>
       <v-dialog
         v-model="modal"
         persistent

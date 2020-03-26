@@ -48,6 +48,7 @@ export default {
     ...mapState({
       contentHeight: state => state.content.main.y,
       viewMain: state => state.viewMain,
+      catalogView: state => state.viewMain,
       sideDrawer: state => state.sideDrawer
     }),
     contentHeight() {
@@ -68,7 +69,8 @@ export default {
     show() {
       return (
         this.sideDrawer &&
-        (this.viewMain === 'calendar' || this.viewMain === 'catalog')
+        (this.viewMain === 'calendar' ||
+          (this.viewMain === 'catalog' && this.catalogView !== 'category'))
       )
     },
     styleFiltersSheet() {

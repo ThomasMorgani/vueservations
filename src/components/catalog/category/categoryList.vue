@@ -1,6 +1,6 @@
 <template>
   <v-card flat>
-    <v-card-title>
+    <component :is="catalogView === 'overview' ? 'v-card-title' : 'v-toolbar'">
       <span class="headline font-weight-medium primary--text">CATEGORIES</span>
       <v-spacer></v-spacer>
       <template v-if="catalogView === 'overview'">
@@ -31,7 +31,7 @@
           <span>Toggle Edit Mode</span>
         </v-tooltip>
       </template>
-    </v-card-title>
+    </component>
     <v-card-text :style="styleCategoryList">
       <v-list>
         <v-list-item
@@ -90,8 +90,12 @@
 <script>
 import { mapState } from 'vuex'
 import filters from '@/modules/filters'
-
+import { VToolbar, VCardTitle } from 'vuetify/lib'
 export default {
+  components: {
+    VCardTitle,
+    VToolbar
+  },
   data: () => ({
     mode: null,
     modeIcons: {

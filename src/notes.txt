@@ -1,3 +1,6 @@
+//APP
+    =//Setup view, breakpoints
+
 //CATALOG ITEM
     =//when clicking reserve button
         =//isAvailable ? start date = now : set values to current reservation or keep it new ? 
@@ -10,7 +13,20 @@
         =//duplicateFound ? close modal, find image by hash, open edit dialog with existing image
     
 
+//PATRONS
+    =//Groups
 
+//USERS
+    =/permissions
+    =/Groups
+    =/crud
+
+
+
+
+
+
+BUGS ==================================================
     on ciEditimage
 on add new, save ci it does not appear the image is not being updated on the ci in state.catalogItems
 

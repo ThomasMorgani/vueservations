@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card flat>
     <v-card-title class="title justify-center primary--text">
       RESERVATION HISTORY
     </v-card-title>

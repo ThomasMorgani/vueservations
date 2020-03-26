@@ -1,8 +1,8 @@
 <template>
   <v-card flat width="100%">
-    <template v-if="!items">
+    <template v-if="!items || items.length < 1">
       <v-row class="flex-column" dense align="center" justify="center">
-        <p>No additional details.</p>
+        <p class="disabled--text">No additional details.</p>
         <!-- <p class="mt-4">
           <v-btn text large color="primary">
             <v-icon color="primary">mdi-plus</v-icon>ADD
@@ -17,24 +17,26 @@
         :key="key + 'cfrow'"
         align="center"
       >
-        <v-col class="subheading primary--text font-weight-bold d-flex flex-grow-1">
-          {{
-          field.name
-          }}
+        <v-col
+          class="subheading primary--text font-weight-bold d-flex flex-grow-1"
+        >
+          {{ field.name }}
         </v-col>
-        <v-col class="d-flex flex-grow-1 flex-shrink-1">{{ field.value }}</v-col>
+        <v-col class="d-flex flex-grow-1 flex-shrink-1">{{
+          field.value
+        }}</v-col>
         <v-col class="d-flex flex-grow-0 flex-shrink-1">
           <v-tooltip right>
             <template v-slot:activator="{ on }">
               <v-icon small v-on="on">
-                {{
-                field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye'
-                }}
+                {{ field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye' }}
               </v-icon>
             </template>
             <span>
               {{
-              field.internal === '1' ? 'Internal use only' : 'Visible to public'
+                field.internal === '1'
+                  ? 'Internal use only'
+                  : 'Visible to public'
               }}
             </span>
           </v-tooltip>

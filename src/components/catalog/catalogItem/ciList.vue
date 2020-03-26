@@ -1,8 +1,10 @@
 <template>
   <!-- <v-card flat color="background"> -->
   <v-card flat>
-    <v-card-title class="d-flex space-between align-center">
-      <!-- <v-card-title class="pa-0"> -->
+    <v-card-title
+      class="title secondary primary--text"
+      v-if="catalogView !== 'catalog'"
+    >
       <span class="headline font-weight-medium primary--text">CATALOG</span>
       <v-spacer></v-spacer>
       <v-icon left color="primary">mdi-filter</v-icon>
@@ -10,7 +12,15 @@
         `${itemList.length} of ${catalogItems.length}`
       }}</span>
     </v-card-title>
-    <v-card-text :style="styleCiList">
+    <v-toolbar color="secondary" fixed v-else>
+      <span class="headline font-weight-medium primary--text">CATALOG</span>
+      <v-spacer></v-spacer>
+      <v-icon left color="primary">mdi-filter</v-icon>
+      <span class="body-1 font-weight-bold">{{
+        `${itemList.length} of ${catalogItems.length}`
+      }}</span>
+    </v-toolbar>
+    <v-card-text :style="styleCiList" class="px-0">
       <v-expansion-panels popout v-model="panel" class="py-1">
         <!-- <template v-for="(item, key) in limitBy(itemsDisplayed, itemDisplayLimit)"> -->
         <template v-for="(item, key) in orderBy(itemList, 'name')">
@@ -67,6 +77,7 @@ export default {
   computed: {
     ...mapState({
       catalogItems: state => state.catalogItems,
+      catalogView: state => state.catalogView,
       categories: state => state.categories,
       events: state => state.events,
       filterAvailability: state => state.filterAvailability,
@@ -259,4 +270,15 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+>>> .v-toolbar {
+  z-index: 9;
+}
+>>> .v-expansion-panel {
+  max-width: 99%;
+}
+
+.v-expansion-panels--popout > .v-expansion-panel {
+  max-width: 99%;
+}
+</style>
