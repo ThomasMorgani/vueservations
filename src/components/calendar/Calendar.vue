@@ -192,6 +192,7 @@ export default {
   }),
   computed: {
     ...mapState({
+      defaultModalProps: state => state.defaultModalProps,
       events: state => state.events,
       filterCategory: state => state.filterCategory,
       filterRangeDate: state => state.filterRangeDate,
@@ -440,7 +441,8 @@ export default {
       }
     },
     showDetails(e) {
-      // console.log(e)
+      console.log(e)
+      this.modalDetailsProps = this.defaultModalProps
       switch (e.type) {
         case 'ci':
           this.modalDetailsCompData = {
@@ -453,7 +455,7 @@ export default {
           this.modalDetailsComp = 'eventEdit'
           break
         case 'event':
-          //console.log('is vent')
+          this.modalDetailsProps['max-width'] = 'unset'
           this.modalDetailsComp = 'eventDetails'
           break
         case 'patron':

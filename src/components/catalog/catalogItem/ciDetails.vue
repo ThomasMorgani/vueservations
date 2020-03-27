@@ -1,21 +1,19 @@
 <template>
   <v-card width="800">
-    <v-card-title class="title primary--text "> </v-card-title>
-    <v-card-text>
+    <v-card-text class="pa-5">
       <v-row dense align="center" justify="center">
         <v-col cols="2" align-self="center" class="d-flex justify-center">
           <v-img
             contain
+            height="70"
             :src="item.image_data.src"
-            :max-width="$vuetify.breakpoint.smAndDown ? 75 : 100"
-            :max-height="$vuetify.breakpoint.smAndDown ? 75 : 100"
             class="pa-0"
           ></v-img>
         </v-col>
         <v-col cols="10">
           <v-row dense class="display-flex align-center justify-start">
             <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
-            <span class="font-weight-medium title primary--text">
+            <span class="font-weight-medium title primary--text ml-5">
               {{ item.name }}
             </span>
             <v-tooltip top>
@@ -55,7 +53,7 @@
                   <v-avatar
                     size="10"
                     :color="categoriesById[item.category].color"
-                    class="mr-1"
+                    class=" ml-5 mr-1"
                   ></v-avatar>
                   <p
                     v-html="categoriesById[item.category].name"
@@ -77,17 +75,23 @@
               </span>
             </v-tooltip>
           </v-row>
-          <v-row dense class="display-flex align-start justify-start my-2">
-            <v-col class="text-xs-left">
-              <p class="caption body-1 pa-2" v-html="item.description"></p>
-            </v-col>
-          </v-row>
-          <v-row dense align="center" justify="start" class="my-2">
-            <!-- STATUS -->
-          </v-row>
         </v-col>
       </v-row>
       <v-row dense justify="end">
+        <v-col class="offset-2 text-left flex-grow-0 flex-shrink-1">
+          <v-btn
+            text
+            color="primary"
+            @click="showDetails = !showDetails"
+            class="font-weight-bold primary--text"
+            ><v-icon
+              left
+              color="primary"
+              v-text="showDetails ? 'mdi-menu-up' : 'mdi-menu-down'"
+            ></v-icon>
+            DETAILS</v-btn
+          >
+        </v-col>
         <v-col class="flex-grow-1 flex-shrink-0"></v-col>
         <v-col class="text-right flex-grow-0 flex-shrink-1">
           <v-tooltip top>
@@ -110,12 +114,12 @@
           </v-tooltip>
         </v-col>
       </v-row>
-      <v-row justify="start">
-        <v-col cols="10" offset="2">
-          <v-divider></v-divider>
-          <p class="title font-weight-bold primary--text">DETAILS</p>
+      <v-row dense justify="start" v-if="showDetails">
+        <v-col cols="8" offset="2" class="text-left pt-0">
+          <v-divider inset></v-divider>
         </v-col>
-        <v-col cols="8" offset="2" class="text-center">
+        <v-col cols="8" offset="2" class="text-left">
+          <p class="caption body-1 pa-2" v-html="item.description"></p>
           <customFieldsList :items="item.custom_fields"></customFieldsList>
         </v-col>
       </v-row>
@@ -135,7 +139,7 @@
         </v-card>
       </v-dialog>
     </v-card-text>
-    <v-card-actions>
+    <v-card-actions v-if="withCardActions">
       <v-spacer></v-spacer>
       <v-btn text color="primary" @click="$emit('close')">CLOSE</v-btn>
     </v-card-actions>
@@ -159,15 +163,26 @@ export default {
   },
   mixins: [Vue2Filters.mixin],
   props: {
+    expandDetails: {
+      type: Boolean,
+      required: false,
+      default: () => true
+    },
     item: {
       type: Object,
       required: true
+    },
+    withCardActions: {
+      type: Boolean,
+      required: false,
+      default: () => true
     }
   },
   data: () => ({
     modal: false,
     modalComp: null,
-    modalCompData: null
+    modalCompData: null,
+    showDetails: true
   }),
   computed: {
     ...mapGetters(['categoriesById']),
@@ -293,7 +308,9 @@ export default {
     }
   },
   created() {
-    console.log(this.item)
+    if (!this.expandDetails) {
+      this.showDetails = false
+    }
   }
 }
 </script>

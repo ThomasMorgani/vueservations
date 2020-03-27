@@ -44,6 +44,12 @@ export default new Vuex.Store({
       name: null,
       status: null
     },
+    defaultModalProps: {
+      'max-width': '800',
+      persistent: true,
+      transition: 'dialog-transition',
+      width: 'unset'
+    },
     events: [],
     eventediting: null,
     filterAvailability: [],

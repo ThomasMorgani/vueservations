@@ -1,7 +1,6 @@
 <template>
   <v-card width="800">
-    <v-card-title class="title primary--text "> </v-card-title>
-    <v-card-text>
+    <v-card-text class="pa-5">
       <v-row dense align="center" justify="center">
         <v-col cols="2" align-self="center" class="d-flex justify-center">
           <v-avatar size="70" color="primary">
@@ -11,7 +10,7 @@
         <v-col cols="10">
           <v-row dense class="display-flex align-center justify-start">
             <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
-            <span class="font-weight-medium title primary--text">
+            <span class="font-weight-medium title primary--text ml-5">
               {{ `${patron.first_name} ${patron.last_name}` }}
             </span>
           </v-row>
@@ -20,7 +19,11 @@
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <div v-on="on">
-                  <v-avatar size="10" color="primary" class="mr-1"></v-avatar>
+                  <v-avatar
+                    size="10"
+                    color="primary"
+                    class="mr-1 ml-5"
+                  ></v-avatar>
                   <p
                     v-html="'Group'"
                     class="font-italic subheading text-capitalize"
@@ -44,7 +47,18 @@
       </v-row>
       <v-row dense justify="end">
         <v-col class="offset-2 text-left flex-grow-0 flex-shrink-1">
-          <p class="title font-weight-bold primary--text">DETAILS</p>
+          <v-btn
+            text
+            color="primary"
+            @click="showDetails = !showDetails"
+            class="font-weight-bold primary--text"
+            ><v-icon
+              left
+              color="primary"
+              v-text="showDetails ? 'mdi-menu-up' : 'mdi-menu-down'"
+            ></v-icon>
+            DETAILS</v-btn
+          >
         </v-col>
         <v-col class="flex-grow-1 flex-shrink-0"></v-col>
         <v-col class="text-right flex-grow-0 flex-shrink-1">
@@ -75,7 +89,7 @@
           </v-tooltip>
         </v-col>
       </v-row>
-      <v-row justify="start">
+      <v-row justify="start" v-if="showDetails">
         <v-col cols="8" offset="2" class="text-left pt-0">
           <v-divider inset></v-divider>
         </v-col>
@@ -115,7 +129,7 @@
         </v-card>
       </v-dialog>
     </v-card-text>
-    <v-card-actions>
+    <v-card-actions v-if="withCardActions">
       <v-spacer></v-spacer>
       <v-btn text color="primary" @click="$emit('close')">CLOSE</v-btn>
     </v-card-actions>
@@ -135,15 +149,26 @@ export default {
   },
   mixins: [Vue2Filters.mixin],
   props: {
+    expandDetails: {
+      type: Boolean,
+      required: false,
+      default: () => true
+    },
     patron: {
       type: Object,
       required: true
+    },
+    withCardActions: {
+      type: Boolean,
+      required: false,
+      default: () => true
     }
   },
   data: () => ({
     modal: false,
     modalComp: null,
-    modalCompData: null
+    modalCompData: null,
+    showDetails: true
   }),
   computed: {
     ...mapState({
@@ -239,6 +264,11 @@ export default {
       }
       this.modalComp = 'patronHistory'
       this.modal = true
+    }
+  },
+  created() {
+    if (!this.expandDetails) {
+      this.showDetails = false
     }
   }
 }
