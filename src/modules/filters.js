@@ -49,6 +49,7 @@ export default {
     endDate2,
     withBuffer = true
   ) {
+    console.log(withBuffer)
     let searchStartDate1 =
       typeof startDate1.getMonth === 'function'
         ? startDate1
@@ -72,11 +73,12 @@ export default {
 
     const searchRange2 = moment.range(searchStartDate2, searchEndDate2)
 
-    // //console.log(searchStartDate1)
-    // //console.log(searchStartDate2)
-    // //console.log(searchEndDate1)
-    // //console.log(searchEndDate2)
+    // console.log(searchStartDate1)
+    // console.log(searchStartDate2)
+    // console.log(searchEndDate1)
+    // console.log(searchEndDate2)
 
-    return searchRange1.overlaps(searchRange2, { adjacent: true })
+    // return searchRange1.overlaps(searchRange2, { adjacent: true })
+    return searchRange1.overlaps(searchRange2, { adjacent: withBuffer })
   }
 }

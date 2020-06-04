@@ -59,6 +59,7 @@ const dateDifference = (date1, date2) => {
 
   return total_days
 }
+
 const eventListSimple = (events, patrons) => {
   return events.map(e => {
     const patron = patrons.find(p => p.id === e.patron_id)

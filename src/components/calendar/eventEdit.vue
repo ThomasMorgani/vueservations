@@ -155,6 +155,7 @@
               </template>
             </v-autocomplete>
           </v-col>
+
           <v-col cols="5">
             <!--
               START DATE ++ TIME
@@ -195,40 +196,8 @@
             </v-dialog>
           </v-col>
           <v-col cols="5">
-            <v-dialog
-              ref="startTimeDialog"
-              v-model="modalStartTime"
-              :return-value.sync="startTime"
-              persistent
-              width="290px"
-            >
-              <template v-slot:activator="{ on }">
-                <v-text-field
-                  v-model="startTime"
-                  label="Start Time"
-                  prepend-icon="mdi-clock"
-                  readonly
-                  v-on="on"
-                  disabled
-                ></v-text-field>
-              </template>
-              <v-time-picker v-if="modalStartTime" v-model="startTime">
-                <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartTime = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.startTimeDialog.save(startTime)"
-                  >OK</v-btn
-                >
-              </v-time-picker>
-            </v-dialog>
-          </v-col>
-          <v-col cols="5">
             <!--
-              END DATE ++ TIME
+              END DATE 
             -->
             <v-dialog
               ref="modalEndDateDialog"
@@ -265,6 +234,54 @@
               </v-date-picker>
             </v-dialog>
           </v-col>
+          <!--
+            TIMES
+          -->
+          <v-col cols="10" class="pa-0">
+            <v-spacer></v-spacer>
+            <v-switch
+              v-model="allDay"
+              label="Full Day"
+              color="primary"
+              hide-details
+              class="mt-0"
+              @change="onAllDay"
+            ></v-switch>
+          </v-col>
+
+          <v-col cols="5">
+            <v-dialog
+              ref="startTimeDialog"
+              v-model="modalStartTime"
+              :return-value.sync="startTime"
+              persistent
+              width="290px"
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="startTime"
+                  label="Start Time"
+                  prepend-icon="mdi-clock"
+                  readonly
+                  v-on="on"
+                  :disabled="allDay"
+                ></v-text-field>
+              </template>
+              <v-time-picker v-if="modalStartTime" v-model="startTime">
+                <v-spacer></v-spacer>
+                <v-btn text color="primary" @click="modalStartTime = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.startTimeDialog.save(startTime)"
+                  >OK</v-btn
+                >
+              </v-time-picker>
+            </v-dialog>
+          </v-col>
+
           <v-col cols="5">
             <v-dialog
               ref="dialog"
@@ -280,7 +297,8 @@
                   prepend-icon="mdi-clock"
                   readonly
                   v-on="on"
-                  disabled
+                  :disabled="allDay"
+                  :error-messages="formErrors.endTime"
                 ></v-text-field>
               </template>
               <v-time-picker v-if="modalEndTime" v-model="endTime" full-width>
@@ -417,9 +435,10 @@ export default {
   mixins: [Vue2Filters.mixin],
   data() {
     return {
+      allDay: true,
       ciSelected: null,
       endDate: null,
-      endTime: null,
+      endTime: '00:00',
       id: null,
       modalConfirmDelete: false,
       modalEndDate: false,
@@ -429,6 +448,7 @@ export default {
       modalStartTime: false,
       notes: '',
       originalValues: {
+        allDay: true,
         ciSelected: null,
         id: null,
         endDate: null,
@@ -440,7 +460,7 @@ export default {
       },
       patronSelected: null,
       startDate: null,
-      startTime: null,
+      startTime: '00:00',
       valid: true
     }
   },
@@ -465,6 +485,7 @@ export default {
         this.endDate = v
       }
     },
+
     formErrors() {
       let errors = {}
       const requireds = [
@@ -486,10 +507,24 @@ export default {
         //console.log(start)
         if (end < start) {
           errors.endDate = ['End date must come after start.']
+        } else {
+          if (!this.allDay) {
+            const startDateTime = new Date('1970-01-01T' + this.startTime + 'Z')
+            const endDateTime = new Date('1970-01-01T' + this.endTime + 'Z')
+            if (startDateTime > endDateTime) {
+              errors.endTime = ['End time must come after start.']
+            }
+          }
         }
         if (this.ciSelected) {
           //console.log(this.events)
           //console.log(this.ciSelected)
+          const startDate = this.startDate || '1980-01-01'
+          const startTime = this.startTime || '00:00'
+          const startDateTime = new Date(startDate + 'T' + startTime)
+          const endDate = this.endDate || '1980-01-01'
+          const endTime = this.endTime || '00:00'
+          const endDateTime = new Date(endDate + 'T' + endTime)
 
           const reservationsBetween = this.events.filter(e => {
             //console.log(this.e)
@@ -498,10 +533,11 @@ export default {
               e.item_id == this.ciSelected.id &&
               e.id != this.id &&
               filters.testRangeOverlap(
-                this.startDate,
-                this.endDate,
+                startDateTime,
+                endDateTime,
                 e.start_date,
-                e.end_date
+                e.end_date,
+                this.allDay
               )
             )
           })
@@ -546,10 +582,11 @@ export default {
               event.item_id === item.id &&
               this.id != event.id &&
               filters.testRangeOverlap(
-                this.startDate,
-                this.endDate,
+                this.formattedStartDateTime(),
+                this.formattedEndDateTime(),
                 event.start_date,
-                event.end_date
+                event.end_date,
+                this.allDay
               )
             ) {
               ci.isDisabled = true
@@ -598,47 +635,76 @@ export default {
   },
   methods: {
     allowedStart(val) {
+      // console.log(val)
       let events = []
+      const startDate = this.startDate || '1980-01-01'
+      const startTime = this.startTime || '00:00'
+      const startDateTime = new Date(startDate + 'T' + startTime)
+      const endDate = val || '1980-01-01'
+      const endTime = this.endTime || '00:00'
+      const endDateTime = new Date(endDate + 'T' + endTime)
       if (this.ciSelected) {
         const ci = { ...this.ciSelected }
         events = this.events.filter(e => {
           if (e.item_id === ci.id) {
-            return (
-              !filters.testRangeOverlap(e.start_date, e.end_date, val, val) ||
-              e.id == this.id
-            )
-          } else {
-            return true
-          }
-        })
-        return events.length >= this.events.length
-      } else {
-        return true
-      }
-    },
-    allowedEnd(val) {
-      let events = []
-      let cDate = new Date(val)
-      let startDate = new Date(this.startDate)
-
-      if (this.ciSelected) {
-        const ci = { ...this.ciSelected }
-        events = this.events.filter(e => {
-          if (e.item_id === ci.id) {
+            // console.log(e)
             return (
               !filters.testRangeOverlap(
                 e.start_date,
                 e.end_date,
-                val,
-                val,
-                false
+                startDateTime,
+                startDateTime,
+                this.allDay
               ) || e.id == this.id
             )
           } else {
             return true
           }
         })
-        return events.length >= this.events.length && cDate > startDate
+        return (
+          events.length >= this.events.length &&
+          startDateTime.getTime() < endDateTime.getTime()
+        )
+      } else {
+        return true
+      }
+    },
+    allowedEnd(val) {
+      // console.log(val)
+      let events = []
+      const startDate = this.startDate || '1980-01-01'
+      const startTime = this.startTime || '00:00'
+      const startDateTime = new Date(startDate + 'T' + startTime)
+      const endDate = val || '1980-01-01'
+      const endTime = this.endTime || '00:00'
+      const endDateTime = new Date(endDate + 'T' + endTime)
+      // console.log(startDate + 'T' + startTime)
+      // console.log(startDateTime)
+      // console.log(endDateTime)
+
+      if (this.ciSelected) {
+        const ci = { ...this.ciSelected }
+        events = this.events.filter(e => {
+          if (e.item_id === ci.id) {
+            // console.log(e)
+            return (
+              !filters.testRangeOverlap(
+                e.start_date,
+                e.end_date,
+                endDateTime,
+                endDateTime,
+                this.allDay
+              ) || e.id == this.id
+            )
+          } else {
+            return true
+          }
+        })
+        console.log(events)
+        return (
+          events.length >= this.events.length &&
+          endDateTime.getTime() > startDateTime.getTime()
+        )
       } else {
         return true
       }
@@ -700,19 +766,33 @@ export default {
         : item.status.toUpperCase()
     },
     formattedEvent() {
-      this.startTime = this.startTime ? this.startTime : '00:00:00'
-      this.endTime = this.endTime ? this.endTime : '00:00:00'
+      this.startTime = this.startTime ? ' ' + this.startTime : ' 00:00'
+      this.endTime = this.endTime ? ' ' + this.endTime : ' 00:00'
       let event = {
         item_id: this.ciSelected.id,
         patron_id: this.patronSelected.id,
-        start_date: this.startDate + ' ' + this.startTime,
-        end_date: this.endDate + ' ' + this.endTime,
+        start_date: this.startDate + this.startTime,
+        end_date: this.endDate + this.endTime,
         notes: this.notes
       }
       if (this.id) {
         event.id = this.id
       }
       return event
+    },
+    formattedEndDateTime() {
+      const endDate = this.endDate || '1980-01-01'
+      const endTime = this.endTime || '00:00'
+      const endDateTime = new Date(endDate + ' ' + endTime)
+      return endDateTime
+    },
+    formattedStartDateTime() {
+      const startDate = this.startDate || '1980-01-01'
+      const startTime = this.startTime || '00:00'
+      const startDateTime = new Date(startDate + ' ' + startTime)
+      console.log(startDate + ' ' + startTime)
+      console.log(startDateTime)
+      return startDateTime
     },
     formatTimestamp(timestamp, withYear = true, withTime = false) {
       return formats.timestampHuman(timestamp, withYear, withTime)
@@ -750,6 +830,12 @@ export default {
             }
           })
           .catch(err => console.log(err))
+      }
+    },
+    onAllDay(e) {
+      if (e) {
+        this.startTime = '00:00'
+        this.endTime = '00:00'
       }
     },
     onPatronAdd(e) {
@@ -792,13 +878,13 @@ export default {
           const splitStart = event.start_date.split(' ')
           //console.log(splitStart)
           this.startDate = splitStart[0]
-          this.startTime = splitStart[1] || '00:00:00'
+          this.startTime = splitStart[1] || '00:00'
           this.$set(this.originalValues, 'startDate', this.startDate)
           this.$set(this.originalValues, 'startTime', this.startTime)
         } else if (k == 'end_date' && event[k]) {
           const splitEnd = event.end_date.split(' ')
           this.endDate = splitEnd[0]
-          this.endTime = splitEnd[1] || '00:00:00'
+          this.endTime = splitEnd[1] || '00:00'
           this.$set(this.originalValues, 'endDate', this.endDate)
           this.$set(this.originalValues, 'endTime', this.endTime)
         } else {
@@ -808,6 +894,9 @@ export default {
           }
         }
       })
+      const isAllDay = this.startTime === '00:00' && this.endTime === '00:00'
+      this.$set(this.originalValues, 'allDay', isAllDay)
+      this.allDay = isAllDay
     }
   }
 }

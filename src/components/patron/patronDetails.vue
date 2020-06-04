@@ -3,7 +3,7 @@
     <v-card-text class="pa-5">
       <v-row dense align="center" justify="center">
         <v-col cols="2" align-self="center" class="d-flex justify-center">
-          <v-avatar size="70" color="primary">
+          <v-avatar size="60" color="primary">
             <v-icon size="x-large" color="secondary">mdi-account</v-icon>
           </v-avatar>
         </v-col>
