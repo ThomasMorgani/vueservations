@@ -99,6 +99,19 @@ const patronHistorySimple = (events, catalogItems) => {
   })
 }
 
+const timeHuman = time => {
+  const timeArr = time.split(':')
+  console.log(timeArr)
+  let period = 'am'
+  let hour = parseInt(timeArr['0'])
+  let min = parseInt(timeArr['1'])
+  if (hour >= 12) period = 'pm'
+  if (hour > 12) hour = hour - 12
+  return `${hour.toString().padStart(2, '0')}:${min
+    .toString()
+    .padStart(2, '0')}${period}`
+}
+
 const timestampHuman = (timestamp, withYear = true, withTime = true) => {
   const asDate =
     typeof timestamp.getMonth === 'function' ? timestamp : new Date(timestamp)
@@ -142,5 +155,6 @@ export {
   eventListSimple,
   noteListSimple,
   patronHistorySimple,
+  timeHuman,
   timestampHuman
 }

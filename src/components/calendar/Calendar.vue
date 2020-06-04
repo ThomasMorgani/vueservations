@@ -139,7 +139,7 @@
 import { mapGetters, mapState } from 'vuex'
 import filters from '@/modules/filters.js'
 import * as formats from '@/modules/formats.js'
-import { timestampHuman } from '@/modules/formats.js'
+import { timeHuman, timestampHuman } from '@/modules/formats.js'
 import eventMenu from '@/components/calendar/eventOverview'
 import filterBtn from '@/components/global/buttons/filterDrawerToggle'
 
@@ -334,9 +334,13 @@ export default {
         : this.categoriesById[item.category].color
     },
     eventLabel(v) {
-      //console.log(v)
+      // console.log(v)
       let start = timestampHuman(v.input.start_date, false, false)
       let end = timestampHuman(v.input.end_date, false, false)
+      if (start === end) {
+        start = timeHuman(v.start.time)
+        end = timeHuman(v.end.time)
+      }
       let label = `
         <span id="${v.input.ciData.abbreviation}" class="mx-2 subtitle-2">
           <strong>${v.input.ciData.abbreviation}</strong>
