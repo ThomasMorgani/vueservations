@@ -101,7 +101,6 @@ const patronHistorySimple = (events, catalogItems) => {
 
 const timeHuman = time => {
   const timeArr = time.split(':')
-  console.log(timeArr)
   let period = 'am'
   let hour = parseInt(timeArr['0'])
   let min = parseInt(timeArr['1'])

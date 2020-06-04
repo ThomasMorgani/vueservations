@@ -237,8 +237,7 @@
           <!--
             TIMES
           -->
-          <v-col cols="10" class="pa-0">
-            <v-spacer></v-spacer>
+          <v-col cols="3" class="py-0" align-self="center">
             <v-switch
               v-model="allDay"
               label="Full Day"
@@ -246,10 +245,25 @@
               hide-details
               class="mt-0"
               @change="onAllDay"
-            ></v-switch>
+            >
+              <template v-slot:prepend>
+                <div v-show="!allDay">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-icon v-on="on" color="warning"
+                        >mdi-alert-octagram
+                      </v-icon>
+                    </template>
+                    Set start/end times first for accurate availability
+                    reporting
+                  </v-tooltip>
+                </div>
+              </template>
+            </v-switch>
           </v-col>
+          <v-col cols="7" class="py-0"> </v-col>
 
-          <v-col cols="5">
+          <v-col cols="5" class="py-0" align-self="center">
             <v-dialog
               ref="startTimeDialog"
               v-model="modalStartTime"
