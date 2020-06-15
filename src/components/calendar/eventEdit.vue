@@ -169,7 +169,7 @@
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  v-model="startDate"
+                  :value="startDate ? formatTimestamp(startDate) : null"
                   label="Start Date"
                   prepend-icon="mdi-calendar"
                   readonly
@@ -208,7 +208,7 @@
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  v-model="endDate"
+                  :value="endDate ? formatTimestamp(endDate) : null"
                   label="End Date"
                   prepend-icon="mdi-calendar"
                   readonly
@@ -273,7 +273,7 @@
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  v-model="startTime"
+                  :value="humanTime(startTime)"
                   label="Start Time"
                   prepend-icon="mdi-clock"
                   readonly
@@ -306,7 +306,7 @@
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  v-model="endTime"
+                  :value="humanTime(endTime)"
                   label="End Time"
                   prepend-icon="mdi-clock"
                   readonly
@@ -536,7 +536,7 @@ export default {
           const startDate = this.startDate || '1980-01-01'
           const startTime = this.startTime || '00:00'
           const startDateTime = new Date(startDate + 'T' + startTime)
-          const endDate = this.endDate || '1980-01-01'
+          const endDate = this.endDate || '3000-01-01'
           const endTime = this.endTime || '00:00'
           const endDateTime = new Date(endDate + 'T' + endTime)
 
@@ -547,15 +547,15 @@ export default {
               e.item_id == this.ciSelected.id &&
               e.id != this.id &&
               filters.testRangeOverlap(
-                startDateTime,
-                endDateTime,
+                startDateTime.toISOString(),
+                endDateTime.toISOString(),
                 e.start_date,
                 e.end_date,
                 this.allDay
               )
             )
           })
-          //console.log(reservationsBetween)
+          console.log(reservationsBetween)
           if (reservationsBetween.length > 0) {
             errors.endDate = ['Existing reservations between start/end date.']
             errors.startDate = ['Existing reservations between start/end date.']
@@ -651,10 +651,10 @@ export default {
     allowedStart(val) {
       // console.log(val)
       let events = []
-      const startDate = this.startDate || '1980-01-01'
+      const startDate = val || '1980-01-01'
       const startTime = this.startTime || '00:00'
       const startDateTime = new Date(startDate + 'T' + startTime)
-      const endDate = val || '1980-01-01'
+      const endDate = this.endDate || '3000-01-01'
       const endTime = this.endTime || '00:00'
       const endDateTime = new Date(endDate + 'T' + endTime)
       if (this.ciSelected) {
@@ -689,7 +689,7 @@ export default {
       const startDate = this.startDate || '1980-01-01'
       const startTime = this.startTime || '00:00'
       const startDateTime = new Date(startDate + 'T' + startTime)
-      const endDate = val || '1980-01-01'
+      const endDate = val || '3000-01-01'
       const endTime = this.endTime || '00:00'
       const endDateTime = new Date(endDate + 'T' + endTime)
       // console.log(startDate + 'T' + startTime)
@@ -705,8 +705,8 @@ export default {
               !filters.testRangeOverlap(
                 e.start_date,
                 e.end_date,
-                endDateTime,
-                endDateTime,
+                endDateTime.toISOString(),
+                endDateTime.toISOString(),
                 this.allDay
               ) || e.id == this.id
             )
@@ -714,7 +714,7 @@ export default {
             return true
           }
         })
-        console.log(events)
+        // console.log(events)
         return (
           events.length >= this.events.length &&
           endDateTime.getTime() > startDateTime.getTime()
@@ -780,13 +780,13 @@ export default {
         : item.status.toUpperCase()
     },
     formattedEvent() {
-      this.startTime = this.startTime ? ' ' + this.startTime : ' 00:00'
-      this.endTime = this.endTime ? ' ' + this.endTime : ' 00:00'
+      const startTime = this.startTime ? ' ' + this.startTime : ' 00:00'
+      const endTime = this.endTime ? ' ' + this.endTime : ' 00:00'
       let event = {
         item_id: this.ciSelected.id,
         patron_id: this.patronSelected.id,
-        start_date: this.startDate + this.startTime,
-        end_date: this.endDate + this.endTime,
+        start_date: this.startDate + startTime,
+        end_date: this.endDate + endTime,
         notes: this.notes
       }
       if (this.id) {
@@ -804,16 +804,33 @@ export default {
       const startDate = this.startDate || '1980-01-01'
       const startTime = this.startTime || '00:00'
       const startDateTime = new Date(startDate + ' ' + startTime)
-      console.log(startDate + ' ' + startTime)
-      console.log(startDateTime)
+      // console.log(startDate + ' ' + startTime)
+      // console.log(startDateTime)
       return startDateTime
     },
     formatTimestamp(timestamp, withYear = true, withTime = false) {
-      return formats.timestampHuman(timestamp, withYear, withTime)
+      const local = new Date(timestamp + 'T00:00:00')
+      return formats.timestampHuman(local, withYear, withTime)
+    },
+    humanTime(time) {
+      const timeArr = time.split(':')
+      let hour = parseInt(timeArr['0'])
+      let min = parseInt(timeArr['1'])
+      let period = ' a.m.'
+      if (hour === 0) {
+        hour = 12
+      } else {
+        if (hour > 12) {
+          hour = hour - 12
+          period = ' p.m.'
+        }
+      }
+      return `${hour.toString().padStart(2, '0')}:${min
+        .toString()
+        .padStart(2, '0')} ${period}`
     },
     modalAction() {
       const event = this.formattedEvent()
-      //console.log(event)
       if (Object.keys(this.formErrors).length < 1) {
         this.$store
           .dispatch('apiCall', {
@@ -865,11 +882,14 @@ export default {
       })
     },
     updateEvent(event) {
-      const events = this.events
+      const events = [...this.events]
       const key = this.events.findIndex(e => e.id == this.id)
       events[key] = event
-      this.$store.dispatch('setStateValue', { key: `events`, value: events })
-      this.$emit('eventUpdated')
+      this.$store.dispatch('setStateValue', {
+        key: `events`,
+        value: [...events]
+      })
+      this.$emit('eventUpdated', this.eventediting)
     }
   },
   mounted() {

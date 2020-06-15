@@ -321,10 +321,14 @@ export default {
     }
   },
   methods: {
-    calendarcheckChanges() {
+    calendarcheckChanges(event) {
+      console.log(event)
       this.$refs.calendar.checkChange()
       if (this.selectedOpen) {
         //TODO MOVE OVERVIEW MENU TO NEW EVENT START
+        // if (event) this.updatedSelectedEvent(event)
+        //TODO: fix this it updates, doesnt close
+        this.selectedOpen = false
       }
     },
     eventColor(e) {
@@ -435,6 +439,8 @@ export default {
       return a
     },
     onDetailsClose(e) {
+      console.log('xx')
+      console.log(e)
       this.modalDetailsShow = false
       this.$store.dispatch('setStateValue', {
         key: 'eventediting',
@@ -479,7 +485,9 @@ export default {
       }
     },
     showEvent({ nativeEvent, event }) {
-      //console.log('show')
+      console.log('show')
+      console.log(event)
+      console.log(nativeEvent.target)
       const open = () => {
         this.selectedEvent = this.formatEventPreview(event)
         this.selectedElement = nativeEvent.target
@@ -506,6 +514,10 @@ export default {
       // You could load events from an outside source (like database) now that we have the start and end dates on the calendar
       this.start = start
       this.end = end
+    },
+    updatedSelectedEvent() {
+      const event = this.events.find(e => e.id === this.selectedEvent.id)
+      this.selectedEvent = this.formatEventPreview(event)
     },
     nth(d) {
       return d > 3 && d < 21

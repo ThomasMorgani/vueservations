@@ -49,7 +49,7 @@ export default {
     endDate2,
     withBuffer = true
   ) {
-    console.log(withBuffer)
+    // DATES 1
     let searchStartDate1 =
       typeof startDate1.getMonth === 'function'
         ? startDate1
@@ -62,15 +62,27 @@ export default {
       searchStartDate1.setDate(searchStartDate1.getDate() - 1)
       searchEndDate1.setDate(searchEndDate1.getDate() + 2)
     }
-    const searchRange1 = moment.range(searchStartDate1, searchEndDate1)
 
-    const searchStartDate2 =
+    // searchStartDate1 = searchStartDate1.toISOString()
+    // searchEndDate1 = searchEndDate1.toISOString()
+
+    // DATES 2
+    let searchStartDate2 =
       typeof startDate2.getMonth === 'function'
         ? startDate2
         : new Date(startDate2)
-    const searchEndDate2 =
+    let searchEndDate2 =
       typeof endDate2.getMonth === 'function' ? endDate2 : new Date(endDate2)
 
+    // searchStartDate2 = searchStartDate2.toISOString()
+    // searchEndDate2 = searchEndDate2.toISOString()
+
+    // console.log(searchStartDate1)
+    // console.log(searchEndDate1)
+    // console.log(searchStartDate2)
+    // console.log(searchEndDate2)
+
+    const searchRange1 = moment.range(searchStartDate1, searchEndDate1)
     const searchRange2 = moment.range(searchStartDate2, searchEndDate2)
 
     // console.log(searchStartDate1)

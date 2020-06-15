@@ -113,7 +113,9 @@ const timeHuman = time => {
 
 const timestampHuman = (timestamp, withYear = true, withTime = true) => {
   const asDate =
-    typeof timestamp.getMonth === 'function' ? timestamp : new Date(timestamp)
+    timestamp && typeof timestamp.getMonth === 'function'
+      ? timestamp
+      : new Date(timestamp)
   let human = ''
   let D = asDate.getDate()
   if (D < 10) {
