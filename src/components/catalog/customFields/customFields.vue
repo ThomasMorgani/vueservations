@@ -47,7 +47,6 @@
         @actionBtn="onAction"
         @cancel="modalClose"
         @close="modalClose"
-        @customFieldCreate="modalClose"
       ></component>
     </v-dialog>
   </v-card>
@@ -179,6 +178,7 @@ export default {
           this.fieldAdd()
           break
         case 'customFieldCreated':
+          this.modalClose()
           this.fieldUpdateCatalogItems(item)
           break
         case 'delete':
