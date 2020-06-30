@@ -172,6 +172,8 @@
                   :value="startDate ? formatTimestamp(startDate) : null"
                   label="Start Date"
                   prepend-icon="mdi-calendar"
+                  clearable
+                  @click:clear="clearValue('startDate')"
                   readonly
                   v-on="on"
                   :error-messages="formErrors.startDate"
@@ -211,6 +213,8 @@
                   :value="endDate ? formatTimestamp(endDate) : null"
                   label="End Date"
                   prepend-icon="mdi-calendar"
+                  clearable
+                  @click:clear="clearValue('endDate')"
                   readonly
                   v-on="on"
                   :error-messages="formErrors.endDate"
@@ -276,9 +280,12 @@
                   :value="humanTime(startTime)"
                   label="Start Time"
                   prepend-icon="mdi-clock"
+                  clearable
+                  @click:clear="clearValue('startTime')"
                   readonly
                   v-on="on"
                   :disabled="allDay"
+                  :error-messages="formErrors.startTime"
                 ></v-text-field>
               </template>
               <v-time-picker v-if="modalStartTime" v-model="startTime">
@@ -309,6 +316,8 @@
                   :value="humanTime(endTime)"
                   label="End Time"
                   prepend-icon="mdi-clock"
+                  clearable
+                  @click:clear="clearValue('endTime')"
                   readonly
                   v-on="on"
                   :disabled="allDay"
@@ -452,7 +461,7 @@ export default {
       allDay: true,
       ciSelected: null,
       endDate: null,
-      endTime: '00:00',
+      endTime: null,
       id: null,
       modalConfirmDelete: false,
       modalEndDate: false,
@@ -474,7 +483,7 @@ export default {
       },
       patronSelected: null,
       startDate: null,
-      startTime: '00:00',
+      startTime: null,
       valid: true
     }
   },
@@ -523,8 +532,17 @@ export default {
           errors.endDate = ['End date must come after start.']
         } else {
           if (!this.allDay) {
+            console.log('not alldayy')
             const startDateTime = new Date('1970-01-01T' + this.startTime + 'Z')
             const endDateTime = new Date('1970-01-01T' + this.endTime + 'Z')
+            if (!this.startTime) {
+              console.log('not alldayy')
+              errors.startTime = ['Start time required if all day is off']
+            }
+            if (!this.endTime) {
+              console.log('not alldayy')
+              errors.endTime = ['End time required if all day is off']
+            }
             if (startDateTime > endDateTime) {
               errors.endTime = ['End time must come after start.']
             }
@@ -723,6 +741,9 @@ export default {
         return true
       }
     },
+    clearValue(val) {
+      this[val] = null
+    },
     customFilter(item, queryText) {
       const possibleKeys = [
         'abbreviation',
@@ -813,21 +834,25 @@ export default {
       return formats.timestampHuman(local, withYear, withTime)
     },
     humanTime(time) {
-      const timeArr = time.split(':')
-      let hour = parseInt(timeArr['0'])
-      let min = parseInt(timeArr['1'])
-      let period = ' a.m.'
-      if (hour === 0) {
-        hour = 12
-      } else {
-        if (hour > 12) {
-          hour = hour - 12
-          period = ' p.m.'
+      if (time) {
+        const timeArr = time.split(':')
+        let hour = parseInt(timeArr['0'])
+        let min = parseInt(timeArr['1'])
+        let period = ' a.m.'
+        if (hour === 0) {
+          hour = 12
+        } else {
+          if (hour > 12) {
+            hour = hour - 12
+            period = ' p.m.'
+          }
         }
+        return `${hour.toString().padStart(2, '0')}:${min
+          .toString()
+          .padStart(2, '0')} ${period}`
+      } else {
+        return null
       }
-      return `${hour.toString().padStart(2, '0')}:${min
-        .toString()
-        .padStart(2, '0')} ${period}`
     },
     modalAction() {
       const event = this.formattedEvent()
@@ -865,8 +890,8 @@ export default {
     },
     onAllDay(e) {
       if (e) {
-        this.startTime = '00:00'
-        this.endTime = '00:00'
+        // this.startTime = '00:00'
+        // this.endTime = '00:00'
       }
     },
     onPatronAdd(e) {
@@ -912,13 +937,13 @@ export default {
           const splitStart = event.start_date.split(' ')
           //console.log(splitStart)
           this.startDate = splitStart[0]
-          this.startTime = splitStart[1] || '00:00'
+          this.startTime = splitStart[1] || null
           this.$set(this.originalValues, 'startDate', this.startDate)
           this.$set(this.originalValues, 'startTime', this.startTime)
         } else if (k == 'end_date' && event[k]) {
           const splitEnd = event.end_date.split(' ')
           this.endDate = splitEnd[0]
-          this.endTime = splitEnd[1] || '00:00'
+          this.endTime = splitEnd[1] || null
           this.$set(this.originalValues, 'endDate', this.endDate)
           this.$set(this.originalValues, 'endTime', this.endTime)
         } else {

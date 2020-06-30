@@ -141,12 +141,12 @@ export default {
       //console.log('save patron method')
       const patronData = {
         id: this.id,
-        barcode: this.barcode.trim() || this.barcode,
-        email: this.email.trim() || this.email,
-        first_name: this.first_name.trim() || this.first_name,
-        last_name: this.last_name.trim() || this.last_name,
-        notes: this.notes.trim() || this.notes,
-        phone: this.phone.trim() || this.phone
+        barcode: this.barcode ? this.barcode.trim() : this.barcode,
+        email: this.email ? this.email.trim() : this.email,
+        first_name: this.first_name ? this.first_name.trim() : this.first_name,
+        last_name: this.last_name ? this.last_name.trim() : this.last_name,
+        notes: this.notes ? this.notes.trim() : this.notes,
+        phone: this.phone ? this.phone.trim() : this.phone
       }
       this.$store
         .dispatch('apiCall', {
