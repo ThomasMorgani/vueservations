@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <titlebarApp></titlebarApp>
-    <v-content ref="content" v-resize="setDimmensions">
+    <v-main ref="content" v-resize="setDimmensions">
       <template v-if="isLoaded">
         <sideDrawer></sideDrawer>
         <transition name="component-fade" appear mode="out-in">
@@ -12,7 +12,7 @@
           ></component>
         </transition>
       </template>
-    </v-content>
+    </v-main>
     <footerApp></footerApp>
     <Snackbar :key="$store.state.snackbarState"></Snackbar>
   </v-app>
@@ -30,6 +30,7 @@ export default {
     btnWithTooltip,
     calendar: () => import('@/components/calendar/Calendar'),
     catalog: () => import('@/components/catalog/catalog'),
+    category: () => import('@/views/catalog/category'),
     customFields: () =>
       import('@/components/catalog/customFields/customFields'),
     footerApp,

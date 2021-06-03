@@ -167,7 +167,8 @@ export default {
     cancel() {
       // this.resetForm();
       this.loading = null
-      this.$store.dispatch('toggleModalEditCategory')
+      this.$emit('close')
+      // this.$store.dispatch('toggleModalEditCategory')
     },
     resetForm() {
       this.color = this.$vuetify.theme.primary || 'primary'
@@ -186,7 +187,7 @@ export default {
           //console.log(res)
           if (res.status) {
             if (res.status === 'success') {
-              this.$store.dispatch('toggleModalEditCategory')
+              this.cancel()
             } else {
               //display error message returned from backend
               //console.log('res.status!= success', res)
@@ -214,7 +215,7 @@ export default {
             if (res.status === 'success') {
               //alert success
               this.id = res.data
-              this.$store.dispatch('toggleModalEditCategory')
+              this.cancel()
             } else {
               //display error message returned from backend
               //console.log('res.status!= success', res)
@@ -228,18 +229,18 @@ export default {
         })
     }
   },
-  created() {
+
+  mounted() {
     if (this.categoryediting) {
       const data = filters.categoryById(this.categoryediting, this.categories)
-      this.color = data.color
-      this.id = data.id
-      this.name = data.name
+      this.color = data?.color || this.$vuetify.theme.primary || 'primary'
+      this.id = data?.id || null
+      this.name = data?.name || null
       //SET INITIAL VALUES TO KEEP TRACK OF
-      this.originalColor = data.color
-      this.originalName = data.name
+      this.originalColor = this.color
+      this.originalName = this.name
     }
-  },
-  mounted() {}
+  }
 }
 </script>
 

@@ -9,61 +9,18 @@
   >
     <v-col cols="12" class="pa-0 flex-shrink-1">
       <!-- <v-sheet height="10vh"> -->
-      <v-toolbar height="40" flat color="background">
-        <!-- <v-btn outlined class="mr-4" @click="setToday">Today</v-btn> -->
-        <v-menu bottom right>
-          <template v-slot:activator="{ on }">
-            <v-btn large text color="primary" v-on="on" class="px-0">
-              <span class="title font-weight-bold">{{ viewLabels[view] }}</span>
-              <v-icon right>mdi-menu-down</v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item @click="view = 'catalog'">
-              <v-list-item-title>CATALOG</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="view = 'category'">
-              <v-list-item-title>CATEGORIES</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="view = 'overview'">
-              <v-list-item-title>OVERVIEW</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+      <v-toolbar height="40" flat color="background primary--text">
+        <span class="title font-weight-bold">CATALOG</span>
         <v-spacer></v-spacer>
-        <!-- <v-btn outlined color="primary" class="mr-4" @click="catalogItemAdd">
-          <v-icon left>mdi-bookmark-plus-outline</v-icon>NEW
-        </v-btn>-->
-        <v-menu bottom right>
-          <template v-slot:activator="{ on }">
-            <v-btn icon color="primary" v-on="on">
-              <v-icon color="primary">mdi-note-plus</v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item @click="catalogItemAdd">
-              <v-list-item-title>CATALOG ITEM</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="categoryAdd">
-              <v-list-item-title>CATEGORY</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        <v-btn icon color="primary" @click="catalogItemAdd">
+          <v-icon color="primary">mdi-note-plus</v-icon>
+        </v-btn>
         <filterBtn></filterBtn>
       </v-toolbar>
     </v-col>
-    <v-col cols="12" class="pa-0 flex-grow-1">
-      <component :is="view" :view="view"></component>
+    <v-col cols="12" class="mt-4 pa-0 flex-grow-1">
+      <CatalogItemList :view="view"></CatalogItemList>
     </v-col>
-    <!-- Edit Category Modal  -->
-    <v-dialog
-      v-model="modalCategoryEdit"
-      persistent
-      max-width="500px"
-      transition="dialog-transition"
-    >
-      <categoryEdit :key="'cEdit' + String(categoryediting)"></categoryEdit>
-    </v-dialog>
     <!-- Edit Catalog Item Modal  -->
     <v-dialog
       v-model="modalCatalogitemEdit"
@@ -98,22 +55,6 @@
         :key="modalEditCatalogItemFields + ''"
       ></catalogItemEditFields>
     </v-dialog>
-    <!-- Catalog Custom Fields Mgmtm Modal  -->
-    <!-- <v-dialog
-      v-model="modalCatalogCustomfield"
-      persistent
-      max-width="500px"
-      transition="dialog-transition"
-      :key="
-        `cinewfEdit${String(
-          catalogItemediting && catalogItemediting.id
-            ? catalogItemediting.id
-            : 'none'
-        )}`
-      "
-    >
-      <catalogCustomfield></catalogCustomfield>
-    </v-dialog>-->
     <v-dialog
       :value="modalImageFullPreview"
       transition="dialog-transition"
@@ -131,26 +72,21 @@
 
 <script>
 import { mapState } from 'vuex'
-import catalog from '@/views/catalog/catalog'
+import CatalogItemList from '@/components/catalog/catalogItem/ciList'
 import catalogItemEdit from '@/components/catalog/catalogItem/ciEdit'
 import catalogItemEditFields from '@/components/catalog/catalogItem/ciEditFields'
-import categoryEdit from '@/components/catalog/category/categoryEdit'
-import category from '@/views/catalog/category'
 import filterBtn from '@/components/global/buttons/filterDrawerToggle'
 import imagePreviewModal from '@/components/images/imagePreviewModal'
-import overview from '@/views/catalog/overview'
 export default {
+  name: 'catalog',
   components: {
-    catalog,
-    catalogCustomfield: () =>
-      import('@/components/catalog/customFields/cfManagement'),
+    CatalogItemList,
+    // catalogCustomfield: () =>
+    //   import('@/components/catalog/customFields/cfManagement'),
     catalogItemEdit,
     catalogItemEditFields,
-    category,
-    categoryEdit,
     filterBtn,
-    imagePreviewModal,
-    overview
+    imagePreviewModal
   },
   data: () => ({
     editCategoryData: {
@@ -209,11 +145,14 @@ export default {
       this.$store.dispatch('toggleModalEditCategory')
     }
   },
-  created() {
-    console.log(this.view)
-    this.view = localStorage.getItem('lastViewCatalog')
-      ? localStorage.getItem('lastViewCatalog')
-      : 'overview'
+  mounted() {
+    console.log(this.$vuetify)
+    // this.$store.dispatch('toggleStateValue', 'sideDrawer')
+    if (this.$vuetify.breakpoint.lgAndUp)
+      this.$store.dispatch('setStateValue', {
+        key: 'sideDrawer',
+        value: true
+      })
   }
 }
 </script>

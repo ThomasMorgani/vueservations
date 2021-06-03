@@ -1,7 +1,7 @@
 <template>
   <!-- <v-card flat color="background"> -->
   <v-card flat>
-    <v-card-title
+    <!-- <v-card-title
       class="title secondary primary--text"
       v-if="catalogView !== 'catalog'"
     >
@@ -19,7 +19,7 @@
       <span class="body-1 font-weight-bold">{{
         `${itemList.length} of ${catalogItems.length}`
       }}</span>
-    </v-toolbar>
+    </v-toolbar> -->
     <v-card-text :style="styleCiList" class="px-0">
       <v-expansion-panels popout v-model="panel" class="py-1">
         <!-- <template v-for="(item, key) in limitBy(itemsDisplayed, itemDisplayLimit)"> -->
@@ -150,7 +150,7 @@ export default {
     styleCiList() {
       let height = this.$store.state.content.main.y || null
       if (height) {
-        height = height - 250
+        height = height - 200
       }
       return {
         height: `${height}px`,

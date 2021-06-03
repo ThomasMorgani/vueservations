@@ -9,11 +9,14 @@
   >
     <h5 class="body-1 font-weight-bold text-uppercase">{{ sbData.status }}:</h5>
     {{ sbData.message }}
-    <v-btn text color="white" @click.native="onClose">Close</v-btn>
+    <v-btn icon color="white" @click.native="onClose" class="closebtn">
+      <v-icon>mdi-close-thick</v-icon>
+    </v-btn>
     <v-progress-linear
       bottom
       color="white"
       :value="progress"
+      class="progress"
     ></v-progress-linear>
   </v-snackbar>
 </template>
@@ -69,4 +72,21 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped lang="scss">
+::v-deep .v-snack__content {
+  width: 100%;
+  padding: 10px;
+}
+
+.closebtn {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.progress {
+  position: absolute;
+  bottom: 1;
+  width: 100%;
+}
+</style>

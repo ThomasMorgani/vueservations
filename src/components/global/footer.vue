@@ -38,6 +38,14 @@ export default {
         {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
+          iconProps: { icon: 'mdi-shape' },
+          tooltipProps: { disabled: false, top: true },
+          tooltipText: 'Category Management',
+          value: 'category'
+        },
+        {
+          btnClass: ['mx-2'],
+          btnProps: { icon: true },
           iconProps: { icon: 'mdi-account' },
           tooltipProps: { disabled: false, top: true },
           tooltipText: 'Patron Management',

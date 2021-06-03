@@ -1,45 +1,13 @@
 <template>
   <v-card flat>
-    <component :is="catalogView === 'overview' ? 'v-card-title' : 'v-toolbar'">
-      <span class="headline font-weight-medium primary--text">CATEGORIES</span>
-      <v-spacer></v-spacer>
-      <template v-if="catalogView === 'overview'">
-        <v-btn text icon color="primary" @click="selectNone">
-          <v-icon>mdi-select</v-icon>
-        </v-btn>
-        <v-btn text icon color="primary" @click="selectAll">
-          <v-icon>mdi-select-group</v-icon>
-        </v-btn>
-      </template>
-      <template v-else>
-        <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <v-btn text icon color="primary" v-on="on" @click="categoryAdd">
-              <v-icon left v-text="'mdi-plus-thick'"></v-icon>
-            </v-btn>
-          </template>
-          <span>Add New Category</span>
-        </v-tooltip>
-        <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <v-btn text icon color="warning" v-on="on" @click="setMode('edit')">
-              <v-icon
-                v-text="mode === 'edit' ? 'mdi-pencil-off' : 'mdi-pencil'"
-              ></v-icon>
-            </v-btn>
-          </template>
-          <span>Toggle Edit Mode</span>
-        </v-tooltip>
-      </template>
-    </component>
     <v-card-text :style="styleCategoryList">
       <v-list>
         <v-list-item
-          v-for="(category, i) in categoryList"
+          v-for="(category, i) in categories"
           :key="i"
           :input-value="filterCategory.includes(category.id)"
           active-class="primary lighten-5"
-          @click="selectItem(category)"
+          @click="$emit('itemClicked', category.id)"
         >
           <v-list-item-avatar
             size="20"
@@ -90,11 +58,12 @@
 <script>
 import { mapState } from 'vuex'
 import filters from '@/modules/filters'
-import { VToolbar, VCardTitle } from 'vuetify/lib'
 export default {
-  components: {
-    VCardTitle,
-    VToolbar
+  props: {
+    categories: {
+      type: Array,
+      default: () => []
+    }
   },
   data: () => ({
     mode: null,
@@ -120,14 +89,11 @@ export default {
     ...mapState({
       catalogItems: state => state.catalogItems,
       catalogView: state => state.catalogView,
-      categories: state => state.categories,
+
       filterCategory: state => state.filterCategory,
       settings: state => state.settings
     }),
-    categoryList() {
-      let list = this.categories
-      return list.sort((a, b) => a.name.localeCompare(b.name))
-    },
+
     categoryCounts() {
       let counts = {}
       if (this.catalogItems) {
@@ -158,13 +124,15 @@ export default {
         'setting'
       )
       const cat = filters.getObjectFromArray(this.categories, 'id', defaultCat)
-      return cat
+      return cat || false
     },
     styleCategoryList() {
       let height = this.$store.state.content.main.y || null
+      console.log(height)
       if (height) {
-        height = height - 260
+        height = height - 200
       }
+      console.log(height)
       return {
         height: `${height}px`,
         'overflow-y': 'auto'
@@ -184,12 +152,12 @@ export default {
           break
       }
     },
-    categoryAdd() {
-      this.editCategoryModal = true
-      //console.log('categoryAdd')
-      this.$store.dispatch('categoryEdit', null)
-      this.$store.dispatch('toggleModalEditCategory')
-    },
+    // categoryAdd() {
+    //   this.editCategoryModal = true
+    //   //console.log('categoryAdd')
+    //   this.$store.dispatch('categoryEdit', null)
+    //   this.$store.dispatch('toggleModalEditCategory')
+    // },
     countText(count, category) {
       if (count === 1) {
         return 'There is 1 item under ' + category
@@ -203,14 +171,14 @@ export default {
       //console.log('details', id)
       return id
     },
-    edit(id) {
-      //console.log('edit', id)
-      this.$store.dispatch('setStateValue', {
-        key: 'categoryediting',
-        value: id
-      })
-      this.$store.dispatch('toggleModalEditCategory')
-    },
+    // edit(id) {
+    //   //console.log('edit', id)
+    //   this.$store.dispatch('setStateValue', {
+    //     key: 'categoryediting',
+    //     value: id
+    //   })
+    //   this.$store.dispatch('toggleModalEditCategory')
+    // },
     selectAll() {
       // this.categorySelect = [...this.categories.keys()]
       this.categoryList.forEach(c =>
