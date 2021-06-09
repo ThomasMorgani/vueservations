@@ -59,9 +59,9 @@ export default {
     //THIS IS FOR CUSTOM BUFFER PERIODS
     //TODO: make this a setting
     if (withBuffer) {
-      searchStartDate1.setDate(searchStartDate1.getDate() - 2)
+      searchStartDate1.setDate(searchStartDate1.getDate() - 1)
       // searchEndDate1.setDate(searchEndDate1.getDate() + 2)
-      searchEndDate1.setDate(searchEndDate1.getDate() + 3)
+      searchEndDate1.setDate(searchEndDate1.getDate() + 1)
     }
 
     // searchStartDate1 = searchStartDate1.toISOString()
