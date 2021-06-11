@@ -1,17 +1,53 @@
 <template>
   <v-card class="d-flex flex-column pa-5 justify-start" height="100%">
+    <!-- span tag to work around v-card class first child inherit border-radius -->
+    <span></span>
     <v-text-field
       solo
       rounded
-      single-line
       clearable
-      formatsend-inner-icon="mdi-magnify"
+      prepend-inner-icon="mdi-magnify"
       placeholder="Search"
       color="primary"
       class="flex-grow-0 flex-shrink-1"
       v-model="searchField"
     ></v-text-field>
     <v-divider color="primary--text"></v-divider>
+    <!-- AVAILABILITY SELECT -->
+    <v-select
+      v-model="availabilitySelect"
+      :items="orderBy(availabilityOptions, 'text')"
+      item-text="text"
+      item-value="text"
+      label="Availability"
+      no-hint
+      no-title
+      clearable
+      color="primary"
+      class="flex-grow-0 flex-shrink-1"
+    >
+      <template v-slot:item="{ item }">
+        <v-list-item-content>
+          <v-list-item-title v-text="item.text"></v-list-item-title>
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-icon :color="item.color" v-text="item.icon"></v-icon>
+        </v-list-item-action>
+      </template>
+      <template v-slot:selection="{ item }">
+        <!-- <v-chip :color="item.color" class="white--text font-weight-bold">
+          <span>{{ item.text }}</span>
+        </v-chip>-->
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon :color="item.color" v-text="item.icon"></v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.text"></v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </template>
+    </v-select>
     <!--CATEGORY SELECT -->
     <v-select
       v-model="categorySelect"
@@ -108,41 +144,18 @@
         </v-chip>
       </template>
     </v-select>
-    <!-- AVAILABILITY SELECT -->
 
+    <!-- VISIBILITY SELECT -->
     <v-select
-      v-model="availabilitySelect"
-      :items="orderBy(availabilityOptions, 'text')"
-      item-text="text"
-      item-value="text"
-      label="Availability"
+      v-model="visibilitySelect"
+      :items="visibilityOptions"
+      label="Visibility"
       no-hint
       no-title
       clearable
       color="primary"
       class="flex-grow-0 flex-shrink-1"
     >
-      <template v-slot:item="{ item }">
-        <v-list-item-content>
-          <v-list-item-title v-text="item.text"></v-list-item-title>
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-icon :color="item.color" v-text="item.icon"></v-icon>
-        </v-list-item-action>
-      </template>
-      <template v-slot:selection="{ item }">
-        <!-- <v-chip :color="item.color" class="white--text font-weight-bold">
-          <span>{{ item.text }}</span>
-        </v-chip>-->
-        <v-list-item>
-          <v-list-item-icon>
-            <v-icon :color="item.color" v-text="item.icon"></v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.text"></v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </template>
     </v-select>
   </v-card>
 </template>
@@ -160,6 +173,7 @@ export default {
       filterRangeDate: state => state.filterRangeDate,
       filterSearch: state => state.filterSearch,
       filterStatus: state => state.filterStatus,
+      filterVisibility: state => state.filterVisibility,
       statusData: state => state.statusData,
       viewMain: state => state.viewMain
     }),
@@ -235,6 +249,31 @@ export default {
       set(val) {
         this.$store.dispatch('setStateValue', {
           key: 'filterStatus',
+          value: val
+        })
+        // this.$store.commit('eventsFilterCategorySelect', val)
+      }
+    },
+    visibilityOptions() {
+      const options = [
+        {
+          text: 'Internal',
+          value: '1'
+        },
+        {
+          text: 'Public',
+          value: '0'
+        }
+      ]
+      return options
+    },
+    visibilitySelect: {
+      get() {
+        return this.filterVisibility
+      },
+      set(val) {
+        this.$store.dispatch('setStateValue', {
+          key: 'filterVisibility',
           value: val
         })
         // this.$store.commit('eventsFilterCategorySelect', val)

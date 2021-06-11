@@ -59,6 +59,7 @@ export default new Vuex.Store({
     filterRangeDate: [],
     filterSearch: '',
     filterStatus: [],
+    filterVisibility: '',
     imagePreviewData: {},
     modalCatalogCustomfield: false,
     modalImageFullPreview: false,

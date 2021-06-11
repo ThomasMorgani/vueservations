@@ -9,6 +9,7 @@
             @reserve="onReserve"
             @showItemReservations="onShowReservations"
             @showItemNotes="onShowNotes"
+            @showImage="onShowImage"
           ></catalogItem>
         </template>
       </v-expansion-panels>
@@ -63,6 +64,7 @@ export default {
       filterRangeDate: state => state.filterRangeDate,
       filterSearch: state => state.filterSearch,
       filterStatus: state => state.filterStatus,
+      filterVisibility: state => state.filterVisibility,
       patrons: state => state.patrons
     }),
     itemList() {
@@ -72,12 +74,14 @@ export default {
         'filterCategory',
         'filterRangeDate',
         'filterSearch',
-        'filterStatus'
+        'filterStatus',
+        'filterVisibility'
       ]
       let filtersSet = {}
       filterNames.forEach(f =>
         this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
       )
+      console.log(filtersSet)
 
       if (Array.isArray(this.catalogItems)) {
         this.catalogItems.forEach(ci => {
@@ -123,6 +127,11 @@ export default {
         }
       }
 
+      if (filtersSet.filterVisibility) {
+        cItemsFiltered = cItemsFiltered.filter(
+          ci => ci.internal === filtersSet.filterVisibility
+        )
+      }
       return cItemsFiltered
     },
     styleCiList() {
@@ -188,6 +197,13 @@ export default {
         //console.log('error: ci not found')
       }
     },
+    onShowImage(ciImage) {
+      this.$store.dispatch('setStateValue', {
+        key: 'imagePreviewData',
+        value: ciImage
+      })
+      this.$store.dispatch('toggleModalImageFullPreview')
+    },
     onShowNotes(ci) {
       this.modalCompData = {
         catalogItem: ci,
@@ -236,7 +252,8 @@ export default {
               this.events.filter(e => e.item_id == ci.id),
               this.patrons
             ),
-            'startDate'
+            'startTime',
+            -1
           ),
           height: 400
         }

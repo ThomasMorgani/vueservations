@@ -14,7 +14,17 @@
       ></v-chip>
     </v-card-title>
     <v-card-text>
-      <tableSimple v-bind="tableData"></tableSimple>
+      <v-sheet
+        v-if="tableData.items && tableData.items.length < 1"
+        height="4rem"
+        class="d-flex align-center justify-center text-center"
+      >
+        <p>
+          No entries found.
+        </p>
+      </v-sheet>
+
+      <tableSimple v-else v-bind="tableData"></tableSimple>
     </v-card-text>
   </v-card>
 </template>

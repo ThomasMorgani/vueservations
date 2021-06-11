@@ -121,9 +121,10 @@
               <v-col cols="12">
                 <v-textarea
                   v-model="description"
-                  label="Decription"
                   auto-grow
                   dense
+                  hide-details=""
+                  label="Decription"
                   outlined
                   rows="4"
                   class="mt-2"
@@ -165,6 +166,21 @@
                   </v-col>
                 </v-row>
               </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="internal"
+                  item-text="text"
+                  item-value="value"
+                  :items="boolTypes"
+                  color="primary"
+                  dense
+                  full-width
+                  hide-details=""
+                  label="Visibility"
+                  prepend-icon="mdi-eye"
+                  class="mt-0 pt-0"
+                ></v-select>
+              </v-col>
             </v-row>
           </form>
         </v-tab-item>
@@ -188,12 +204,6 @@
       </v-tabs-items>
     </v-card-text>
     <v-card-actions>
-      <!--
-  tab == 'info' ?
-  tab == 'details' ?
-
-      -->
-
       <v-tooltip top :disabled="!id">
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -341,6 +351,16 @@ export default {
   data: () => ({
     abbreviation: null,
     affectedEventData: null,
+    boolTypes: [
+      {
+        value: '0',
+        text: 'Public listing'
+      },
+      {
+        value: '1',
+        text: 'Internal use only'
+      }
+    ],
     category: null,
     color: 'primary',
     customFields: [],
@@ -352,6 +372,7 @@ export default {
       description: null,
       id: null,
       image_data: {},
+      internal: '0',
       name: null,
       reservation_buffer: null,
       reservation_length: null,
@@ -361,6 +382,7 @@ export default {
     id: null,
     image: null,
     image_data: {},
+    internal: '0',
     loading: false,
     modalConfirmDelete: false,
     modalEditImage: false,
@@ -442,6 +464,7 @@ export default {
         if (
           field !== 'id' &&
           field !== 'customFields' &&
+          field !== 'internal' &&
           this[field] === this.defaultItem[field]
         ) {
           fields.push(field)

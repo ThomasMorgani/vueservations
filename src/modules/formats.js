@@ -13,6 +13,7 @@ const catalogItem = item => {
     description: item.description || '',
     id: item.id,
     image_data: item.image_data || {},
+    internal: item.internal || '0',
     isAvailable: item.isAvailable,
     lastReservation:
       item.lastReservation && item.lastReservation['0']
@@ -63,14 +64,18 @@ const dateDifference = (date1, date2) => {
 }
 
 const eventListSimple = (events, patrons) => {
+  const currYear = new Date().getFullYear().toString()
   return events.map(e => {
     const patron = patrons.find(p => p.id === e.patron_id)
+    const showYear = currYear !== e.start_date.substr(0, 4)
+    const eTime = new Date(e.start_date).getTime()
     const newEvent = {
       patron: patron
         ? `${patron.last_name}, ${patron.first_name}`
         : 'UNK PATRON',
-      startDate: timestampHuman(e.start_date, false, false),
-      endDate: timestampHuman(e.end_date, false, false)
+      startDate: timestampHuman(e.start_date, showYear, false),
+      endDate: timestampHuman(e.end_date, showYear, false),
+      startTime: eTime
     }
     return newEvent
   })

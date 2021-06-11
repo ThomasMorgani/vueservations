@@ -8,6 +8,7 @@
             :src="thumbnailSrc"
             :max-width="$vuetify.breakpoint.smAndDown ? 75 : 100"
             :max-height="$vuetify.breakpoint.smAndDown ? 75 : 100"
+            @click.stop="$emit('showImage', item.image_data)"
             class="pa-0"
           ></v-img>
         </v-col>
@@ -98,25 +99,21 @@
             </v-tooltip>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
-                <v-card
-                  flat
-                  class="d-flex align-center text-left mx-3"
+                <v-btn
+                  text
+                  color="primary"
+                  class="mr-3"
                   v-on="on"
+                  @click.stop="showReservations"
                 >
-                  <v-icon color="primary" v-text="'mdi-history'"></v-icon>
-                  <p
-                    v-text="
-                      item.lastReservation
-                        ? formatDate(
-                            item.lastReservation.start_date,
-                            true,
-                            false
-                          )
-                        : 'N/A'
-                    "
-                    class="ml-1 font-weight-bold primary--text"
-                  ></p>
-                </v-card>
+                  <v-icon left v-text="'mdi-history'"></v-icon>
+                  {{
+                    item.lastReservation
+                      ? formatDate(item.lastReservation.start_date, true, false)
+                      : 'N/A'
+                  }}
+                  <!-- <p v-text="status.text" :class="` ml-1 font-weight-bold ${status.color}--text`"></p> -->
+                </v-btn>
               </template>
               <span v-html="lastReservedText()"></span>
             </v-tooltip>
@@ -126,36 +123,49 @@
     </v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-row dense justify="end">
-        <v-col class="flex-grow-1 flex-shrink-0"></v-col>
-        <v-col class="text-right flex-grow-0 flex-shrink-1">
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn text icon color="primary" @click="showNotes" v-on="on">
-                <v-icon color="primary">mdi-note-text-outline</v-icon>
-              </v-btn>
-            </template>
-            <span>Notes</span>
-          </v-tooltip>
-        </v-col>
-        <v-col class="text-right flex-grow-0 flex-shrink-1">
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn text icon @click="showReservations" v-on="on">
-                <v-icon color="primary">mdi-calendar-clock</v-icon>
-              </v-btn>
-            </template>
-            <span>View Reservations</span>
-          </v-tooltip>
-        </v-col>
-        <v-col class="text-right flex-grow-0 flex-shrink-1">
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn text icon color="primary" @click="edit" v-on="on">
-                <v-icon color="primary">mdi-square-edit-outline</v-icon>
-              </v-btn>
-            </template>
-            <span>Edit Item</span>
-          </v-tooltip>
+        <v-col cols="2"> </v-col>
+        <v-col cols="10" class="d-flex align-end justify-space-between">
+          <v-sheet class="d-flex flex-column align-start justify-start">
+            <p>
+              <span class="text-body-1 primary--text">
+                RESERVATION LENGTH:
+              </span>
+              {{ reservationText(item.reservation_length) }}
+            </p>
+            <p>
+              <span class="text-body-1 primary--text">
+                RESERVATION BUFFER:
+              </span>
+              {{ reservationText(item.reservation_buffer) }}
+            </p>
+          </v-sheet>
+          <v-spacer></v-spacer>
+          <v-sheet>
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-btn text icon color="primary" @click="showNotes" v-on="on">
+                  <v-icon color="primary">mdi-note-text-outline</v-icon>
+                </v-btn>
+              </template>
+              <span>Notes</span>
+            </v-tooltip>
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-btn text icon @click="showReservations" v-on="on">
+                  <v-icon color="primary">mdi-calendar-clock</v-icon>
+                </v-btn>
+              </template>
+              <span>View Reservations</span>
+            </v-tooltip>
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-btn text icon color="primary" @click="edit" v-on="on">
+                  <v-icon color="primary">mdi-square-edit-outline</v-icon>
+                </v-btn>
+              </template>
+              <span>Edit Item</span>
+            </v-tooltip>
+          </v-sheet>
         </v-col>
       </v-row>
       <v-row justify="start">
@@ -291,6 +301,11 @@ export default {
         // }
         this.$emit('reserve', e)
       }
+    },
+    reservationText(num = null) {
+      num = parseInt(num)
+      if (isNaN(num)) return '-'
+      return num === 1 ? `1 Day` : `${num} Days`
     },
     showNotes() {
       this.$emit('showItemNotes', this.item)

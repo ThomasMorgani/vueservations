@@ -29,7 +29,8 @@ export default {
       type: Object,
       required: true
     }
-  }
+  },
+  computed: {}
 }
 </script>
 
