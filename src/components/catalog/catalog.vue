@@ -112,7 +112,8 @@ export default {
       modalEditCatalogItemFields: state =>
         state.modalCatalogitemEditCustomfields,
       modalCategoryEdit: state => state.modalCategoryEdit,
-      modalImageFullPreview: state => state.modalImageFullPreview
+      modalImageFullPreview: state => state.modalImageFullPreview,
+      settings: state => state.settings
     }),
     view: {
       set(val) {
@@ -127,9 +128,10 @@ export default {
   methods: {
     catalogItemAdd() {
       //console.log('catalogItemAdd')
+
       this.$store.dispatch('setStateValue', {
         key: 'catalogitemediting',
-        value: { ...this.$store.state.defaultCatalogItem }
+        value: this.catalogItemCreateNew()
       })
       setTimeout(() => {
         this.$store.dispatch('toggleModalCatalogitemEdit')
@@ -143,6 +145,26 @@ export default {
         value: null
       })
       this.$store.dispatch('toggleModalEditCategory')
+    },
+    catalogItemCreateNew() {
+      const newItem = { ...this.$store.state.defaultCatalogItem }
+      //custom fields (checkout period id ==== '11', buffer period id === '21')
+      const {
+        Default_reservation_length,
+        Default_reservation_buffer
+      } = this.settings.reduce((acc, setting) => {
+        if (
+          setting.name === 'Default_reservation_buffer' ||
+          setting.name === 'Default_reservation_length'
+        ) {
+          acc[setting.name] = setting
+        }
+        return acc
+      }, {})
+      newItem.reservation_buffer = Default_reservation_buffer.setting
+      newItem.reservation_length = Default_reservation_length.setting
+
+      return newItem
     }
   },
   mounted() {

@@ -42,6 +42,8 @@ export default new Vuex.Store({
       },
       description: null,
       name: null,
+      reservation_buffer: null,
+      reservation_length: null,
       status: null
     },
     defaultModalProps: {

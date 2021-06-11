@@ -20,6 +20,8 @@ const catalogItem = item => {
         : null,
     name: item.name || '',
     notes: item.notes || [],
+    reservation_buffer: item.reservation_buffer || null,
+    reservation_length: item.reservation_length || null,
     status: item.status || ''
   }
 }

@@ -63,20 +63,7 @@ export default {
       required: false
     }
   },
-  computed: {
-    iseq() {
-      console.log(this.setting.default_value)
-      console.log(this.setting.currentValue)
-      return this.setting.default_value == this.setting.currentValue
-    },
-    curr() {
-      const vc = this.setting.currentValue
-      return vc
-    },
-    prev() {
-      return this.setting
-    }
-  }
+  computed: {}
 }
 </script>
 

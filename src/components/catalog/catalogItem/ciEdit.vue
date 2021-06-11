@@ -129,6 +129,42 @@
                   class="mt-2"
                 ></v-textarea>
               </v-col>
+              <v-col cols="12">
+                <v-row dense>
+                  <v-col cols="6">
+                    <v-text-field
+                      color="primary"
+                      name="ReservationLength"
+                      label="Reservation length (days)"
+                      min="0"
+                      :rules="[
+                        val =>
+                          isNaN(val) || val < 1
+                            ? 'Number greater than 0 required'
+                            : true
+                      ]"
+                      type="number"
+                      v-model="reservation_length"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-text-field
+                      v-model="reservation_buffer"
+                      color="primary"
+                      label="Reservation buffer (days)"
+                      min="0"
+                      name="ReservationBuffer"
+                      type="number"
+                      :rules="[
+                        val =>
+                          isNaN(val) || val < 0
+                            ? 'Number greater than 0 required'
+                            : true
+                      ]"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-col>
             </v-row>
           </form>
         </v-tab-item>
@@ -317,6 +353,8 @@ export default {
       id: null,
       image_data: {},
       name: null,
+      reservation_buffer: null,
+      reservation_length: null,
       status: null
     },
     description: null,
@@ -328,6 +366,8 @@ export default {
     modalEditImage: false,
     name: null,
     originalValues: {},
+    reservation_buffer: null,
+    reservation_length: null,
     status: null,
     tab: null
   }),
@@ -600,6 +640,10 @@ export default {
         this.$set(this.originalValues, item, values[item])
       }
     },
+    testReservationLength(val) {
+      val = parseInt(val)
+      return isNaN(val) || val < 1 ? 'Number greater than 0 required' : true
+    },
     updateImage(imageData) {
       //console.log(imageData)
       this.$set(this, 'image_data', imageData)
@@ -617,6 +661,10 @@ export default {
       //console.log(this.$vuetify)
       const theme = this.$vuetify.theme.isDark ? 'dark' : 'light'
       this.color = this.$vuetify.theme.themes[theme].primary
+      this.reservation_buffer =
+        this?.catalogItemediting?.reservation_buffer || null
+      this.reservation_length =
+        this?.catalogItemediting?.reservation_length || null
     }
   }
 }

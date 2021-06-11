@@ -46,10 +46,10 @@ export default {
         {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
-          iconProps: { icon: 'mdi-account' },
+          iconProps: { icon: 'mdi-card-text-outline' },
           tooltipProps: { disabled: false, top: true },
-          tooltipText: 'Patron Management',
-          value: 'patron'
+          tooltipText: 'Custom Fields Management',
+          value: 'customFields'
         },
         {
           btnClass: ['mx-2'],
@@ -62,10 +62,10 @@ export default {
         {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
-          iconProps: { icon: 'mdi-format-columns' },
+          iconProps: { icon: 'mdi-account' },
           tooltipProps: { disabled: false, top: true },
-          tooltipText: 'Catalog Fields Management',
-          value: 'customFields'
+          tooltipText: 'Patron Management',
+          value: 'patron'
         },
         {
           btnClass: ['mx-2'],
