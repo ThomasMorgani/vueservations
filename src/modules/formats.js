@@ -1,4 +1,6 @@
 import Moment from 'moment'
+import filters from '@/modules/filters.js'
+
 //TODO: WHEN SETTINGS ARE SETUP, IMPORT DEFAULTS, DONT HARDCODE
 const catalogItem = item => {
   return {
@@ -63,6 +65,16 @@ const dateDifference = (date1, date2) => {
   return total_days
 }
 
+const eventDetailed = (event, catalogItems, patrons) => {
+  // console.log('eventDetailedeventDetailedeventDetailed')
+  // console.log(event)
+  return {
+    ...event,
+    ciData: filters.getObjectFromArray(catalogItems, 'id', event.item_id), //
+    patronData: filters.getObjectFromArray(patrons, 'id', event.patron_id)
+  }
+}
+
 const eventListSimple = (events, patrons) => {
   const currYear = new Date().getFullYear().toString()
   return events.map(e => {
@@ -79,6 +91,31 @@ const eventListSimple = (events, patrons) => {
     }
     return newEvent
   })
+}
+
+const eventPreview = (event, categories) => {
+  console.log(event)
+  console.log(categories)
+  if (typeof event !== 'object') return
+  event = event?.event ? { ...event.event } : { ...event }
+  const data = {
+    details: {
+      color: event.ciData.color || 'primary',
+      id: event.id,
+      title: event.ciData.name || 'Event Details'
+    },
+    eventData: event,
+    fields: {
+      First: event.patronData.first_name || '',
+      Last: event.patronData.last_name || '-',
+      Start: timestampHuman(event.start_date, true, false) || '-',
+      End: timestampHuman(event.end_date, true, false) || '-',
+      Length: dateDifference(event.start_date, event.end_date) + ' Days',
+      Note:
+        event.notes && Array.isArray(event.notes) ? event.notes[0] : event.notes
+    }
+  }
+  return data
 }
 
 const noteListSimple = notes => {
@@ -160,7 +197,9 @@ export {
   catalogItem,
   cfCiValuesSimple,
   dateDifference,
+  eventDetailed,
   eventListSimple,
+  eventPreview,
   noteListSimple,
   patronHistorySimple,
   timeHuman,

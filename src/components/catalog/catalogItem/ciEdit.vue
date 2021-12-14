@@ -604,10 +604,13 @@ export default {
         'abbreviation',
         'category',
         'color',
-        'id',
         'description',
+        'id',
+        'internal',
         'name',
         'note',
+        'reservation_buffer',
+        'reservation_length',
         'status'
       ]
       let postData = {}

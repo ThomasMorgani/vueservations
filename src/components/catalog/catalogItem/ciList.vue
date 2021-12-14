@@ -1,17 +1,19 @@
 <template>
   <v-card flat>
-    <v-card-text :style="styleCiList" class="px-0">
-      <v-expansion-panels popout v-model="panel" class="py-1">
-        <template v-for="(item, key) in orderBy(itemList, 'name')">
+    <v-card-text :style="styleCiList" class="px-0 text-center">
+      <p v-if="itemList.length < 1">No results found</p>
+      <v-expansion-panels v-else popout v-model="panel" class="py-1">
+        <transition-group name="flip-list" mode="out-in" style="width: 100%">
           <catalogItem
-            :key="item.id ? item.id : key + 'ci'"
+            v-for="item in orderBy(itemList, 'name')"
+            :key="item.id"
             :item="item"
             @reserve="onReserve"
             @showItemReservations="onShowReservations"
             @showItemNotes="onShowNotes"
             @showImage="onShowImage"
           ></catalogItem>
-        </template>
+        </transition-group>
       </v-expansion-panels>
     </v-card-text>
     <v-dialog
@@ -41,6 +43,7 @@ export default {
   name: 'catalogList',
   components: {
     catalogItem,
+    eventDetails: () => import('@/components/calendar/eventDetails'),
     eventEdit: () => import('@/components/calendar/eventEdit'),
     ciNotes: () => import('@/components/catalog/catalogItem/ciNotes'),
     ciReservations: () =>
@@ -81,7 +84,6 @@ export default {
       filterNames.forEach(f =>
         this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
       )
-      console.log(filtersSet)
 
       if (Array.isArray(this.catalogItems)) {
         this.catalogItems.forEach(ci => {
@@ -154,8 +156,6 @@ export default {
           this.categories
         )
         catalogItem.categoryName = category.name || 'MISC'
-        // catalogItem.customFields = cata
-
         if (catalogItem.lastReservation && catalogItem.lastReservation['0']) {
           let now = new Date()
           catalogItem.isAvailable = !filters.testRangeOverlap(
@@ -167,35 +167,54 @@ export default {
         } else {
           catalogItem.isAvailable = true
         }
-
         return formats.catalogItem(catalogItem)
       } else {
-        //console.log('no cat')
         return formats.catalogItem(catalogItem)
       }
     },
     onModalClose() {
-      //console.log('ci list modal closed')
       this.modal = false
       this.$store.dispatch('setStateValue', {
         key: 'eventediting',
         value: null
       })
     },
-    onReserve(e) {
-      //console.log('onReserve')
-      //console.log(e)
-      if (e) {
+    onReserve(ci) {
+      if (!ci) return //todo: handle
+      if (ci.status !== 'enabled') {
+        this.$store.dispatch('setStateValue', {
+          key: 'snackbarData',
+          value: {
+            status: 'error',
+            message: `${ci.status.toUpperCase()} items can't be reserved.`
+          }
+        })
+        this.onShowNotes(ci)
+        this.$store.dispatch('toggleStateValue', 'snackbarState')
+        return
+      }
+
+      let eventData = { allDay: true }
+
+      if (ci.isAvailable) {
+        eventData.ciData = { ...ci }
+        this.modalComp = 'eventEdit'
         this.$store.dispatch('setStateValue', {
           key: 'eventediting',
-          value: { ciData: e }
+          value: eventData
         })
-        this.modalComp = 'eventEdit'
-        setTimeout(() => (this.modal = true), 19)
-        //console.log('event found open modal')
       } else {
-        //console.log('error: ci not found')
+        this.modalComp = 'eventDetails'
+        const temp = {
+          event: formats.eventDetailed(
+            ci.lastReservation,
+            this.catalogItems,
+            this.patrons
+          )
+        }
+        this.modalCompData = { event: formats.eventPreview(temp) }
       }
+      setTimeout(() => (this.modal = true), 19)
     },
     onShowImage(ciImage) {
       this.$store.dispatch('setStateValue', {
@@ -275,5 +294,9 @@ export default {
 
 .v-expansion-panels--popout > .v-expansion-panel {
   max-width: 99%;
+}
+
+.flip-list-move {
+  transition: transform 1s;
 }
 </style>

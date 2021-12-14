@@ -127,13 +127,19 @@
         <v-col cols="10" class="d-flex align-end justify-space-between">
           <v-sheet class="d-flex flex-column align-start justify-start">
             <p>
-              <span class="text-body-1 primary--text">
+              <span class="text-body-1 font-weight-bold primary--text">
+                ITEM VISIBILITY:
+              </span>
+              {{ item.internal === '0' ? 'Publicly listed' : 'Internal use' }}
+            </p>
+            <p>
+              <span class="text-body-1 font-weight-bold primary--text">
                 RESERVATION LENGTH:
               </span>
               {{ reservationText(item.reservation_length) }}
             </p>
             <p>
-              <span class="text-body-1 primary--text">
+              <span class="text-body-1 font-weight-bold primary--text">
                 RESERVATION BUFFER:
               </span>
               {{ reservationText(item.reservation_buffer) }}
@@ -207,8 +213,12 @@ export default {
       let reserved = false
       if (this.item.lastReservation) {
         const now = new Date()
+        const startDate = new Date(this.item.lastReservation.start_date)
         const endDate = new Date(this.item.lastReservation.end_date)
-        if (endDate < now) {
+        console.log(now)
+        console.log(endDate)
+        if (startDate < now && endDate > now) {
+          console.log('end is less than now')
           reserved = this.isReservedText()
         }
       }
@@ -286,21 +296,7 @@ export default {
       }</p>`
     },
     reserve(e) {
-      if (this.item.status !== 'enabled') {
-        this.$store.dispatch('setStateValue', {
-          key: 'snackbarData',
-          value: {
-            status: 'error',
-            message: `${this.item.status.toUpperCase()} items can't be reserved.`
-          }
-        })
-        this.$store.dispatch('toggleStateValue', 'snackbarState')
-      } else {
-        // if (this.item.isAvailable) {
-        //   this.$emit('reserve', e)
-        // }
-        this.$emit('reserve', e)
-      }
+      this.$emit('reserve', e)
     },
     reservationText(num = null) {
       num = parseInt(num)

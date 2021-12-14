@@ -4,7 +4,15 @@
       <v-row dense align="center" justify="center">
         <v-col cols="2" align-self="center" class="d-flex justify-center">
           <v-avatar size="60" color="primary">
-            <v-icon size="x-large" color="secondary">mdi-calendar-range</v-icon>
+            <v-img
+              v-if="itemImage()"
+              :src="itemImage()"
+              @click="showImage"
+            ></v-img>
+
+            <v-icon v-else size="x-large" color="secondary"
+              >mdi-calendar-range</v-icon
+            >
           </v-avatar>
         </v-col>
         <v-col cols="10">
@@ -22,28 +30,22 @@
                 <div v-on="on">
                   <v-avatar
                     size="10"
-                    color="warning"
+                    :color="statusMap[status].color"
                     class="mr-1 ml-5"
                   ></v-avatar>
                   <p
-                    v-html="'Pending'"
+                    v-html="statusMap[status].label"
                     class="font-italic subheading text-capitalize"
                     style="display: inline;"
                   ></p>
                 </div>
               </template>
               <span>
-                <p class="mb-1">
-                  <strong>Status (active, ended, pending)</strong>
-                </p>
-                <v-avatar size="15" color="primary" class="mr-1"></v-avatar>
-                {{ 'Group Name' }}
+                {{ statusMap[status].text }}
               </span>
             </v-tooltip>
           </v-row>
-          <v-row dense align="center" justify="start" class="my-2">
-            <!-- STATUS -->
-          </v-row>
+          <v-row dense align="center" justify="start" class="my-2"> </v-row>
         </v-col>
       </v-row>
       <v-row dense justify="end">
@@ -115,7 +117,7 @@
       <v-dialog
         v-model="modal"
         persistent
-        max-width="600"
+        max-width="800"
         transition="dialog-transition"
       >
         <v-card flat>
@@ -129,6 +131,10 @@
       </v-dialog>
     </v-card-text>
     <v-card-actions v-if="withCardActions">
+      <v-btn text color="primary" @click="reserve">
+        <v-icon color="primary" left>mdi-calendar-plus</v-icon> NEW
+        RESERVATION</v-btn
+      >
       <v-spacer></v-spacer>
       <v-btn text color="primary" @click="$emit('close')">CLOSE</v-btn>
     </v-card-actions>
@@ -137,7 +143,7 @@
 
 <script>
 import { mapState } from 'vuex'
-// import * as formats from '@/modules/formats.js'
+import * as formats from '@/modules/formats.js'
 import Vue2Filters from 'vue2-filters'
 import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 export default {
@@ -145,6 +151,7 @@ export default {
   components: {
     btnWithTooltip,
     ciDetails: () => import('@/components/catalog/catalogItem/ciDetails'),
+    eventEdit: () => import('@/components/calendar/eventEdit'),
     patronDetails: () => import('@/components/patron/patronDetails')
   },
   mixins: [Vue2Filters.mixin],
@@ -163,7 +170,24 @@ export default {
     modal: false,
     modalComp: null,
     modalCompData: null,
-    showDetails: true
+    showDetails: true,
+    statusMap: {
+      active: {
+        color: 'success',
+        label: 'Active',
+        text: 'Reservation is currently active'
+      },
+      expired: {
+        color: 'error',
+        label: 'Expired',
+        text: 'Reservation has ended'
+      },
+      pending: {
+        color: 'warning',
+        label: 'Pending',
+        text: 'Reservation is pending'
+      }
+    }
   }),
   computed: {
     ...mapState({
@@ -172,6 +196,9 @@ export default {
       patrons: state => state.patrons
     }),
     details() {
+      const currYear = new Date().getFullYear()
+      const endYear = new Date(this.event.eventData.end_date).getFullYear()
+      const startYear = new Date(this.event.eventData.start_date).getFullYear()
       return [
         {
           name: 'Item',
@@ -186,28 +213,72 @@ export default {
         },
         {
           name: 'Start',
-          value: this.event.eventData.start_date || '-'
+          value:
+            formats.timestampHuman(
+              this.event.eventData.start_date,
+              currYear === startYear,
+              false
+            ) || '-'
         },
         {
           name: 'End',
-          value: this.event.eventData.end_date || '-'
+          value:
+            formats.timestampHuman(
+              this.event.eventData.end_date,
+              currYear === endYear,
+              false
+            ) || '-'
         },
         {
           name: 'Duration',
-          value: 'X Days..' || '-'
+          value:
+            `${formats.dateDifference(
+              this.event.eventData.end_date,
+              this.event.eventData.start_date
+            )} Days` || '-'
         },
         {
           name: 'Notes',
           value: this.event.eventData.notes || '-'
         }
       ]
+    },
+    status() {
+      const now = new Date().getTime()
+      const start = new Date(this.event.eventData.start_date).getTime()
+      const end = new Date(this.event.eventData.end_date).getTime()
+      if (start > now) {
+        return 'pending'
+      }
+      if (end < now) {
+        return 'expired'
+      }
+      return 'active'
     }
   },
   methods: {
+    itemImage() {
+      return this.event?.eventData?.ciData?.image_data?.src
+    },
+    reserve() {
+      this.modalComp = 'eventEdit'
+      this.$store.dispatch('setStateValue', {
+        key: 'eventediting',
+        value: { ciData: { ...this.event.eventData.ciData } }
+      })
+      this.modal = true
+    },
     showCatalogItem() {
       this.modalComp = 'ciDetails'
       this.modalCompData = { item: this.event.eventData.ciData }
       this.modal = true
+    },
+    showImage() {
+      this.$store.dispatch('setStateValue', {
+        key: 'imagePreviewData',
+        value: this.event?.eventData?.ciData?.image_data
+      })
+      this.$store.dispatch('toggleModalImageFullPreview')
     },
     showPatron() {
       this.modalComp = 'patronDetails'

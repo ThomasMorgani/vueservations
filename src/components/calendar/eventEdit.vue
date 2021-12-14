@@ -241,7 +241,11 @@
           <!--
             TIMES
           -->
-          <v-col cols="3" class="py-0" align-self="center">
+          <v-col
+            cols="3"
+            class="d-flex align-center  justify-center py-0"
+            align-self="center"
+          >
             <v-switch
               v-model="allDay"
               label="Full Day"
@@ -265,7 +269,24 @@
               </template>
             </v-switch>
           </v-col>
-          <v-col cols="7" class="py-0"> </v-col>
+          <v-col
+            cols="7"
+            align-self="center"
+            class="d-flex align-center  justify-center py-0"
+          >
+            <v-alert
+              :value="reservationLengthWarn !== false"
+              border="left"
+              color="warning"
+              colored-border
+              dense
+              elevation="1"
+              icon="mdi-alert"
+              class="flex-grow-1 warning--text"
+            >
+              {{ reservationLengthWarn }}
+            </v-alert>
+          </v-col>
 
           <v-col cols="5" class="py-0" align-self="center">
             <v-dialog
@@ -508,6 +529,15 @@ export default {
         this.endDate = v
       }
     },
+    ciSelectedStatus() {
+      if (!this.ciSelected) {
+        return null
+      } else {
+        const id = this.ciSelected.id
+        const item = filters.customfieldById(id, this.itemList)
+        return item.status
+      }
+    },
 
     formErrors() {
       let errors = {}
@@ -526,21 +556,16 @@ export default {
       if (this.endDate && this.startDate) {
         let end = new Date(this.endDate)
         let start = new Date(this.startDate)
-        //console.log(end)
-        //console.log(start)
         if (end < start) {
           errors.endDate = ['End date must come after start.']
         } else {
           if (!this.allDay) {
-            console.log('not alldayy')
             const startDateTime = new Date('1970-01-01T' + this.startTime + 'Z')
             const endDateTime = new Date('1970-01-01T' + this.endTime + 'Z')
             if (!this.startTime) {
-              console.log('not alldayy')
               errors.startTime = ['Start time required if all day is off']
             }
             if (!this.endTime) {
-              console.log('not alldayy')
               errors.endTime = ['End time required if all day is off']
             }
             if (startDateTime > endDateTime) {
@@ -549,8 +574,6 @@ export default {
           }
         }
         if (this.ciSelected) {
-          //console.log(this.events)
-          //console.log(this.ciSelected)
           const startDate = this.startDate || '1980-01-01'
           const startTime = this.startTime || '00:00'
           const startDateTime = new Date(startDate + 'T' + startTime)
@@ -559,8 +582,6 @@ export default {
           const endDateTime = new Date(endDate + 'T' + endTime)
 
           const reservationsBetween = this.events.filter(e => {
-            //console.log(this.e)
-
             return (
               e.item_id == this.ciSelected.id &&
               e.id != this.id &&
@@ -573,7 +594,6 @@ export default {
               )
             )
           })
-          console.log(reservationsBetween)
           if (reservationsBetween.length > 0) {
             errors.endDate = ['Existing reservations between start/end date.']
             errors.startDate = ['Existing reservations between start/end date.']
@@ -583,7 +603,6 @@ export default {
       if (this.ciSelectedStatus !== 'enabled' && !errors.ciSelected) {
         errors.ciSelected = ['Item invalid status']
       }
-
       return errors
     },
     isChanged() {
@@ -647,27 +666,30 @@ export default {
     patronList() {
       return this.patrons
     },
+    reservationLengthWarn() {
+      if (
+        this.ciSelected?.reservation_length &&
+        this.startDate &&
+        this.endDate
+      ) {
+        const length = parseInt(this.ciSelected.reservation_length)
+        const diff = formats.dateDifference(this.startDate, this.endDate)
+        return diff > length
+          ? `Reservation length of ${diff} days exceeds selected item's configured period of ${length} days.`
+          : false
+      }
+      return false
+    },
     saveDisabled() {
       return (
         !this.valid ||
         Object.keys(this.formErrors).length > 0 ||
         !this.isChanged
       )
-    },
-    ciSelectedStatus() {
-      if (!this.ciSelected) {
-        return null
-      } else {
-        const id = this.ciSelected.id
-        const item = filters.customfieldById(id, this.itemList)
-        //console.log(item)
-        return item.status
-      }
     }
   },
   methods: {
     allowedStart(val) {
-      // console.log(val)
       let events = []
       const startDate = val || '1980-01-01'
       const startTime = this.startTime || '00:00'
@@ -679,14 +701,15 @@ export default {
         const ci = { ...this.ciSelected }
         events = this.events.filter(e => {
           if (e.item_id === ci.id) {
-            // console.log(e)
             return (
               !filters.testRangeOverlap(
                 e.start_date,
                 e.end_date,
                 startDateTime,
                 startDateTime,
-                this.allDay
+                // this.allDay
+                // ci.reservation_buffer
+                1
               ) || e.id == this.id
             )
           } else {
@@ -702,7 +725,6 @@ export default {
       }
     },
     allowedEnd(val) {
-      // console.log(val)
       let events = []
       const startDate = this.startDate || '1980-01-01'
       const startTime = this.startTime || '00:00'
@@ -710,15 +732,10 @@ export default {
       const endDate = val || '3000-01-01'
       const endTime = this.endTime || '00:00'
       const endDateTime = new Date(endDate + 'T' + endTime)
-      // console.log(startDate + 'T' + startTime)
-      // console.log(startDateTime)
-      // console.log(endDateTime)
-
       if (this.ciSelected) {
         const ci = { ...this.ciSelected }
         events = this.events.filter(e => {
           if (e.item_id === ci.id) {
-            // console.log(e)
             return (
               !filters.testRangeOverlap(
                 e.start_date,
@@ -732,7 +749,6 @@ export default {
             return true
           }
         })
-        // console.log(events)
         return (
           events.length >= this.events.length &&
           endDateTime.getTime() > startDateTime.getTime()
@@ -766,17 +782,14 @@ export default {
       if (month < 10) {
         month = '0' + month
       }
-      ////console.log(year + '-' + month + '-' + day)
       return year + '-' + month + '-' + day
     },
     deleteEvent() {
-      //console.log('deleteEvent')
       this.$store
         .dispatch('apiCall', {
           endpoint: '/reservation_delete/' + this.id
         })
         .then(resp => {
-          //console.log(resp)
           if (resp.status === 'success') {
             this.$store.dispatch('setStateValue', {
               key: 'events',
@@ -825,8 +838,6 @@ export default {
       const startDate = this.startDate || '1980-01-01'
       const startTime = this.startTime || '00:00'
       const startDateTime = new Date(startDate + ' ' + startTime)
-      // console.log(startDate + ' ' + startTime)
-      // console.log(startDateTime)
       return startDateTime
     },
     formatTimestamp(timestamp, withYear = true, withTime = false) {
@@ -864,12 +875,9 @@ export default {
           })
           .then(resp => {
             if (resp.status === 'error') {
-              //console.log('eventEditResp ERROR', resp)
               //TODO SETUP ERROR HANDLING + FEEDBACK
             }
             if (resp.status === 'success') {
-              //console.log(this.id)
-              //console.log(this.id == false)
               if (!this.id) {
                 this.id = resp.data
                 event.id = resp.data
@@ -918,11 +926,9 @@ export default {
     }
   },
   mounted() {
-    // //console.log('mounted')
+    // if (this.eventediting && this.eventediting.id) {
     if (this.eventediting) {
-      const event = this.eventediting
-
-      //console.log('ciEditing:', event)
+      const event = { ...this.eventediting }
       const valPairs = {
         id: 'id',
         ciData: 'ciSelected',
@@ -935,17 +941,22 @@ export default {
       Object.keys(valPairs).forEach(k => {
         if (k == 'start_date' && event[k]) {
           const splitStart = event.start_date.split(' ')
-          //console.log(splitStart)
           this.startDate = splitStart[0]
           this.startTime = splitStart[1] || null
-          this.$set(this.originalValues, 'startDate', this.startDate)
-          this.$set(this.originalValues, 'startTime', this.startTime)
+          this.originalValues = {
+            ...this.originalValues,
+            startDate: this.startDate,
+            startTime: this.startTime
+          }
         } else if (k == 'end_date' && event[k]) {
           const splitEnd = event.end_date.split(' ')
           this.endDate = splitEnd[0]
           this.endTime = splitEnd[1] || null
-          this.$set(this.originalValues, 'endDate', this.endDate)
-          this.$set(this.originalValues, 'endTime', this.endTime)
+          this.originalValues = {
+            ...this.originalValues,
+            endDate: this.endDate,
+            endTime: this.endTime
+          }
         } else {
           if (event[k] != undefined) {
             this[valPairs[k]] = event[k]
@@ -953,8 +964,9 @@ export default {
           }
         }
       })
-      const isAllDay = this.startTime === '00:00' && this.endTime === '00:00'
-      this.$set(this.originalValues, 'allDay', isAllDay)
+      const isAllDay =
+        (this.startTime === '00:00' && this.endTime === '00:00') || !event.id
+      this.originalValues = { ...this.originalValues, allDay: isAllDay }
       this.allDay = isAllDay
     }
   }

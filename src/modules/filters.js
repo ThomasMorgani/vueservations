@@ -33,22 +33,17 @@ export default {
   getObjectFromArray(arr, key, val, returnVal = false) {
     //return item from obj where key === val
     if (!Array.isArray(arr)) {
-      //console.log('error: expected array as first paramater. Received:')
-      //console.log(arr)
+      // console.log('error: expected array as first paramater. Received:')
+      // console.log(arr)
       return false
     } else {
       const result = arr.find(el => el[key] === val)
-      // //console.log(result)
       return returnVal ? result[returnVal] : result
     }
   },
-  testRangeOverlap(
-    startDate1,
-    endDate1,
-    startDate2,
-    endDate2,
-    withBuffer = true
-  ) {
+  testRangeOverlap(startDate1, endDate1, startDate2, endDate2, buffer) {
+    buffer = parseInt(buffer)
+    if (isNaN(buffer)) buffer = 0
     // DATES 1
     let searchStartDate1 =
       typeof startDate1.getMonth === 'function'
@@ -58,11 +53,10 @@ export default {
       typeof endDate1.getMonth === 'function' ? endDate1 : new Date(endDate1)
     //THIS IS FOR CUSTOM BUFFER PERIODS
     //TODO: make this a setting
-    if (withBuffer) {
-      searchStartDate1.setDate(searchStartDate1.getDate() - 1)
-      // searchEndDate1.setDate(searchEndDate1.getDate() + 2)
-      searchEndDate1.setDate(searchEndDate1.getDate() + 1)
-    }
+    searchStartDate1.setDate(searchStartDate1.getDate() - buffer)
+    // searchStartDate1.setDate(searchStartDate1.getDate() - 1)
+    // searchEndDate1.setDate(searchEndDate1.getDate() + buffer)
+    // searchEndDate1.setDate(searchEndDate1.getDate() + 1)
 
     // searchStartDate1 = searchStartDate1.toISOString()
     // searchEndDate1 = searchEndDate1.toISOString()
@@ -92,6 +86,6 @@ export default {
     // console.log(searchEndDate2)
 
     // return searchRange1.overlaps(searchRange2, { adjacent: true })
-    return searchRange1.overlaps(searchRange2, { adjacent: withBuffer })
+    return searchRange1.overlaps(searchRange2, { adjacent: buffer })
   }
 }

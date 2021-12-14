@@ -81,8 +81,6 @@ export default {
   name: 'catalog',
   components: {
     CatalogItemList,
-    // catalogCustomfield: () =>
-    //   import('@/components/catalog/customFields/cfManagement'),
     catalogItemEdit,
     catalogItemEditFields,
     filterBtn,
@@ -127,8 +125,6 @@ export default {
   },
   methods: {
     catalogItemAdd() {
-      //console.log('catalogItemAdd')
-
       this.$store.dispatch('setStateValue', {
         key: 'catalogitemediting',
         value: this.catalogItemCreateNew()
@@ -139,7 +135,6 @@ export default {
     },
     categoryAdd() {
       this.editCategoryModal = true
-      //console.log('categoryAdd')
       this.$store.dispatch('setStateValue', {
         key: 'categoryEditing',
         value: null
@@ -148,7 +143,6 @@ export default {
     },
     catalogItemCreateNew() {
       const newItem = { ...this.$store.state.defaultCatalogItem }
-      //custom fields (checkout period id ==== '11', buffer period id === '21')
       const {
         Default_reservation_length,
         Default_reservation_buffer
@@ -168,8 +162,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$vuetify)
-    // this.$store.dispatch('toggleStateValue', 'sideDrawer')
     if (this.$vuetify.breakpoint.lgAndUp)
       this.$store.dispatch('setStateValue', {
         key: 'sideDrawer',

@@ -129,6 +129,20 @@
               @eventUpdated="calendarcheckChanges"
             ></component>
           </v-dialog>
+          <v-dialog
+            :value="modalImageFullPreview"
+            transition="dialog-transition"
+            :key="
+              `imgPrev${String(
+                imagePreviewData && imagePreviewData.id
+                  ? imagePreviewData.id
+                  : 'none'
+              )}`
+            "
+            @input="$store.dispatch('toggleModalImageFullPreview')"
+          >
+            <imagePreviewModal></imagePreviewModal>
+          </v-dialog>
         </v-sheet>
       </v-sheet>
     </v-col>
@@ -153,6 +167,7 @@ export default {
     eventDetails: () => import('@/components/calendar/eventDetails'),
     eventMenu,
     filterBtn,
+    imagePreviewModal: () => import('@/components/images/imagePreviewModal'),
     patronDetails: () => import('@/components/patron/patronDetails')
   },
   mixins: [Vue2Filters.mixin],
@@ -192,12 +207,15 @@ export default {
   }),
   computed: {
     ...mapState({
+      catalogItems: state => state.catalogItems,
+      categories: state => state.categories,
       defaultModalProps: state => state.defaultModalProps,
       events: state => state.events,
       filterCategory: state => state.filterCategory,
       filterRangeDate: state => state.filterRangeDate,
       filterSearch: state => state.filterSearch,
-      catalogItems: state => state.catalogItems,
+      imagePreviewData: state => state.imagePreviewData,
+      modalImageFullPreview: state => state.modalImageFullPreview,
       patrons: state => state.patrons
     }),
     ...mapGetters(['categoriesById']),
@@ -212,19 +230,9 @@ export default {
       )
       if (Array.isArray(this.events)) {
         this.events.forEach(e => {
-          eventsFiltered.push({
-            ...e,
-            ciData: filters.getObjectFromArray(
-              this.catalogItems,
-              'id',
-              e.item_id
-            ), //
-            patronData: filters.getObjectFromArray(
-              this.patrons,
-              'id',
-              e.patron_id
-            )
-          })
+          eventsFiltered.push(
+            formats.eventDetailed(e, this.catalogItems, this.patrons)
+          )
         })
 
         if (Object.keys(filtersSet).length > 0) {
@@ -321,8 +329,8 @@ export default {
     }
   },
   methods: {
-    calendarcheckChanges(event) {
-      console.log(event)
+    calendarcheckChanges() {
+      //args =event
       this.$refs.calendar.checkChange()
       if (this.selectedOpen) {
         //TODO MOVE OVERVIEW MENU TO NEW EVENT START
@@ -338,7 +346,6 @@ export default {
         : this.categoriesById[item.category].color
     },
     eventLabel(v) {
-      // console.log(v)
       let start = timestampHuman(v.input.start_date, false, false)
       let end = timestampHuman(v.input.end_date, false, false)
       if (start === end) {
@@ -396,28 +403,7 @@ export default {
       return e
     },
     formatEventPreview(e) {
-      //TODO: move to module
-      //this will format each reservation until we do so in backend
-      //console.log(e)
-      // let test = formats.dateDifference(e.start_date, e.end_date)
-      // console.log(test)
-      const data = {
-        details: {
-          color: this.eventColor(e),
-          id: e.id,
-          title: e.ciData.name || 'Event Details'
-        },
-        eventData: e,
-        fields: {
-          First: e.patronData.first_name || '',
-          Last: e.patronData.last_name || '-',
-          Start: e.start_date || '-',
-          End: e.end_date || '-',
-          Length: formats.dateDifference(e.start_date, e.end_date) + ' Days',
-          Note: e.notes && Array.isArray(e.notes) ? e.notes[0] : e.notes
-        }
-      }
-      return data
+      return formats.eventPreview(e, this.categories)
     },
     getEventById(eid) {
       const eventKey = this.events.findIndex(event => event.id === eid)
@@ -439,8 +425,6 @@ export default {
       return a
     },
     onDetailsClose(e) {
-      console.log('xx')
-      console.log(e)
       this.modalDetailsShow = false
       this.$store.dispatch('setStateValue', {
         key: 'eventediting',
@@ -451,7 +435,6 @@ export default {
       }
     },
     showDetails(e) {
-      console.log(e)
       this.modalDetailsProps = this.defaultModalProps
       switch (e.type) {
         case 'ci':
@@ -461,7 +444,6 @@ export default {
           this.modalDetailsComp = 'ciDetails'
           break
         case 'edit':
-          //console.log('is vent')
           this.modalDetailsComp = 'eventEdit'
           break
         case 'event':
@@ -475,7 +457,6 @@ export default {
           this.modalDetailsComp = 'patronDetails'
           break
         default:
-          //console.log('err: no match')
           this.modalDetailsComp = null
           //TODO: maybe set no match for generic error
           break
@@ -485,9 +466,6 @@ export default {
       }
     },
     showEvent({ nativeEvent, event }) {
-      console.log('show')
-      console.log(event)
-      console.log(nativeEvent.target)
       const open = () => {
         this.selectedEvent = this.formatEventPreview(event)
         this.selectedElement = nativeEvent.target
