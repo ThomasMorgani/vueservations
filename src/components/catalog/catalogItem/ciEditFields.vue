@@ -193,13 +193,13 @@
       </template>
     </v-card-text>
     <v-card-actions>
-      <v-tooltip top>
+      <v-tooltip color="primary" top>
         <template v-slot:activator="{ on }">
           <v-btn text color="primary" v-on="on" @click="addField">ADD</v-btn>
         </template>
         <span>Add new custom field</span>
       </v-tooltip>
-      <v-tooltip top>
+      <v-tooltip color="primary" top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn text :disabled="!isChanged" @click="restoreValues"

@@ -35,7 +35,7 @@
               <v-icon v-text="modeIcons[mode].icon"></v-icon>
             </v-btn>
             <div v-else>
-              <v-tooltip top>
+              <v-tooltip color="primary" top>
                 <template v-slot:activator="{ on }">
                   <span v-on="on" class="mb-0 subheading-1"
                     >({{ categoryCounts[category.id] || 0 }})</span
@@ -91,7 +91,7 @@ export default {
       catalogView: state => state.catalogView,
 
       filterCategory: state => state.filterCategory,
-      settings: state => state.settings
+      settings: state => state.appSettings
     }),
 
     categoryCounts() {
@@ -128,11 +128,9 @@ export default {
     },
     styleCategoryList() {
       let height = this.$store.state.content.main.y || null
-      console.log(height)
       if (height) {
         height = height - 200
       }
-      console.log(height)
       return {
         height: `${height}px`,
         'overflow-y': 'auto'

@@ -18,7 +18,7 @@
             <span class="font-weight-medium title primary--text">
               {{ item.name }}
             </span>
-            <v-tooltip top>
+            <v-tooltip color="primary" top>
               <template v-slot:activator="{ on }">
                 <v-chip
                   label
@@ -46,7 +46,7 @@
           </v-row>
 
           <v-row dense class="display-flex align-center justify-start">
-            <v-tooltip top>
+            <v-tooltip color="primary" top>
               <template v-slot:activator="{ on }">
                 <div v-on="on">
                   <v-avatar
@@ -81,7 +81,7 @@
           </v-row>
           <v-row dense align="center" justify="start" class="my-2">
             <!-- STATUS -->
-            <v-tooltip top>
+            <v-tooltip color="primary" top>
               <template v-slot:activator="{ on }">
                 <v-btn
                   text
@@ -97,7 +97,7 @@
               </template>
               <span v-html="status.popovertext"></span>
             </v-tooltip>
-            <v-tooltip top>
+            <v-tooltip color="primary" top>
               <template v-slot:activator="{ on }">
                 <v-btn
                   text
@@ -147,7 +147,7 @@
           </v-sheet>
           <v-spacer></v-spacer>
           <v-sheet>
-            <v-tooltip top>
+            <v-tooltip color="primary" top>
               <template v-slot:activator="{ on }">
                 <v-btn text icon color="primary" @click="showNotes" v-on="on">
                   <v-icon color="primary">mdi-note-text-outline</v-icon>
@@ -155,7 +155,7 @@
               </template>
               <span>Notes</span>
             </v-tooltip>
-            <v-tooltip top>
+            <v-tooltip color="primary" top>
               <template v-slot:activator="{ on }">
                 <v-btn text icon @click="showReservations" v-on="on">
                   <v-icon color="primary">mdi-calendar-clock</v-icon>
@@ -163,7 +163,7 @@
               </template>
               <span>View Reservations</span>
             </v-tooltip>
-            <v-tooltip top>
+            <v-tooltip color="primary" top>
               <template v-slot:activator="{ on }">
                 <v-btn text icon color="primary" @click="edit" v-on="on">
                   <v-icon color="primary">mdi-square-edit-outline</v-icon>
@@ -215,8 +215,8 @@ export default {
         const now = new Date()
         const startDate = new Date(this.item.lastReservation.start_date)
         const endDate = new Date(this.item.lastReservation.end_date)
-        console.log(now)
-        console.log(endDate)
+        // console.log(now)
+        // console.log(endDate)
         if (startDate < now && endDate > now) {
           console.log('end is less than now')
           reserved = this.isReservedText()

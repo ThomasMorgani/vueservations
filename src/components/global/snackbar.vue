@@ -7,7 +7,9 @@
     @input="onClose"
     transition="fade-transition"
   >
-    <h5 class="body-1 font-weight-bold text-uppercase">{{ sbData.status }}:</h5>
+    <h5 class="body-1 font-weight-bold text-uppercase">
+      {{ sbData.statusText || sbData.status }}:
+    </h5>
     {{ sbData.message }}
     <v-btn icon color="white" @click.native="onClose" class="closebtn">
       <v-icon>mdi-close-thick</v-icon>

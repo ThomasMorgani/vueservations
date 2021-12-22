@@ -71,35 +71,20 @@ export default {
     saveNote() {
       //console.log('save')
       this.saveLoading = true
-      this.$store
-        .dispatch('apiCall', {
-          endpoint: '/note',
-          postData: this.noteFormatted()
-        })
-        .then(resp => {
-          if (resp.status == 'success') {
-            //$emit('saveNote', resp.data)
-            const isNew = this.id === null
-            let now = new Date()
-            let nowTimestamp = formats.timestampHuman(now, true, false)
-            let noteData = {
-              id: isNew ? resp.data : this.id,
-              note: this.note,
-              date_created: isNew
-                ? nowTimestamp
-                : this.noteEditing.date_created,
-              date_updated: nowTimestamp
-            }
-            this.$emit('saveNote', {
-              isNew: isNew,
-              note: noteData
-            })
-            this.close()
-
-            //console.log(resp)
-          }
-        })
-        .catch(err => console.log(err))
+      const isNew = this.id === null
+      const now = new Date()
+      const nowTimestamp = formats.timestampHuman(now, true, false)
+      const noteData = {
+        id: isNew ? now.getTime() : this.id,
+        note: this.note,
+        date_created: isNew ? nowTimestamp : this.noteEditing.date_created,
+        date_updated: nowTimestamp
+      }
+      this.$emit('saveNote', {
+        isNew: isNew,
+        note: noteData
+      })
+      this.close()
     }
   },
   mounted() {

@@ -68,17 +68,24 @@ const dateDifference = (date1, date2) => {
 const eventDetailed = (event, catalogItems, patrons) => {
   // console.log('eventDetailedeventDetailedeventDetailed')
   // console.log(event)
+  // console.log(patrons)
   return {
     ...event,
     ciData: filters.getObjectFromArray(catalogItems, 'id', event.item_id), //
-    patronData: filters.getObjectFromArray(patrons, 'id', event.patron_id)
+    patronData: filters.getObjectFromArray(
+      patrons,
+      'id',
+      parseInt(event.patron_id)
+    )
   }
 }
 
 const eventListSimple = (events, patrons) => {
+  // console.log(events)
+  // console.log(patrons)
   const currYear = new Date().getFullYear().toString()
   return events.map(e => {
-    const patron = patrons.find(p => p.id === e.patron_id)
+    const patron = patrons.find(p => p.id === parseInt(e.patron_id))
     const showYear = currYear !== e.start_date.substr(0, 4)
     const eTime = new Date(e.start_date).getTime()
     const newEvent = {
@@ -93,9 +100,10 @@ const eventListSimple = (events, patrons) => {
   })
 }
 
-const eventPreview = (event, categories) => {
-  console.log(event)
-  console.log(categories)
+const eventPreview = event => {
+  // const eventPreview = (event, categories) => {
+  // console.log(event)
+  // console.log(categories)
   if (typeof event !== 'object') return
   event = event?.event ? { ...event.event } : { ...event }
   const data = {
@@ -155,6 +163,18 @@ const timeHuman = time => {
     .padStart(2, '0')}${period}`
 }
 
+const timestampSql = (time, withTime = true) => {
+  time = time && typeof time.getMonth === 'function' ? time : new Date(time)
+
+  const adjDt = new Date(time.getTime() - time.getTimezoneOffset() * 60000)
+  return withTime
+    ? adjDt
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ')
+    : adjDt.toISOString().split('T')[0]
+}
+
 const timestampHuman = (timestamp, withYear = true, withTime = true) => {
   const asDate =
     timestamp && typeof timestamp.getMonth === 'function'
@@ -203,5 +223,6 @@ export {
   noteListSimple,
   patronHistorySimple,
   timeHuman,
-  timestampHuman
+  timestampHuman,
+  timestampSql
 }

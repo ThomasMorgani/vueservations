@@ -26,7 +26,7 @@
           field.value
         }}</v-col>
         <v-col class="d-flex flex-grow-0 flex-shrink-1">
-          <v-tooltip right>
+          <v-tooltip color="primary" right>
             <template v-slot:activator="{ on }">
               <v-icon small v-on="on">
                 {{ field.internal === '1' ? 'mdi-eye-off' : 'mdi-eye' }}

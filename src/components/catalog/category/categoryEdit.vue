@@ -117,7 +117,7 @@ export default {
       catalogItems: state => state.catalogItems,
       categories: state => state.categories,
       categoryediting: state => state.categoryediting,
-      settings: state => state.settings
+      settings: state => state.appSettings
     }),
     categoryeditingData() {
       return filters.categoryById(this.categoryediting, this.categories)

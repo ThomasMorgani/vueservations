@@ -17,7 +17,7 @@
         <v-spacer></v-spacer>
         <v-menu bottom>
           <template v-slot:activator="{ on: menu }">
-            <v-tooltip top>
+            <v-tooltip color="primary" top>
               <template v-slot:activator="{ on: tooltip }">
                 <v-btn icon v-on="{ ...tooltip, ...menu }">
                   <v-icon color="primary">

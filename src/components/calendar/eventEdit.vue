@@ -101,7 +101,7 @@
               class="mt-4"
             >
               <template v-slot:append>
-                <v-tooltip top v-if="!patronSelected">
+                <v-tooltip color="primary" top v-if="!patronSelected">
                   <template v-slot:activator="{ on }">
                     <v-btn
                       text
@@ -129,6 +129,7 @@
                       v-text="data.item.barcode"
                     ></v-list-item-subtitle>
                   </v-list-item-content>
+                  <v-list-item-action> </v-list-item-action>
                 </v-list-item>
               </template>
               <template v-slot:item="data">
@@ -256,7 +257,7 @@
             >
               <template v-slot:prepend>
                 <div v-show="!allDay">
-                  <v-tooltip bottom>
+                  <v-tooltip color="primary" bottom>
                     <template v-slot:activator="{ on }">
                       <v-icon v-on="on" color="warning"
                         >mdi-alert-octagram
@@ -785,20 +786,13 @@ export default {
       return year + '-' + month + '-' + day
     },
     deleteEvent() {
-      this.$store
-        .dispatch('apiCall', {
-          endpoint: '/reservation_delete/' + this.id
-        })
-        .then(resp => {
-          if (resp.status === 'success') {
-            this.$store.dispatch('setStateValue', {
-              key: 'events',
-              value: this.events.filter(e => e.id !== this.id)
-            })
-            this.$emit('close', { wasDeleted: true })
-          }
-        })
-        .catch(err => console.log(err))
+      this.$store.dispatch('eventDelete', this.id)
+      this.$store.dispatch('toggleSnackbar', {
+        status: 'success',
+        message: 'Event deleted.',
+        value: true
+      })
+      this.$emit('close', { wasDeleted: true })
     },
     itemActionText(item) {
       return item.status == 'unavailable' && item.lastReservation['0']
@@ -866,35 +860,31 @@ export default {
       }
     },
     modalAction() {
+      if (Object.keys(this.formErrors).length > 0) return
+
       const event = this.formattedEvent()
-      if (Object.keys(this.formErrors).length < 1) {
-        this.$store
-          .dispatch('apiCall', {
-            endpoint: '/reservation',
-            postData: event
-          })
-          .then(resp => {
-            if (resp.status === 'error') {
-              //TODO SETUP ERROR HANDLING + FEEDBACK
-            }
-            if (resp.status === 'success') {
-              if (!this.id) {
-                this.id = resp.data
-                event.id = resp.data
-                this.$store.dispatch('setStateValue', {
-                  isPush: true,
-                  key: 'events',
-                  value: { ...event }
-                })
-              } else {
-                this.updateEvent(event)
-              }
-              this.$emit('eventUpdated')
-              this.$emit('close')
-            }
-          })
-          .catch(err => console.log(err))
+      const isNew = !this.id
+      if (isNew) {
+        const now = new Date()
+        event.id = now.getTime()
+        event.updated = formats.timestampSql(now)
+        this.addEvent(event)
+      } else {
+        this.updateEvent(event)
+        this.$emit('eventUpdated')
       }
+      this.$store.dispatch('setStateValue', {
+        key: 'snackbarData',
+        value: {
+          status: 'success',
+          message: `Event ${isNew ? 'added' : 'updated'}.`
+        }
+      })
+      this.$store.dispatch('setStateValue', {
+        key: 'snackbarState',
+        value: true
+      })
+      this.$emit('close')
     },
     onAllDay(e) {
       if (e) {
@@ -914,6 +904,15 @@ export default {
         this[field] = this.originalValues[field]
       })
     },
+    addEvent(event) {
+      this.$store.dispatch('eventAdd', event)
+      this.$store.dispatch('toggleSnackbar', {
+        status: 'success',
+        message: 'Event added.',
+        value: true
+      })
+      this.$emit('close')
+    },
     updateEvent(event) {
       const events = [...this.events]
       const key = this.events.findIndex(e => e.id == this.id)
@@ -921,6 +920,10 @@ export default {
       this.$store.dispatch('setStateValue', {
         key: `events`,
         value: [...events]
+      })
+      this.$store.dispatch('localStorageWrite', {
+        key: `events`,
+        data: [...events]
       })
       this.$emit('eventUpdated', this.eventediting)
     }
@@ -935,9 +938,8 @@ export default {
         patronData: 'patronSelected',
         start_date: 'startDate',
         end_date: 'endDate',
-        note: 'notes'
+        notes: 'notes'
       }
-
       Object.keys(valPairs).forEach(k => {
         if (k == 'start_date' && event[k]) {
           const splitStart = event.start_date.split(' ')

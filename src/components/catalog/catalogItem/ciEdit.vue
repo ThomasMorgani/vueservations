@@ -3,13 +3,13 @@
     <v-card-title class="justify-center title primary--text">
       {{ id ? 'EDIT ITEM' : 'ADD ITEM' }}
     </v-card-title>
-    <v-card-text>
+    <v-card-text class="pr-0">
       <v-tabs v-model="tab" background-color="transparent" color="primary" grow>
         <v-tab key="0">INFO</v-tab>
         <v-tab key="1">DETAILS</v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="tab" class="modalBody">
+      <v-tabs-items v-model="tab" class="modalBody pr-6">
         <v-tab-item key="0">
           <form>
             <v-row align="center" justify="center" dense>
@@ -139,7 +139,7 @@
                       label="Reservation length (days)"
                       min="0"
                       :rules="[
-                        val =>
+                        (val) =>
                           isNaN(val) || val < 1
                             ? 'Number greater than 0 required'
                             : true
@@ -157,7 +157,7 @@
                       name="ReservationBuffer"
                       type="number"
                       :rules="[
-                        val =>
+                        (val) =>
                           isNaN(val) || val < 0
                             ? 'Number greater than 0 required'
                             : true
@@ -204,7 +204,7 @@
       </v-tabs-items>
     </v-card-text>
     <v-card-actions>
-      <v-tooltip top :disabled="!id">
+      <v-tooltip color="primary" top :disabled="!id">
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
@@ -221,7 +221,7 @@
         <span>{{ tab === 0 ? 'Delete catalog item' : 'Edit Details' }}</span>
       </v-tooltip>
 
-      <v-tooltip top>
+      <v-tooltip color="primary" top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
@@ -238,7 +238,7 @@
 
       <v-spacer></v-spacer>
       <v-btn text large color="primary" @click="cancel">CLOSE</v-btn>
-      <v-tooltip top :disabled="!saveDisabled && !isChanged">
+      <v-tooltip color="primary" top :disabled="!saveDisabled && !isChanged">
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
@@ -613,50 +613,33 @@ export default {
         'reservation_length',
         'status'
       ]
-      let postData = {}
-      itemValues.forEach(val => (postData[val] = this[val]))
-      postData.image = this.image_data.id
-      const isNew = !postData.id
+      const ciData = {}
+      itemValues.forEach(val => (ciData[val] = this[val]))
+      ciData.image = this.image_data.id
+      const isNew = !ciData.id
       if (isNew) {
         //TODO: WE SHOULD BE ABLE TO WORK THIS INTO UPDATE FUNCTION ON SERVERSIDE
-        postData.customFields = this.catalogItemediting.customFields
+        ciData.customFields = this.catalogItemediting.customFields
+        ciData.id = new Date().getTime()
       }
-      const endpoint = isNew ? '/catalogitem_create' : '/catalogitem_update'
-      this.$store
-        .dispatch('apiCall', {
-          endpoint: endpoint,
-          postData: postData
+      if (isNew) {
+        //ADD ITEM TO LIST
+        this.$store.dispatch('catalogitemAdd', ciData)
+        // this.$store.dispatch('catalogitemediting', ciData)
+        this.setItemeditingValues(ciData)
+        //SET CATALOG ITEM editing ID
+      } else {
+        const itemData = { ...ciData, image_data: this.image_data }
+        //console.log(itemData)
+        Object.keys(itemData).forEach(key => {
+          this.$store.dispatch('catalogitemSetValue', {
+            id: this.id,
+            key: key,
+            data: itemData[key]
+          })
         })
-        .then(resp => {
-          if (resp.status === 'success') {
-            if (isNew) {
-              //ADD ITEM TO LIST
-              this.$store.dispatch('catalogitemAdd', resp.data)
-              this.$store.dispatch('catalogitemediting', resp.data)
-              this.setItemeditingValues(resp.data)
-              //SET CATALOG ITEM editing ID
-            } else {
-              const itemData = { ...postData, image_data: this.image_data }
-              //console.log(itemData)
-              Object.keys(itemData).forEach(key => {
-                this.$store.dispatch('catalogitemSetValue', {
-                  id: this.id,
-                  key: key,
-                  data: itemData[key]
-                })
-              })
-              // this.$store.dispatch('catalogitemSetValue', {
-              //   id: this.id,
-              //   key: 'image_data',
-              //   data: this.image_data
-              // })
-              this.setItemeditingValues(itemData)
-              // this.cancel()
-            }
-          }
-          //set originalItem to item
-        })
-        .catch(err => console.log(err))
+        this.setItemeditingValues(itemData)
+      }
 
       this.loading = null
     },

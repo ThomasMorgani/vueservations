@@ -88,7 +88,7 @@ export default {
   },
   created() {
     this.viewMain = localStorage.getItem('lastView') || 'calendar'
-    this.$store.dispatch('initializeApp', this.$apiSettings)
+    this.$store.dispatch('initializeApp')
   },
   mounted() {
     setTimeout(() => {

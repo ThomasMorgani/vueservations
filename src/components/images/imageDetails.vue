@@ -90,7 +90,7 @@ export default {
       ]
     },
     isDefaultImage() {
-      const setting = this.$store.state.settings.find(
+      const setting = this.$store.state.appSettings.find(
         s => s.name === 'Default_Image'
       )
       return setting?.setting && setting.setting === this.imageData.id

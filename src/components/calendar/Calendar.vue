@@ -83,14 +83,13 @@
           <!-- @mouseenter:event="showTooltip($event, true)" -->
           <!-- @mouseleave:event="showTooltip($event, false)"<v-calendar -->
           <v-calendar
+            v-if="isLoaded"
             ref="calendar"
             v-model="focus"
             :key="modalDetailsShow"
             color="primary"
             :events="orderBy(eventsList, 'name')"
-            :event-color="eventColor"
             :event-margin-bottom="2"
-            :event-name="eventLabel"
             event-start="start_date"
             event-end="end_date"
             :now="today"
@@ -100,7 +99,19 @@
             @click:date="viewDay"
             @change="updateRange"
             @contextmenu:day="contextDay"
-          ></v-calendar>
+          >
+            <template #event="{event}">
+              <v-sheet
+                :color="eventColor(event)"
+                class="d-flex align-center white--text"
+              >
+                <span v-html="eventLabel(event)"></span>
+                <v-icon v-if="event.notes" small color="white"
+                  >mdi-note-outline</v-icon
+                >
+              </v-sheet>
+            </template>
+          </v-calendar>
           <v-menu
             v-model="selectedOpen"
             :close-on-content-click="false"
@@ -115,7 +126,12 @@
               @showDetails="showDetails"
             ></eventMenu>
           </v-menu>
-          <v-tooltip top v-model="tooltipEvent" v-bind="toptipPosition">
+          <v-tooltip
+            color="primary"
+            top
+            v-model="tooltipEvent"
+            v-bind="toptipPosition"
+          >
             <span>HELLO</span>
           </v-tooltip>
           <v-dialog v-model="modalDetailsShow" v-bind="modalDetailsProps">
@@ -182,6 +198,7 @@ export default {
       '4day': '4 Days'
     },
     name: null,
+    isLoaded: false,
     navDrawer: false,
     start: null,
     end: null,
@@ -346,39 +363,22 @@ export default {
         : this.categoriesById[item.category].color
     },
     eventLabel(v) {
-      let start = timestampHuman(v.input.start_date, false, false)
-      let end = timestampHuman(v.input.end_date, false, false)
+      // console.log(v)
+      let start = timestampHuman(v.start_date, false, false)
+      let end = timestampHuman(v.end_date, false, false)
       if (start === end) {
         start = timeHuman(v.start.time)
         end = timeHuman(v.end.time)
       }
       let label = `
-        <span id="${v.input.ciData.abbreviation}" class="mx-2 subtitle-2">
-          <strong>${v.input.ciData.abbreviation}</strong>
-          ${v.input.patronData.last_name} ${start} - ${end}
-          <v-icon small color="white" v-text="${
-            v.input.notes ? 'mdi-note' : ''
-          }"></v-icon>
+        <span id="${v.ciData.abbreviation}" class="mx-2 subtitle-2">
+          <strong>${v.ciData.abbreviation}</strong>
+          ${v?.patronData?.last_name || '-'} ${start} - ${end}
+        
         </span>
       `
 
       return label
-    },
-    initializeApp() {
-      //MOVE THIS TO APP.js
-      //console.log('get events method')
-      this.axios
-        .get(`${this.$apiSettings.baseUrl}/initialize_page_data`)
-        .then(response => {
-          //console.log(response)
-          if (response.data && response.data.reservations) {
-            // response.data.reservations.forEach(res => this.events.push({...res, name: res.title, start: res.startDate, end: res.end_date}))
-            this.events = response.data.reservations
-          }
-        })
-        .catch(e => {
-          console.log(e)
-        })
     },
     eventAdd() {
       //console.log('eventAdd')
@@ -508,9 +508,7 @@ export default {
     }
   },
   mounted() {
-    // this.initializeApp()
-    // this.$vuetify.theme.isDark = true
-    // //console.log(this.$vuetify)
+    this.isLoaded = true
   }
 }
 </script>

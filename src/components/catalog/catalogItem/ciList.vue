@@ -186,10 +186,12 @@ export default {
           key: 'snackbarData',
           value: {
             status: 'error',
+            statusText: 'Notice',
             message: `${ci.status.toUpperCase()} items can't be reserved.`
           }
         })
-        this.onShowNotes(ci)
+        if (ci.notes && ci.notes.length > 0) this.onShowNotes(ci)
+
         this.$store.dispatch('toggleStateValue', 'snackbarState')
         return
       }

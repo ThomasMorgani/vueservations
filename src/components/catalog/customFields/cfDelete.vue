@@ -8,12 +8,16 @@
       <p class="font-weight-bold">
         {{ `${field.name}` }}
       </p>
-      <template v-if="affectedItems.items && affectedItems.items.length > 0">
+      <v-sheet
+        v-if="affectedItems.items && affectedItems.items.length > 0"
+        color="transparent"
+        width="100%"
+      >
         <p class="text-center mt-4">
           This field will be removed from the following items:
         </p>
         <eventTableSimple v-bind="affectedItems"></eventTableSimple>
-      </template>
+      </v-sheet>
       <p class="text-center" v-else>
         (There are no items associated with this field)
       </p>

@@ -80,7 +80,7 @@ export default {
   }),
   computed: {
     ...mapState({
-      settings: state => state.settings
+      settings: state => state.appSettings
     }),
     settingsByName() {
       const settings = {}

@@ -114,27 +114,19 @@ export default {
     noteAdd(note) {
       this.tableData.items.push(note)
       this.catalogItem.notes.push(note)
+      this.saveNotesToLocal()
     },
     noteDelete(note) {
       this.saveLoading = true
-      this.$store
-        .dispatch('apiCall', {
-          endpoint: '/note/' + note.id
-        })
-        .then(resp => {
-          if (resp.status == 'success') {
-            const noteKeyCi = this.catalogItem.notes.findIndex(
-              n => n.id == note.id
-            )
-            const noteKeyTi = this.tableData.items.findIndex(
-              n => n.id == note.id
-            )
-            this.$delete(this.catalogItem.notes, noteKeyCi)
-            this.$delete(this.tableData.items, noteKeyTi)
-            this.noteDeletingLoading = null
-          }
-        })
-        .catch(err => console.log(err))
+      const noteKeyCi = this.catalogItem.notes.findIndex(n => n.id == note.id)
+      const noteKeyTi = this.tableData.items.findIndex(n => n.id == note.id)
+      this.$delete(this.catalogItem.notes, noteKeyCi)
+      this.$delete(this.tableData.items, noteKeyTi)
+      this.noteDeletingLoading = null
+      this.$store.dispatch('localStorageWrite', {
+        key: 'catalogItems',
+        data: this.$store.state.catalogItems
+      })
     },
     noteEdit(item) {
       this.noteEditing = item
@@ -145,7 +137,7 @@ export default {
       if (ciNoteKey > -1) {
         this.$set(this.catalogItem.notes, ciNoteKey, note)
       } else {
-        //console.log('ERROR UPDATING NOTE. MATCHING KEYS NOT FOUND')
+        console.log('ERROR UPDATING NOTE. MATCHING KEYS NOT FOUND')
       }
       const tableItemNoteKey = this.tableData.items.findIndex(
         ti => ti.id == note.id
@@ -163,6 +155,10 @@ export default {
       } else {
         this.noteUpdate(note.note)
       }
+      this.$store.dispatch('localStorageWrite', {
+        key: 'catalogItems',
+        data: this.$store.state.catalogItems
+      })
       this.modalEditNote = false
     }
   }

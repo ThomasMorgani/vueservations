@@ -117,7 +117,7 @@ export default {
 </script>
 
 <style scoped>
-td {
-  word-wrap: break-word;
+>>> .cell {
+  word-break: break-word;
 }
 </style>

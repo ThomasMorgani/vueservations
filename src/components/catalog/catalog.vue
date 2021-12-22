@@ -25,7 +25,7 @@
     <v-dialog
       v-model="modalCatalogitemEdit"
       persistent
-      max-width="600px"
+      max-width="800px"
       transition="dialog-transition"
       :key="
         `ciEdit${String(
@@ -111,7 +111,7 @@ export default {
         state.modalCatalogitemEditCustomfields,
       modalCategoryEdit: state => state.modalCategoryEdit,
       modalImageFullPreview: state => state.modalImageFullPreview,
-      settings: state => state.settings
+      settings: state => state.appSettings
     }),
     view: {
       set(val) {

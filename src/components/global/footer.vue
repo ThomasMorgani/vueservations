@@ -9,6 +9,9 @@
       slider-color="secondary"
     >
       <!-- TODO: MOVE TO DATA OBJECT, V-for over -->
+      <v-tab key="resetDemo">
+        <DemoResetBtn></DemoResetBtn>
+      </v-tab>
       <v-tab v-for="item in items" :key="item.value">
         <btnWithTooltip v-bind="item"></btnWithTooltip>
       </v-tab>
@@ -18,28 +21,30 @@
 
 <script>
 import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
+import DemoResetBtn from '@/components/global/buttons/DemoResetBtn'
 
 export default {
   name: 'footerApp',
   components: {
-    btnWithTooltip
+    btnWithTooltip,
+    DemoResetBtn
   },
   computed: {
     items() {
       return [
-        {
-          btnClass: ['mx-2'],
-          btnProps: { icon: true },
-          iconProps: { icon: 'mdi-help-circle-outline' },
-          tooltipProps: { disabled: false, top: true },
-          tooltipText: 'Help Documentation',
-          value: 'help'
-        },
+        // {
+        //   btnClass: ['mx-2'],
+        //   btnProps: { icon: true },
+        //   iconProps: { icon: 'mdi-help-circle-outline' },
+        //   tooltipProps: { color: 'primary', disabled: false, top: true },
+        //   tooltipText: 'Help Documentation',
+        //   value: 'help'
+        // },
         {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-shape' },
-          tooltipProps: { disabled: false, top: true },
+          tooltipProps: { color: 'primary', disabled: false, top: true },
           tooltipText: 'Category Management',
           value: 'category'
         },
@@ -47,7 +52,7 @@ export default {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-card-text-outline' },
-          tooltipProps: { disabled: false, top: true },
+          tooltipProps: { color: 'primary', disabled: false, top: true },
           tooltipText: 'Custom Fields Management',
           value: 'customFields'
         },
@@ -55,7 +60,7 @@ export default {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-image-multiple' },
-          tooltipProps: { disabled: false, top: true },
+          tooltipProps: { color: 'primary', disabled: false, top: true },
           tooltipText: 'Image Management',
           value: 'images'
         },
@@ -63,7 +68,7 @@ export default {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-account' },
-          tooltipProps: { disabled: false, top: true },
+          tooltipProps: { color: 'primary', disabled: false, top: true },
           tooltipText: 'Patron Management',
           value: 'patron'
         },
@@ -71,7 +76,7 @@ export default {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-cogs' },
-          tooltipProps: { disabled: false, top: true },
+          tooltipProps: { color: 'primary', disabled: false, top: true },
           tooltipText: 'Settings',
           value: 'settings'
         }

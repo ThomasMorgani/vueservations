@@ -8,12 +8,15 @@
       <p class="font-weight-bold">
         {{ `${patron.last_name}, ${patron.first_name}` }}
       </p>
-      <template v-if="affectedEvents.items && affectedEvents.items.length > 0">
+      <v-sheet
+        v-if="affectedEvents.items && affectedEvents.items.length > 0"
+        width="100%"
+      >
         <p class="text-center mt-4">
           The following reservations for this patron will be removed.
         </p>
         <eventTableSimple v-bind="affectedEvents"></eventTableSimple>
-      </template>
+      </v-sheet>
       <p class="text-center" v-else>
         (There are no events associated with this patron)
       </p>

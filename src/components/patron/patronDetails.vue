@@ -16,7 +16,7 @@
           </v-row>
 
           <v-row dense class="display-flex align-center justify-start">
-            <v-tooltip top>
+            <v-tooltip color="primary" top>
               <template v-slot:activator="{ on }">
                 <div v-on="on">
                   <v-avatar
@@ -62,7 +62,7 @@
         </v-col>
         <v-col class="flex-grow-1 flex-shrink-0"></v-col>
         <v-col class="text-right flex-grow-0 flex-shrink-1">
-          <v-tooltip top>
+          <v-tooltip color="primary" top>
             <template v-slot:activator="{ on }">
               <v-btn
                 disabled
@@ -79,7 +79,7 @@
           </v-tooltip>
         </v-col>
         <v-col class="text-right flex-grow-0 flex-shrink-1">
-          <v-tooltip top>
+          <v-tooltip color="primary" top>
             <template v-slot:activator="{ on }">
               <v-btn text icon @click="showReservations" v-on="on">
                 <v-icon color="primary">mdi-calendar-clock</v-icon>

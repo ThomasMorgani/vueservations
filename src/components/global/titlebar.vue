@@ -36,7 +36,7 @@ export default {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-layers' },
-          tooltipProps: { disabled: false, bottom: true },
+          tooltipProps: { color: 'primary', disabled: false, bottom: true },
           tooltipText: 'Item Catalog',
           value: 'catalog'
         },
@@ -44,7 +44,7 @@ export default {
           btnClass: ['mx-2'],
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-calendar' },
-          tooltipProps: { disabled: false, bottom: true },
+          tooltipProps: { color: 'primary', disabled: false, bottom: true },
           tooltipText: 'Reservations',
           value: 'calendar'
         }

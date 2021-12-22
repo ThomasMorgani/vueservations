@@ -1,7 +1,10 @@
 <template>
   <v-card color="grey lighten-4" flat min-width="300">
     <v-toolbar dark :color="event.details.color" height="50">
-      <v-toolbar-title v-html="event.details.title" class="title"></v-toolbar-title>
+      <v-toolbar-title
+        v-html="event.details.title"
+        class="title"
+      ></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon color="white" @click="$emit('closeDetails')">
         <v-icon>mdi-close</v-icon>
@@ -9,7 +12,7 @@
     </v-toolbar>
     <v-card-text class="pt-0">
       <v-row dense justify="space-between" class="py-2">
-        <v-tooltip top>
+        <v-tooltip color="primary" top>
           <template v-slot:activator="{ on }">
             <v-btn
               icon
@@ -23,7 +26,7 @@
           <span>Event Details</span>
         </v-tooltip>
 
-        <v-tooltip top>
+        <v-tooltip color="primary" top>
           <template v-slot:activator="{ on }">
             <v-btn
               icon
@@ -36,7 +39,7 @@
           </template>
           <span>Catalog item details</span>
         </v-tooltip>
-        <v-tooltip top>
+        <v-tooltip color="primary" top>
           <template v-slot:activator="{ on }">
             <v-btn
               icon
@@ -50,17 +53,24 @@
           <span>Patron Details</span>
         </v-tooltip>
       </v-row>
-      <v-row dense v-for="(details, detail) in event.fields" :key="detail" align="center">
-        <v-col cols="4" class="subtitle-1 primary--text font-weight-bold text-no-wrap">{{ detail }}</v-col>
+      <v-row
+        dense
+        v-for="(details, detail) in event.fields"
+        :key="detail"
+        align="center"
+      >
+        <v-col
+          cols="4"
+          class="subtitle-1 primary--text font-weight-bold text-no-wrap"
+          >{{ detail }}</v-col
+        >
         <v-col class="text-no-wrap text-left font-weight-bold">
-          {{
-          details
-          }}
+          {{ details }}
         </v-col>
       </v-row>
     </v-card-text>
     <v-card-actions>
-      <!-- <v-tooltip top>
+      <!-- <v-tooltip color="primary" top>
         <template v-slot:activator="{ on }">
           <v-btn icon color="error" @click="$emit('deleteEvent', event.details.id)" v-on="on">
             <v-icon>mdi-delete-forever</v-icon>
@@ -69,9 +79,14 @@
         <span>Delete Event</span>
       </v-tooltip>-->
       <v-spacer></v-spacer>
-      <v-tooltip top>
+      <v-tooltip color="primary" top>
         <template v-slot:activator="{ on }">
-          <v-btn text color="warning" @click="$emit('editEvent', event.eventData)" v-on="on">
+          <v-btn
+            text
+            color="warning"
+            @click="$emit('editEvent', event.eventData)"
+            v-on="on"
+          >
             <v-icon left>mdi-square-edit-outline</v-icon>EDIT
           </v-btn>
         </template>

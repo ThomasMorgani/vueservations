@@ -10,10 +10,13 @@
     height="contentHeight"
   >
     <v-sheet height="40" class="d-flex align-center justify-space-between pa-2">
-      <span class="title font-weight-bold align-center primary--text"
-        >FILTERS</span
+      <v-sheet
+        color="transparent"
+        @click="$store.dispatch('toggleStateValue', 'sideDrawer')"
+        class="title font-weight-bold align-center primary--text"
+        >FILTERS</v-sheet
       >
-      <v-tooltip top>
+      <v-tooltip color="primary" left>
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn

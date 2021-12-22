@@ -8,7 +8,7 @@
       ></v-progress-circular>
       <template v-else>
         <v-col cols="3" v-if="showAdd">
-          <v-tooltip top>
+          <v-tooltip color="primary" top>
             <template v-slot:activator="{ on }">
               <v-card
                 hover

@@ -220,6 +220,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this)
     setTimeout(() => {
       this.isLoaded = true
     }, 1000)
