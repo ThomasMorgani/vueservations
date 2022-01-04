@@ -2,7 +2,7 @@
   <v-app-bar color="primary" app dark clipped-right>
     <v-row>
       <v-col align-self="center">
-        <v-toolbar-title>EIPL RESERVATIONS</v-toolbar-title>
+        <v-toolbar-title>{{ appTitle() }}</v-toolbar-title>
       </v-col>
       <v-spacer></v-spacer>
       <v-col cols="4">
@@ -19,9 +19,11 @@
           </v-tab>
         </v-tabs>
       </v-col>
-    </v-row> </v-app-bar
-></template>
+    </v-row>
+  </v-app-bar>
+</template>
 <script>
+import { mapState } from 'vuex'
 import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 
 export default {
@@ -30,6 +32,9 @@ export default {
     btnWithTooltip
   },
   computed: {
+    ...mapState({
+      appSettings: state => state.appSettings
+    }),
     items() {
       return [
         {
@@ -72,6 +77,12 @@ export default {
           value: v
         })
       }
+    }
+  },
+  methods: {
+    appTitle() {
+      const setting = this.appSettings.find(s => s.name === 'App_Name')
+      return setting.setting || 'VUESERVATIONS'
     }
   }
 }

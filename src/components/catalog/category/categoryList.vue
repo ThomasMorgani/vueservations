@@ -16,7 +16,11 @@
           <v-list-item-content class="py-2">
             <v-list-item-title class="headline text-capitalize primary--text">
               {{ category.name }}
-              <v-tooltip top v-if="category.id == defaultCategory.id">
+              <v-tooltip
+                v-if="category.id == defaultCategory.id"
+                color="primary"
+                top
+              >
                 <template v-slot:activator="{ on }">
                   <v-icon x-small v-on="on" class="mb-4">mdi-star</v-icon>
                 </template>

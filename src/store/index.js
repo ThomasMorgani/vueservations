@@ -273,70 +273,76 @@ export default new Vuex.Store({
     },
     categoryDelete({ commit, dispatch, state }, data) {
       return new Promise((resolve, reject) => {
-        dispatch('apiCall', {
-          endpoint: '/category_delete/' + data.id
+        const result = { status: 'success', message: 'Category removed' }
+        const idx = state.categories.findIndex(el => el.id === data.id)
+        if (idx < 0) {
+          result.status = 'error'
+          result.message = 'Category not found'
+          commit('setStateValue', {
+            key: 'snackbarData',
+            value: result
+          })
+          commit('setStateValue', { key: 'snackbarState', value: true })
+          return reject(result)
+        }
+
+        commit('categoryDelete', idx)
+        //Update any CI with deleted category with default category
+        const defaultCat = filters.getObjectFromArray(
+          state.appSettings,
+          'name',
+          'Default_Category',
+          'setting'
+        )
+        state.catalogItems.forEach((ci, i) => {
+          if (ci.category === data.id) {
+            commit('catalogitemSetValue', {
+              index: i,
+              key: 'category',
+              data: defaultCat
+            })
+          }
         })
-          .then(res => {
-            //console.log(res)
-            if (res.status === 'success') {
-              commit(
-                'categoryDelete',
-                state.categories.findIndex(el => el.id === data.id)
-              )
-              //Update any CI with deleted category with default category
-              const defaultCat = filters.getObjectFromArray(
-                state.appSettings,
-                'name',
-                'Default_Category',
-                'setting'
-              )
-              state.catalogItems.forEach((ci, i) => {
-                if (ci.category === data.id) {
-                  commit('catalogitemSetValue', {
-                    index: i,
-                    key: 'category',
-                    data: defaultCat
-                  })
-                }
-              })
-            }
-            commit('setStateValue', { key: 'snackbarData', value: res })
-            commit('setStateValue', { key: 'snackbarState', value: true })
-            resolve(res)
-          })
-          .catch(err => {
-            console.log(err)
-            reject(err)
-          })
+        commit('setStateValue', {
+          key: 'snackbarData',
+          value: result
+        })
+        commit('setStateValue', { key: 'snackbarState', value: true })
+        //SAVE CATEGORIES
+        console.log('SAVE TGO LOCAL STORAGE HERE')
+        dispatch('localStorageWrite', {
+          key: 'categories',
+          data: state.categories
+        })
+        return resolve(result)
       })
     },
     categoryEditSave({ commit, dispatch, state }, data) {
       // //console.log('data', data)
       return new Promise((resolve, reject) => {
-        dispatch('apiCall', {
-          endpoint: '/category_edit',
-          postData: data
+        const result = {
+          status: 'success',
+          message: `Category ${data?.isNew ? 'Added' : 'Updated'}`,
+          data: null
+        }
+        if (data.isNew) {
+          data.id = new Date().getTime()
+          commit('categoryAdd', data)
+        } else {
+          const catKey = state.categories.findIndex(el => el.id === data.id)
+          if (catKey < 0) {
+            result.status = 'error'
+            result.message = 'Category Not Found'
+            return reject(result)
+          }
+          commit('categoryUpdate', { key: catKey, value: data })
+        }
+        dispatch('localStorageWrite', {
+          key: 'categories',
+          data: state.categories
         })
-          .then(res => {
-            //console.log('res', res)
-            if (res.status === 'success') {
-              if (data.isNew) {
-                data.id = res.data
-                commit('categoryAdd', data)
-              } else {
-                const catKey = state.categories.findIndex(
-                  el => el.id === data.id
-                )
-                commit('categoryUpdate', { key: catKey, value: data })
-              }
-            }
-            //console.log(res)
-            resolve(res)
-          })
-          .catch(err => {
-            console.log(err)
-            reject(err)
-          })
+        result.data = data.id
+        resolve(result)
       })
     },
     customfieldsAddField({ commit }, data) {

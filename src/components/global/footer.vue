@@ -9,10 +9,15 @@
       slider-color="secondary"
     >
       <!-- TODO: MOVE TO DATA OBJECT, V-for over -->
-      <v-tab key="resetDemo">
+      <v-tab href="#demoReset" key="demoReset" value="demoReset">
         <DemoResetBtn></DemoResetBtn>
       </v-tab>
-      <v-tab v-for="item in items" :key="item.value">
+      <v-tab
+        v-for="item in items"
+        :href="'#' + item.value"
+        :key="item.value"
+        :value="item.value"
+      >
         <btnWithTooltip v-bind="item"></btnWithTooltip>
       </v-tab>
     </v-tabs>
@@ -84,14 +89,15 @@ export default {
     },
     viewMain: {
       get() {
-        return this.items.findIndex(i => i.value === this.$store.state.viewMain)
+        return this.$store.state.viewMain
       },
       set(v) {
+        if (v === 'demoReset') return
         this.$store.dispatch('setStateValue', {
           key: 'viewMain',
-          value: this.items[v].value
+          value: v
         })
-        localStorage.setItem('lastView', this.items[v].value)
+        localStorage.setItem('lastView', v)
       }
     },
     viewSub: {

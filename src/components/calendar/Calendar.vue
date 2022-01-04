@@ -1,9 +1,9 @@
 <template>
   <v-row fill-height align-start justify-start dense no-gutters>
     <v-col cols="12">
-      <v-toolbar height="40" flat color="background">
+      <v-toolbar height="40" flat color="background" class="primary--text">
         <!-- <v-btn outlined class="mr-4" @click="setToday">Today</v-btn> -->
-        <v-menu bottom right>
+        <!-- <v-menu bottom right>
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on" color="primary">
               <span class="title font-weight-bold">
@@ -26,14 +26,14 @@
               <v-list-item-title>4 days</v-list-item-title>
             </v-list-item>
           </v-list>
-        </v-menu>
+        </v-menu> -->
         <v-btn fab text small @click="prev">
           <v-icon small>mdi-chevron-left</v-icon>
         </v-btn>
+        <v-toolbar-title>{{ title }}</v-toolbar-title>
         <v-btn fab text small @click="next">
           <v-icon small>mdi-chevron-right</v-icon>
         </v-btn>
-        <v-toolbar-title>{{ title }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <!-- <v-btn outlined color="primary" class="mr-4" @click="eventAdd">
           <v-icon left>mdi-bookmark-plus-outline</v-icon>NEW
@@ -95,11 +95,11 @@
             :now="today"
             :type="type"
             @click:event="showEvent"
-            @click:more="viewDay"
-            @click:date="viewDay"
             @change="updateRange"
             @contextmenu:day="contextDay"
           >
+            <!-- @click:more="viewDay"
+            @click:date="viewDay" -->
             <template #event="{event}">
               <v-sheet
                 :color="eventColor(event)"
@@ -255,7 +255,7 @@ export default {
         if (Object.keys(filtersSet).length > 0) {
           if (filtersSet.filterCategory) {
             eventsFiltered = eventsFiltered.filter(
-              e => filtersSet.filterCategory.indexOf(e.ciData.category) > -1
+              e => filtersSet.filterCategory.indexOf(e.ciData?.category) > -1
             )
           }
 
@@ -270,16 +270,17 @@ export default {
             ]
             eventsFiltered = eventsFiltered.filter(e => {
               return (
-                filters.findStringMatchesInObj(
+                e?.ciData &&
+                (filters.findStringMatchesInObj(
                   e.ciData,
                   possibleKeysCi,
                   filtersSet.filterSearch
                 ) ||
-                filters.findStringMatchesInObj(
-                  e.patronData,
-                  possibleKeysPatron,
-                  filtersSet.filterSearch
-                )
+                  filters.findStringMatchesInObj(
+                    e.patronData,
+                    possibleKeysPatron,
+                    filtersSet.filterSearch
+                  ))
               )
             })
           }

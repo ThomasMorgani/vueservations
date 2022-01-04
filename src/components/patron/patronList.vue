@@ -37,7 +37,7 @@
       v-model="modalAction"
       scrollable
       persistent=""
-      max-width="700px"
+      max-width="1000px"
       transition="dialog-transition"
     >
       <component

@@ -11,7 +11,7 @@
       </v-tooltip>
     </v-card-title>
     <v-card-text>
-      <form>
+      <form @submit.prevent="saveCategory">
         <v-row class="justify-center align-center">
           <v-col cols="2">
             <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
@@ -77,7 +77,7 @@
       <v-btn
         text
         small
-        color="primary"
+        color="error"
         :disabled="!id"
         :loading="loading === 'delete'"
         @click="modalConfirmDelete = !modalConfirmDelete"
@@ -181,26 +181,21 @@ export default {
       this.modalConfirmDelete = false
       this.$store
         .dispatch('categoryDelete', {
+          // id: 1999999
           id: this.id
         })
         .then(res => {
-          //console.log(res)
-          if (res.status) {
-            if (res.status === 'success') {
-              this.cancel()
-            } else {
-              //display error message returned from backend
-              //console.log('res.status!= success', res)
-            }
-            this.loading = null
+          if (res?.status === 'success') {
+            this.cancel()
           }
         })
         .catch(err => {
           console.log(err)
-          alert('ERROR: ' + err)
         })
+      this.loading = null
     },
     saveCategory() {
+      if (this.saveDisabled) return
       this.loading = 'save'
       this.$store
         .dispatch('categoryEditSave', {
@@ -210,22 +205,15 @@ export default {
           isNew: this.id === null
         })
         .then(res => {
-          //console.log(res)
-          if (res.status) {
-            if (res.status === 'success') {
-              //alert success
-              this.id = res.data
-              this.cancel()
-            } else {
-              //display error message returned from backend
-              //console.log('res.status!= success', res)
-            }
-            this.loading = null
+          if (res?.status === 'success') {
+            this.id = res.data
+            this.cancel()
           }
+          this.loading = null
+          this.$store.dispatch('toggleSnackbar', res)
         })
         .catch(err => {
-          console.log(err)
-          alert('ERROR: ' + err)
+          console.log('ERROR: ' + err)
         })
     }
   },

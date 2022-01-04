@@ -6,7 +6,7 @@
     <v-card-text style="max-height: 600px;">
       <v-form ref="form">
         <v-row align="center" justify="space-around">
-          <v-col cols="5"
+          <v-col cols="12" md="5"
             ><v-text-field
               v-model="first_name"
               label="First Name"
@@ -17,7 +17,7 @@
               persistent-hint
             ></v-text-field
           ></v-col>
-          <v-col cols="5"
+          <v-col cols="12" md="5"
             ><v-text-field
               v-model="last_name"
               label="Last Name"
@@ -28,7 +28,7 @@
               persistent-hint
             ></v-text-field
           ></v-col>
-          <v-col cols="5"
+          <v-col cols="12" md="5"
             ><v-text-field
               v-model="email"
               label="Email"
@@ -36,7 +36,7 @@
               prepend-icon="mdi-email"
             ></v-text-field
           ></v-col>
-          <v-col cols="5"
+          <v-col cols="12" md="5"
             ><v-text-field
               v-model="phone"
               label="Telephone"
@@ -45,7 +45,7 @@
               mask="###-###-####"
             ></v-text-field
           ></v-col>
-          <v-col cols="5"
+          <v-col cols="12" md="5"
             ><v-text-field
               v-model="barcode"
               label="Barcode"
@@ -53,7 +53,7 @@
               prepend-icon="mdi-barcode"
             ></v-text-field
           ></v-col>
-          <v-col cols="5"
+          <v-col cols="12" md="5"
             ><v-textarea
               v-model="notes"
               label="Notes"

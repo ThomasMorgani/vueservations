@@ -16,7 +16,13 @@
       class="elTd"
       ref="table"
     ></el-table-column>
-    <el-table-column v-if="tableData.actions" :label="'ACTIONS'" align="right">
+    <el-table-column
+      v-if="tableData.actions"
+      :label="'ACTIONS'"
+      align="right"
+      fixed="right"
+      width="140"
+    >
       <template slot-scope="scope">
         <v-btn
           v-for="(action, key) in tableData.actions"

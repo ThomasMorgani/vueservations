@@ -1,15 +1,15 @@
 <template>
   <v-card class="d-flex flex-column py-1 px-4 justify-start" height="100%">
     <v-text-field
-      single-line
-      rounded
-      solo
+      v-model="searchField"
       clearable
+      color="primary"
       formatsend-inner-icon="mdi-magnify"
       placeholder="Search"
-      color="primary"
+      rounded
+      single-line
+      solo
       class="flex-grow-0 flex-shrink-1"
-      v-model="searchField"
     ></v-text-field>
     <v-select
       v-model="categorySelect"

@@ -18,7 +18,8 @@ export default {
     let field = customFields.find(field => field.id === id)
     return field
   },
-  findStringMatchesInObj(targetObj, keysArr, queryText) {
+  findStringMatchesInObj(targetObj = false, keysArr, queryText) {
+    if (targetObj?.constructor.name !== 'Object') return false
     let pass = false
     keysArr.forEach(key => {
       if (targetObj[key]) {
