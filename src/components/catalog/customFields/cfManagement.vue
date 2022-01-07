@@ -1,6 +1,8 @@
 <template>
   <v-card>
-    <v-card-title>NEW FIELD</v-card-title>
+    <v-card-title
+      ><ModalTitleText text="NEW FIELD"></ModalTitleText
+    ></v-card-title>
     <v-card-text>
       <v-row dense>
         <v-col cols="12">
@@ -8,6 +10,8 @@
             <v-col cols="10">
               <v-text-field
                 v-model="name"
+                autofocus
+                clearable
                 label="Name"
                 :messages="messagesName"
                 name="Name"
@@ -124,6 +128,7 @@ export default {
   }),
   computed: {
     ...mapState({
+      customFieldEditing: state => state.customFieldEditing,
       customFields: state => state.customFields
     }),
     isDisabled() {
@@ -147,16 +152,16 @@ export default {
 
       switch (nameMatch) {
         case '':
-          messages.push('Field name required')
+          messages.push('Field name required.')
           break
         case 'null':
-          messages.push('Field name required')
+          messages.push('Field name required.')
           break
         case 'new field':
-          messages.push('Select Unique Name')
+          messages.push('Select a unique name.')
           break
         case false:
-          messages.push('Name already exists')
+          messages.push('Name already exists.')
           break
         default:
           break
@@ -177,31 +182,39 @@ export default {
       this.loading = false
     },
     save() {
-      this.$store
-        .dispatch('apiCall', {
-          endpoint: '/customfield_new',
-          postData: {
-            name: this.name,
-            internal: this.internal,
-            type: this.type,
-            default_value: this.value
-          }
-        })
-        .then(resp => {
-          //console.log(resp)
-          if (resp.status === 'success') {
-            if (resp.data) {
-              this.$store.dispatch('customfieldsAddField', resp.data)
-              this.$store.dispatch('toggleModalCatalogCustomfield')
-              this.$emit('customFieldCreated', resp.data)
-              this.resetFields
-            }
-          } else {
-            this.alertText = resp.message
-            this.alertVisible = true
-          }
-        })
+      const resp = {
+        data: {
+          name: this.name,
+          internal: this.internal,
+          type: this.type,
+          default_value: this.value,
+          id: new Date().getTime()
+        },
+        message: 'New custom field created',
+        status: 'success'
+      }
+
+      if (resp.status === 'success') {
+        if (resp.data) {
+          this.$store.dispatch('customfieldsAddField', resp.data)
+          this.$store.dispatch('toggleModalCatalogCustomfield')
+          this.$store.dispatch('localStorageWrite', {
+            key: `customFields`,
+            data: this.customFields
+          })
+          this.$store.dispatch('toggleSnackbar', resp)
+          this.$emit('customFieldCreated', resp.data)
+          this.resetFields
+        }
+      } else {
+        //not used in demo
+        this.alertText = resp.message
+        this.alertVisible = true
+      }
     }
+  },
+  mounted() {
+    if (this.customFieldEditing?.name) this.name = this.customFieldEditing.name
   }
 }
 </script>

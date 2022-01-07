@@ -209,28 +209,31 @@ export default {
     },
     fieldDelete(field) {
       //dispatch api
-      this.$store
-        .dispatch('apiCall', {
-          endpoint: '/customfield/' + field.id
+      const fKey = this.customFields.findIndex(f => f.id == field.id)
+      if (fKey > -1) {
+        this.$store.dispatch('deleteStateValueByKey', {
+          stateItem: 'customFields',
+          key: fKey
         })
-        .then(resp => {
-          if (resp.status === 'success') {
-            const fKey = this.customFields.findIndex(f => f.id == field.id)
-            if (fKey > -1) {
-              this.$store.dispatch('deleteStateValueByKey', {
-                stateItem: 'customFields',
-                key: fKey
-              })
-            }
-            this.fieldDeleteFromCatalogItems(field)
-            this.$store.dispatch('setStateValue', {
-              key: 'patronEditing',
-              value: null
-            })
-            this.modalAction = false
-          }
-        })
-        .catch(err => console.log(err))
+      }
+      this.fieldDeleteFromCatalogItems(field)
+      this.$store.dispatch('toggleSnackbar', {
+        message: 'Custom field deleted.',
+        status: 'success'
+      })
+      this.$store.dispatch('localStorageWrite', {
+        key: 'customFields',
+        data: this.customFields
+      })
+      this.$store.dispatch('localStorageWrite', {
+        key: 'catalogItems',
+        data: this.catalogItems
+      })
+      this.$store.dispatch('setStateValue', {
+        key: 'patronEditing',
+        value: null
+      })
+      this.modalAction = false
     },
     fieldDeleteFromCatalogItems(field) {
       this.catalogItems.forEach((ci, ciIndex) => {
@@ -240,25 +243,6 @@ export default {
           )
           if (fieldIndex > -1) {
             this.$delete(this.catalogItems[ciIndex].custom_fields, fieldIndex)
-          }
-        }
-      })
-    },
-    fieldUpdateCatalogItems(field) {
-      //console.log(field)
-      this.catalogItems.forEach((ci, ciIndex) => {
-        if (ci.custom_fields?.length > 0) {
-          const fieldIndex = ci.custom_fields.findIndex(
-            f => f.field_id == field.id
-          )
-          //console.log(fieldIndex)
-          if (fieldIndex > -1) {
-            this.$set(this.catalogItems[ciIndex].custom_fields, fieldIndex, {
-              ...this.catalogItems[ciIndex].custom_fields[fieldIndex],
-              internal: field.internal,
-              type: field.type,
-              name: field.name
-            })
           }
         }
       })
@@ -296,6 +280,25 @@ export default {
       })
       this.modalComp = 'cfEdit'
       this.modalAction = true
+    },
+    fieldUpdateCatalogItems(field) {
+      //console.log(field)
+      this.catalogItems.forEach((ci, ciIndex) => {
+        if (ci.custom_fields?.length > 0) {
+          const fieldIndex = ci.custom_fields.findIndex(
+            f => f.field_id == field.id
+          )
+          //console.log(fieldIndex)
+          if (fieldIndex > -1) {
+            this.$set(this.catalogItems[ciIndex].custom_fields, fieldIndex, {
+              ...this.catalogItems[ciIndex].custom_fields[fieldIndex],
+              internal: field.internal,
+              type: field.type,
+              name: field.name
+            })
+          }
+        }
+      })
     }
   }
 }

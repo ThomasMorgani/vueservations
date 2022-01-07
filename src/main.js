@@ -4,6 +4,8 @@ import store from './store' //vuex
 import vuetify from './plugins/vuetify'
 import { Table, TableColumn } from 'element-ui'
 
+import ModalTitleText from '@/components/global/modalTitleText.vue'
+
 import { apiSettings } from './.env.local.js'
 
 // import firebase from 'firebase/app'
@@ -16,6 +18,7 @@ Vue.prototype.$apiSettings = apiSettings
 
 Vue.use(Table)
 Vue.use(TableColumn)
+Vue.component('ModalTitleText', ModalTitleText)
 
 Vue.config.productionTip = false
 new Vue({

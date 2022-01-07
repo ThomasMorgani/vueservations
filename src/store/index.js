@@ -230,25 +230,13 @@ export default new Vuex.Store({
     catalogitemAdd({ commit }, data) {
       commit('catalogitemAdd', data)
     },
-    catalogitemDelete({ commit, dispatch, state }, data) {
-      return new Promise((resolve, reject) => {
-        dispatch('apiCall', {
-          endpoint: '/catalogItem_delete/' + data.id
-        })
-          .then(res => {
-            //console.log(res)
-            if (res.status === 'success') {
-              commit(
-                'catalogitemDelete',
-                state.catalogItems.findIndex(el => el.id === data.id)
-              )
-            }
-            resolve(res)
-          })
-          .catch(err => {
-            console.log(err)
-            reject(err)
-          })
+    catalogitemDelete({ commit, state }, data) {
+      return new Promise(resolve => {
+        commit(
+          'catalogitemDelete',
+          state.catalogItems.findIndex(el => el.id === data.id)
+        )
+        return resolve(true)
       })
     },
     catalogitemSetValue({ commit, state }, data) {
@@ -439,7 +427,10 @@ export default new Vuex.Store({
     toggleStateValue({ commit, state }, data) {
       commit('setStateValue', { key: data, value: !state[data] })
     },
-    toggleModalCatalogCustomfield({ commit, state }) {
+    toggleModalCatalogCustomfield({ commit, state }, data = null) {
+      if (data !== null) {
+        commit('setStateValue', { key: 'customFieldEditing', value: data })
+      }
       commit('toggleModalCatalogCustomfield', !state.modalCatalogCustomfield)
     },
     toggleModalCatalogitemEdit({ commit, state }) {
@@ -472,9 +463,10 @@ export default new Vuex.Store({
     COMMIT_SNACKBAR_STATE(state, value) {
       state.snackbarState = value
     },
+
     //
     //
-    //  NEW ABOVE
+    //  NEW ABOVE, TODO: REFACTOR BELOW
     //
     //
     catalogitemAdd(state, data) {

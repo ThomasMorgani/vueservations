@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card height="100%">
     <v-card-title class="justify-center title primary--text">
       {{ id ? 'EDIT ITEM' : 'ADD ITEM' }}
     </v-card-title>
@@ -10,7 +10,7 @@
       </v-tabs>
 
       <v-tabs-items v-model="tab" class="modalBody pr-6">
-        <v-tab-item key="0">
+        <v-tab-item key="0" class="tabItem">
           <form>
             <v-row align="center" justify="center" dense>
               <v-col cols="12">
@@ -139,7 +139,7 @@
                       label="Reservation length (days)"
                       min="0"
                       :rules="[
-                        (val) =>
+                        val =>
                           isNaN(val) || val < 1
                             ? 'Number greater than 0 required'
                             : true
@@ -157,7 +157,7 @@
                       name="ReservationBuffer"
                       type="number"
                       :rules="[
-                        (val) =>
+                        val =>
                           isNaN(val) || val < 0
                             ? 'Number greater than 0 required'
                             : true
@@ -184,22 +184,24 @@
             </v-row>
           </form>
         </v-tab-item>
-        <v-tab-item key="1">
-          <v-row>
-            <v-col cols="12">
-              <v-card flat class="pa-2">
-                <v-card-text>
-                  <v-row justify="space-between" no-gutters>
-                    <v-col cols="12">
-                      <customFieldsList
-                        :items="customFieldsDisplayed"
-                      ></customFieldsList>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+        <v-tab-item key="1" class="tabItem pt-4">
+          <v-card height="100%" outlined>
+            <v-row>
+              <v-col cols="12">
+                <v-card flat height="100%" class="pa-2">
+                  <v-card-text>
+                    <v-row justify="space-between" no-gutters>
+                      <v-col cols="12">
+                        <customFieldsList
+                          :items="customFieldsDisplayed"
+                        ></customFieldsList>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-card>
         </v-tab-item>
       </v-tabs-items>
     </v-card-text>
@@ -209,12 +211,17 @@
           <div v-on="on">
             <v-btn
               text
-              large
               :color="tab === 0 ? 'error' : 'warning'"
               :disabled="tab === 0 && !id"
               :loading="loading === 'delete'"
               @click="tab === 0 ? deletePrompt() : editCustomFields()"
-              >{{ tab === 0 ? 'DELETE' : 'EDIT' }}</v-btn
+            >
+              <v-icon
+                :color="tab === 0 ? 'error' : 'warning'"
+                v-text="`mdi-${tab === 0 ? 'trash-can' : 'pencil'}`"
+              ></v-icon>
+
+              {{ tab === 0 ? 'DELETE' : 'EDIT' }}</v-btn
             >
           </div>
         </template>
@@ -532,17 +539,26 @@ export default {
       //console.log('delete')
       this.$store
         .dispatch('catalogitemDelete', { id: this.id })
-        .then(resp => {
-          //console.log(resp)
-          if (resp.status === 'success') {
-            this.$store.dispatch('setStateValue', {
-              key: 'events',
-              value: this.events.filter(e => e.item_id !== this.id)
-            })
-            this.modalConfirmDelete = !this.modalConfirmDelete
-            this.$store.dispatch('toggleModalCatalogitemEdit')
-            //TODO: SNACKBAR
-          }
+        .then(() => {
+          this.$store.dispatch('setStateValue', {
+            key: 'events',
+            value: this.events.filter(e => e.item_id !== this.id)
+          })
+          this.modalConfirmDelete = !this.modalConfirmDelete
+          this.$store.dispatch('localStorageWrite', {
+            key: 'catalogItems',
+            data: this.catalogItems
+          })
+          this.$store.dispatch('localStorageWrite', {
+            key: 'events',
+            data: this.events
+          })
+          this.$store.dispatch('toggleSnackbar', {
+            status: 'success',
+            message: 'Catalog item deleted.'
+          })
+          this.$store.dispatch('toggleModalCatalogitemEdit')
+          //TODO: SNACKBAR
         })
         .catch(err => {
           console.log('err: ' + err)
@@ -621,8 +637,6 @@ export default {
         //TODO: WE SHOULD BE ABLE TO WORK THIS INTO UPDATE FUNCTION ON SERVERSIDE
         ciData.customFields = this.catalogItemediting.customFields
         ciData.id = new Date().getTime()
-      }
-      if (isNew) {
         //ADD ITEM TO LIST
         this.$store.dispatch('catalogitemAdd', ciData)
         // this.$store.dispatch('catalogitemediting', ciData)
@@ -640,6 +654,15 @@ export default {
         })
         this.setItemeditingValues(itemData)
       }
+
+      this.$store.dispatch('localStorageWrite', {
+        key: `catalogItems`,
+        data: this.catalogItems
+      })
+      this.$store.dispatch('toggleSnackbar', {
+        status: 'success',
+        message: 'Catalog item Saved.'
+      })
 
       this.loading = null
     },
@@ -687,6 +710,10 @@ p {
   height: 65vh;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.tabItem {
+  height: 100%;
 }
 
 .bounce-top-enter-active {

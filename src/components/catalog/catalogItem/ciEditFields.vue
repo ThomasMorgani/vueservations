@@ -8,11 +8,15 @@
       :key="`cinewfEdit${String(fieldAddingNew ? fieldAddingNew : 'none')}`"
     >
       <catalogCustomfield
-        @customFieldCreated="updateField(fieldAddingNew, $event)"
+        @customFieldCreated="updateField(cfEditingIdx, $event)"
+        class="catalogCustomfield"
       ></catalogCustomfield>
     </v-dialog>
-    <v-card-title class="justify-center title primary--text outlined">{{
-      catalogItemediting.id ? `EDIT DETAILS` : 'ADD FIELDS'
+    <v-card-title class="justify-center title primary--text outlined">
+      <ModalTitleText
+        :text="catalogItemediting.id ? `EDIT DETAILS` : 'ADD FIELDS'"
+      ></ModalTitleText>
+      {{
     }}</v-card-title>
     <v-card-text class="modalBody">
       <template v-if="fieldsDisplayed.length < 1">
@@ -31,7 +35,10 @@
           <v-row dense align="center">
             <v-col cols="8" class="pt-0">
               <p class="title font-weight-bold primary--text mb-0">
-                {{ fields[field.objectKey].name || 'New Field' }}
+                {{
+                  (fields[field.objectKey] && fields[field.objectKey].name) ||
+                    'New Field'
+                }}
               </p>
             </v-col>
             <v-col cols="4" class="text-right pt-0">
@@ -66,7 +73,9 @@
                   class="subheading primary--text font-weight-bold d-flex shrink py-0"
                   >Value:</v-col
                 >
-                <v-col>{{ fields[field.objectKey].value }}</v-col>
+                <v-col>{{
+                  fields[field.objectKey] && fields[field.objectKey].value
+                }}</v-col>
               </v-row>
               <!-- <v-row align="center" dense>
                 <v-col
@@ -82,6 +91,7 @@
                 >
                 <v-col>
                   {{
+                    fields[field.objectKey] &&
                     fields[field.objectKey].internal === '1'
                       ? 'Internal'
                       : 'Public'
@@ -95,6 +105,7 @@
             <v-col cols="11">
               <v-autocomplete
                 v-model="fields[field.objectKey]"
+                :hide-no-data="modalCatalogCustomfield"
                 :items="
                   orderBy(
                     [...customFieldsAvailable, fields[field.objectKey]],
@@ -109,7 +120,33 @@
                 label="Name"
                 return-object
                 @change="updateField(field.objectKey, $event)"
-              ></v-autocomplete>
+                @search-input="
+                  fields[field.objectKey].name = $event.target.value
+                "
+                @
+              >
+                <template #no-data>
+                  <v-card>
+                    <v-card-text class="d-flex flex-column align-center">
+                      <p class="">
+                        No Fields found.
+                      </p>
+                      <v-btn
+                        color="primary"
+                        text
+                        @click="
+                          createNewCustomField(index, {
+                            ...fields[field.objectKey]
+                          })
+                        "
+                      >
+                        <v-icon color="primary" left>mdi-plus</v-icon> ADD
+                        FIELD</v-btn
+                      >
+                    </v-card-text>
+                  </v-card>
+                </template>
+              </v-autocomplete>
               <!-- <v-autocomplete
                 v-model="autocomplete[field.objectKey]"
                 :items="orderBy(customFieldsAvailable, 'name')"
@@ -128,7 +165,11 @@
                 text
                 icon
                 color="primary"
-                @click="createNewField(index)"
+                @click="
+                  createNewCustomField(index, {
+                    ...fields[field.objectKey]
+                  })
+                "
               >
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
@@ -195,14 +236,22 @@
     <v-card-actions>
       <v-tooltip color="primary" top>
         <template v-slot:activator="{ on }">
-          <v-btn text color="primary" v-on="on" @click="addField">ADD</v-btn>
+          <v-btn text color="success" large v-on="on" @click="addField">
+            <v-icon color="success" small>mdi-plus</v-icon>
+
+            ADD</v-btn
+          >
         </template>
         <span>Add new custom field</span>
       </v-tooltip>
       <v-tooltip color="primary" top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
-            <v-btn text :disabled="!isChanged" @click="restoreValues"
+            <v-btn
+              color="warning"
+              text
+              :disabled="!isChanged"
+              @click="restoreValues"
               >RESET</v-btn
             >
           </div>
@@ -211,7 +260,7 @@
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-btn text color="primary" @click="cancel">CANCEL</v-btn>
-      <v-tooltip top :disabled="!saveDisabled && !isChanged">
+      <v-tooltip color="primary" top :disabled="!saveDisabled && !isChanged">
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
@@ -260,6 +309,7 @@ export default {
         text: 'True'
       }
     ],
+    cfEditingIdx: null,
     fieldAddingNew: null,
     fields: {},
     fieldsediting: [],
@@ -298,6 +348,7 @@ export default {
   }),
   computed: {
     ...mapState({
+      catalogItems: state => state.catalogItems,
       catalogItemediting: state => state.catalogitemediting,
       catalogitemFieldsediting: state => state.catalogitemFieldsediting,
       customFields: state => state.customFields,
@@ -343,7 +394,7 @@ export default {
         Object.keys(this.fieldsOriginal).length
       //console.log(changed)
       Object.keys(this.fields).forEach(key => {
-        if (this.fieldsOriginal[key]) {
+        if (this.fieldsOriginal?.[key]) {
           if (
             this.fields[key].name !== this.fieldsOriginal[key].name ||
             this.fields[key].value !== this.fieldsOriginal[key].value
@@ -398,9 +449,9 @@ export default {
       this.editField(newKey)
       //console.log(this.fields)
     },
-    createNewField(index) {
-      this.fieldAddingNew = index
-      this.$store.dispatch('toggleModalCatalogCustomfield')
+    createNewCustomField(index, data) {
+      this.$store.dispatch('toggleModalCatalogCustomfield', { name: data.name })
+      this.cfEditingIdx = index
     },
     customFieldById(id) {
       return filters.customfieldById(id, this.customFields)
@@ -439,7 +490,14 @@ export default {
       })
       return fields
     },
-    updateField(fieldKey, fields) {
+    updateField(fieldKey, fields = null) {
+      console.log(fieldKey)
+      console.log(fields)
+      if (fieldKey && fields == null) {
+        this.$set(this.fields, fieldKey, { ...this.fieldTemplate })
+        return
+      }
+      //SWITCH?
       for (let key in fields) {
         if (key !== 'id' && key !== 'default_value') {
           //SET VALUE TO DEFAULT VALUE ?
@@ -462,10 +520,9 @@ export default {
     },
     restoreValues() {
       this.fields = { ...this.fieldsOriginal }
+      this.fieldsediting = []
     },
     saveFields() {
-      //console.log('saveFields')
-      // //console.log(this.fields)
       if (Object.keys(this.fields).length < 1) {
         //console.log('no fields. if fields !== fields_original:')
         //console.log('confirm removing all fields, set new endpoint?')
@@ -477,35 +534,31 @@ export default {
         })
         this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
         this.reset()
-      } else {
-        this.$store
-          .dispatch('apiCall', {
-            endpoint: '/catalogitem_fields_edit',
-            postData: {
-              catalogItem: this.catalogItemediting.id,
-              fields: this.formatFields()
-            }
-          })
-          .then(resp => {
-            //console.log(resp)
-            if (resp.status === 'success') {
-              //update editing item, actual item custom fields, close modal
-              // let custom_fields = []
-              // Object.key(this.f)
-              this.$store.dispatch('catalogitemeditingSetValue', {
-                key: 'customFields',
-                data: resp.data
-              })
-              this.$store.dispatch('catalogitemSetValue', {
-                id: this.catalogItemediting.id,
-                key: 'custom_fields',
-                data: resp.data
-              })
-              this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
-              this.reset()
-            }
-          })
+        return
       }
+      const resp = {
+        data: this.formatFields(),
+        message: 'Details saved.',
+        status: 'success'
+      }
+
+      this.$store.dispatch('catalogitemeditingSetValue', {
+        key: 'customFields',
+        data: resp.data
+      })
+      this.$store.dispatch('catalogitemSetValue', {
+        id: this.catalogItemediting.id,
+        key: 'custom_fields',
+        data: resp.data
+      })
+      this.$store.dispatch('toggleModalCatalogitemEditCustomfields')
+      this.reset()
+
+      this.$store.dispatch('localStorageWrite', {
+        key: `catalogItems`,
+        data: this.catalogItems
+      })
+      this.$store.dispatch('toggleSnackbar', resp)
     }
   },
   created() {
@@ -541,5 +594,8 @@ export default {
 .modalBody {
   height: 70vh;
   overflow-y: auto;
+}
+.catalogCustomfield {
+  z-index: 209;
 }
 </style>

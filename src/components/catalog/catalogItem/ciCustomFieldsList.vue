@@ -1,5 +1,5 @@
 <template>
-  <v-card flat width="100%">
+  <v-card flat height="100%" width="100%">
     <template v-if="!items || items.length < 1">
       <v-row class="flex-column" dense align="center" justify="center">
         <p class="disabled--text">No additional details.</p>

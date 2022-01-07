@@ -1,7 +1,8 @@
 <template>
   <v-card>
     <v-card-title class="justify-center  primary--text">
-      <h5 class="title">{{ id ? 'EDIT CATEGORY' : 'ADD CATEGORY' }}</h5>
+      <TitleText :text="id ? 'EDIT CATEGORY' : 'ADD CATEGORY'"></TitleText>
+
       <v-spacer></v-spacer>
       <v-tooltip top v-if="id == defaultCategory.id">
         <template v-slot:activator="{ on }">
@@ -101,8 +102,12 @@
 <script>
 import { mapState } from 'vuex'
 import filters from '@/modules/filters'
+import TitleText from '@/components/global/modalTitleText.vue'
 export default {
   name: 'categoryEdit',
+  components: {
+    TitleText
+  },
   data: () => ({
     color: 'primary',
     id: null,

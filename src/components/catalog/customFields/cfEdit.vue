@@ -1,8 +1,10 @@
 <template>
   <v-card>
-    <v-card-title>{{
-      this.id ? 'EDIT CUSTOM FIELD' : 'NEW FIELD'
-    }}</v-card-title>
+    <v-card-title>
+      <TitleText
+        :text="this.id ? 'EDIT CUSTOM FIELD' : 'NEW FIELD'"
+      ></TitleText>
+    </v-card-title>
     <v-card-text>
       <v-row dense>
         <v-col cols="12">
@@ -30,9 +32,9 @@
             <v-col cols="10">
               <v-select
                 v-model="internal"
+                color="primary"
                 :items="visibilityTypes"
                 label="Visibility"
-                full-width
               ></v-select>
             </v-col>
             <v-col cols="10">
@@ -87,8 +89,12 @@
 
 <script>
 import { mapState } from 'vuex'
+import TitleText from '@/components/global/modalTitleText.vue'
 export default {
   name: 'cfEdit',
+  components: {
+    TitleText
+  },
   data: () => ({
     alertText: null,
     alertVisible: false,
@@ -219,46 +225,48 @@ export default {
         type: this.type,
         default_value: this.default_value
       }
-      this.$store
-        .dispatch('apiCall', {
-          endpoint: '/customfield',
-          postData: fieldData
-        })
-        .then(resp => {
-          if (resp.status === 'success') {
-            if (this.id) {
-              //console.log('id, updating field')
-              const cfKey = this.customFields.findIndex(
-                f => f.id == fieldData.id
-              )
-              if (cfKey > -1) {
-                this.$store.dispatch('setStateValueByKey', {
-                  stateItem: 'customFields',
-                  key: cfKey,
-                  value: fieldData
-                })
-              }
-            } else {
-              //console.log('no id, inserting field')
-              fieldData.id = resp.data
-              this.$store.dispatch('setStateValue', {
-                isPush: true,
-                key: 'customFields',
-                value: fieldData
-              })
-            }
-            this.setValues(fieldData)
-            this.$emit('actionBtn', {
-              action: 'customFieldCreated',
-              item: fieldData
+      const isNew = this.id === null
+      const resp = {
+        data: isNew ? this.id : new Date().getTime(),
+        message: `Custom field ${isNew ? 'added' : 'updated'}.`,
+        status: 'success'
+      }
+
+      if (resp.status === 'success') {
+        if (!isNew) {
+          const cfKey = this.customFields.findIndex(f => f.id == fieldData.id)
+          if (cfKey > -1) {
+            this.$store.dispatch('setStateValueByKey', {
+              stateItem: 'customFields',
+              key: cfKey,
+              value: fieldData
             })
-            this.loading = false
-          } else {
-            this.alertText = resp.message
-            this.alertVisible = true
-            this.loading = false
           }
+        } else {
+          //console.log('no id, inserting field')
+          fieldData.id = resp.data
+          this.$store.dispatch('setStateValue', {
+            isPush: true,
+            key: 'customFields',
+            value: fieldData
+          })
+        }
+        this.setValues(fieldData)
+        this.$store.dispatch('localStorageWrite', {
+          key: 'customFields',
+          data: this.customFields
         })
+        this.$emit('actionBtn', {
+          action: 'customFieldCreated',
+          item: fieldData
+        })
+        this.loading = false
+      } else {
+        //not used in demo
+        this.alertText = resp.message
+        this.alertVisible = true
+        this.loading = false
+      }
     },
     setValues(values) {
       Object.keys(values).forEach(k => {
