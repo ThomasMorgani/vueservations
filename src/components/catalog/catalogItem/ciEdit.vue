@@ -558,7 +558,6 @@ export default {
             message: 'Catalog item deleted.'
           })
           this.$store.dispatch('toggleModalCatalogitemEdit')
-          //TODO: SNACKBAR
         })
         .catch(err => {
           console.log('err: ' + err)

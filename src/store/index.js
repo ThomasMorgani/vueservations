@@ -63,6 +63,7 @@ export default new Vuex.Store({
     filterSearch: '',
     filterStatus: [],
     filterVisibility: '',
+    images: [],
     imagePreviewData: {},
     modalCatalogCustomfield: false,
     modalImageFullPreview: false,
@@ -131,6 +132,13 @@ export default new Vuex.Store({
     viewSub: null
   },
   getters: {
+    appSettingsByName(state) {
+      const settings = {}
+      Object.values(state.appSettings).forEach(setting => {
+        settings[setting.name] = setting
+      })
+      return settings
+    },
     categoriesById(state) {
       let cats = {}
       if (Array.isArray(state.categories)) {

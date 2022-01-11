@@ -1,6 +1,6 @@
 <template>
   <v-card width="800">
-    <v-card-text class="pa-5" height="100%">
+    <v-card-text class="pa-5">
       <v-row dense align="center" justify="center">
         <v-col cols="2" align-self="center" class="d-flex justify-center">
           <v-img

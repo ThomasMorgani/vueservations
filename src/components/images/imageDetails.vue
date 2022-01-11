@@ -26,7 +26,7 @@
           <v-list dense>
             <v-list-item v-for="detail in imageDetails" :key="detail.text">
               <v-list-item-content>
-                <v-list-item-title class="subtitle-2"
+                <v-list-item-title class="subtitle-2 primary--text"
                   >{{ detail.text }}
                 </v-list-item-title>
                 <v-list-item-subtitle>{{ detail.value }}</v-list-item-subtitle>

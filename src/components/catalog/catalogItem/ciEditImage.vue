@@ -67,7 +67,7 @@ export default {
   components: {
     imageDetails,
     imageGallery,
-    imageUplaod: () => import('@/components/images/imageUpload')
+    imageUplaod: () => import('@/components/images/imageAdd')
   },
   props: {
     originalImageData: {

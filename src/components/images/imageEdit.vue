@@ -13,7 +13,7 @@
           small: true,
           left: true
         }"
-        :tooltipProps="{ disabled: false, top: true }"
+        :tooltipProps="{ color: 'primary', disabled: false, top: true }"
         :tooltipText="
           isDefaultImage ? 'Default image cant\'t be deleted' : 'Delete Image'
         "
@@ -31,7 +31,7 @@
           small: true,
           left: true
         }"
-        :tooltipProps="{ disabled: false, top: true }"
+        :tooltipProps="{ color: 'primary', disabled: false, top: true }"
         :tooltipText="'Edit Image Properties'"
         @click="imageEdit(imageData)"
       ></btnWithTooltip>
@@ -79,8 +79,8 @@
     <!-- <MODAL DELETE -->
     <v-dialog
       v-model="modalDelete"
-      width="unset"
       max-width="800px"
+      width="unset"
       transition="dialog-transition"
     >
       <imageDelete
@@ -166,45 +166,22 @@ export default {
     },
     onDeleteConfirm() {
       this.isLoadingDelete = true
-      this.$store
-        .dispatch('apiCall', {
-          endpoint: '/image_delete/' + this.imageData.id
-        })
-        .then(resp => {
-          if (resp.status === 'success') {
-            this.modalDelete = false
-            this.modalEdit = false
-            if (this.imageDeleteData.affectedItems.items.length > 0) {
-              this.updateCatalogItems()
-            }
-            this.$emit('imageDeleted', this.imageData)
-          } else {
-            this.isLoadingDelete = false
-          }
-        })
+      this.modalDelete = false
+      this.modalEdit = false
+      if (this.imageDeleteData.affectedItems.items.length > 0) {
+        this.updateCatalogItems()
+      }
+      this.isLoadingDelete = false
+      this.$emit('imageDeleted', this.imageData)
     },
 
     saveImageEdit() {
       if (this.imageRename) {
-        this.$store
-          .dispatch('apiPost', {
-            endpoint: '/image_rename',
-            postData: {
-              id: this.imageData.id,
-              display_name: this.imageRename
-            }
-          })
-          .then(resp => {
-            if (resp.status === 'success') {
-              // this.updateImageName()
-              this.$emit('imageEditSaved', {
-                ...this.imageData,
-                display_name: this.imageRename
-              })
-              this.modalEdit = false
-            }
-          })
-          .catch(err => console.log(err))
+        this.$emit('imageEditSaved', {
+          ...this.imageData,
+          display_name: this.imageRename
+        })
+        this.modalEdit = false
       }
     },
     updateCatalogItems() {
