@@ -65,6 +65,8 @@ export default {
   components: {
     btnWithTooltip,
     patronDelete: () => import('@/components/patron/patronDelete'),
+    patron: () => import('@/components/patron/patronDelete'),
+    patronDetails: () => import('@/components/patron/patronDetails'),
     patronEdit: () => import('@/components/patron/patronEdit'),
     patronHistory: () => import('@/components/patron/patronHistory'),
     tableAdvanced
@@ -94,7 +96,6 @@ export default {
         )
       }
       return list
-      // return this.tableData.items
     },
     tableData() {
       return {
@@ -119,7 +120,7 @@ export default {
           }
         ],
         items: this.patronsList,
-        actions: ['delete', 'edit', 'history'],
+        actions: ['edit', 'details'],
         height: this.$store.state.content.main.y - 200
       }
     }
@@ -157,6 +158,10 @@ export default {
       this.modalAction = true
     },
     modalClose() {
+      if (this.modalComp === 'patronDelete') {
+        this.modalComp = 'patronEdit'
+        return
+      }
       this.modalAction = false
     },
     // onAction({ action, rowIndex, item }) {
@@ -170,6 +175,9 @@ export default {
           break
         case 'deleteConfirm':
           this.patronDelete(this.modalCompData.patron.id)
+          break
+        case 'details':
+          this.patronDetails(item)
           break
         case 'edit':
           this.patronEdit(item)
@@ -192,32 +200,30 @@ export default {
       this.modalAction = true
     },
     patronDelete(patron) {
-      //dispatch api
-      this.$store
-        .dispatch('apiCall', {
-          endpoint: '/patron/' + patron
-        })
-        .then(resp => {
-          if (resp.status === 'success') {
-            //console.log(patron)
-            const pId = this.patrons.findIndex(p => p.id == patron)
-            //console.log(pId)
-            if (pId > -1) {
-              this.$store.dispatch('deleteStateValueByKey', {
-                stateItem: 'patrons',
-                key: pId
-              })
-              // const spl = this.patrons.splice(pId, 1)
-              // //console.log(spl)
-            }
-            this.$store.dispatch('setStateValue', {
-              key: 'events',
-              value: this.events.filter(e => e.patron_id != patron)
-            })
-            this.modalAction = false
-          }
-        })
-        .catch(err => console.log(err))
+      //remove patron, patron linked events
+      //setState
+      this.$store.dispatch('setStateValue', {
+        key: 'patrons',
+        value: this.patrons.filter(p => p.id != patron)
+      })
+      this.$store.dispatch('setStateValue', {
+        key: 'events',
+        value: this.events.filter(e => e.patron_id != patron)
+      })
+      this.$store.dispatch('localStorageWrite', {
+        key: 'patrons',
+        data: this.patrons
+      })
+      this.$store.dispatch('localStorageWrite', {
+        key: 'events',
+        data: this.events
+      })
+      this.$store.dispatch('toggleSnackbar', {
+        status: 'success',
+        message: 'Patron deleted.'
+      })
+      this.modalAction = false
+      return true
     },
     patronDeletePrompt(patron) {
       this.modalCompData = {
@@ -248,6 +254,13 @@ export default {
         }
       }
       this.modalComp = 'patronDelete'
+      this.modalAction = true
+    },
+    patronDetails(patron) {
+      this.modalCompData = {
+        patron: patron
+      }
+      this.modalComp = 'patronDetails'
       this.modalAction = true
     },
     patronEdit(patron) {

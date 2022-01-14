@@ -35,7 +35,7 @@
         )}`
       "
     >
-      <catalogItemEdit></catalogItemEdit>
+      <catalogItemEdit :isNew="true"></catalogItemEdit>
     </v-dialog>
     <!-- Edit Catalog Item Modal  -->
     <v-dialog

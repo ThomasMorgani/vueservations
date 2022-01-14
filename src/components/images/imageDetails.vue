@@ -17,7 +17,12 @@
     <v-card-text>
       <v-row align="center">
         <v-col cols="6">
-          <v-img contain :src="imageData.src"></v-img>
+          <v-img
+            contain
+            :src="imageData.src"
+            @click="showPreview"
+            class="hoverPointer"
+          ></v-img>
         </v-col>
         <v-col
           cols="6"
@@ -94,6 +99,17 @@ export default {
         s => s.name === 'Default_Image'
       )
       return setting?.setting && setting.setting === this.imageData.id
+    }
+  },
+  methods: {
+    showPreview() {
+      this.$store.dispatch('setStateValue', {
+        key: 'imagePreviewData',
+        value: {
+          src: this.imageData
+        }
+      })
+      this.$store.dispatch('toggleModalImageFullPreview')
     }
   }
 }

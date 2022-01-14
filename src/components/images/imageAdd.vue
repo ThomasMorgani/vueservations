@@ -124,6 +124,7 @@ export default {
         id: now.getTime(),
         image_hash: null,
         src: this.imageUrl,
+        srcType: this.imgSrcSelect,
         width: imageData.image.width || ''
       }
       return newImage
@@ -137,7 +138,7 @@ export default {
       })
       this.$store.dispatch('localStorageWrite', {
         key: 'images',
-        data: this.images
+        data: this.$store.state.images
       })
 
       this.$emit('imageAdded', image)

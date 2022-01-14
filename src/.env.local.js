@@ -8,10 +8,9 @@ export { apiSettings }
 // }
 
 const apiSettings = {
-  appUrl: 'https://eipl.org/reservations',
-  baseUrl: 'https://eipl.org/reservations/dev/api',
-  fqdn: 'https://eipl.org'
-  // baseUrl: 'https://eipl.org/reservations/api'
+  appUrl: '',
+  baseUrl: '',
+  fqdn: ''
 }
 
 // const firebaseSettings = {

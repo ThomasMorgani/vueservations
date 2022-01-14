@@ -4,8 +4,8 @@
       :imageData="imageFile ? imageFile : currentImageData"
     ></imageDetails>
     <v-expand-transition>
-      <v-card flat v-show="method !== null" class="expansionCard pa-5">
-        <v-card-text v-if="method === 'select'" class="pt-0">
+      <v-card flat v-show="showGallery" class="expansionCard pa-5">
+        <v-card-text v-if="showGallery" class="pt-0">
           <imageGallery
             :images="images"
             :showAdd="true"
@@ -18,11 +18,17 @@
       </v-card>
     </v-expand-transition>
     <v-card-actions>
-      <v-btn cols="6" color="primary" dark text @click="showGallery">
+      <v-btn
+        cols="6"
+        color="primary"
+        dark
+        text
+        @click="showGallery = !showGallery"
+      >
         <v-icon small left>{{
-          method !== 'select' ? 'mdi-image-multiple' : 'mdi-chevron-up'
+          !showGallery ? 'mdi-image-multiple' : 'mdi-chevron-up'
         }}</v-icon
-        >{{ method !== 'select' ? 'CHANGE IMAGE' : 'CLOSE' }}
+        >{{ !showGallery ? 'CHANGE IMAGE' : 'CLOSE' }}
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="close">CANCEL</v-btn>
@@ -80,18 +86,12 @@ export default {
     }
   },
   data: () => ({
-    defaultImageData: {
-      file_path: '/reservations/images/default/',
-      file_name: 'catalogitem.png',
-      file_type: 'PNG'
-    },
-    images: null,
     imageDisplayed: null,
     imageUrl: null,
     imageFile: null,
     isLoaded: false,
     loading: false,
-    method: null,
+    showGallery: false,
     modalNewImage: false,
     modalFullImagePreview: false,
     saveDisabled: false,
@@ -104,14 +104,24 @@ export default {
         ? this.selectedImageData
         : this.originalImageData
     },
+    defaultImage() {
+      return this.$store.getters.defaultImageData
+    },
     image() {
       if (this.imageFile) {
         return this.imageUrl
       } else {
-        return `${this.$apiSettings.fqdn}${this.currentImageData.file_path ||
-          this.defaultImageData.file_path}${this.currentImageData.file_name ||
-          this.defaultImageData.file_name}`
+        //TODO: utils/formats format image data. create src there, fallback to
+        //default image getter
+        return this.currentImageData.srcType === 'url'
+          ? this.currentImageData.src
+          : `${this.$apiSettings.fqdn}${this.currentImageData.file_path ||
+              this.defaultImage.file_path}${this.currentImageData.file_name ||
+              this.defaultImage.file_name}`
       }
+    },
+    images() {
+      return this.$store.state.images
     },
     imagePreviewProperties() {
       let loaded = this.isLoaded
@@ -162,22 +172,9 @@ export default {
     close() {
       this.$emit('closeImageModal')
     },
-    getImages() {
-      //console.log('get images')
-      this.$store
-        .dispatch('apiCall', { endpoint: '/images_get_all' })
-        .then(resp => {
-          this.images = resp
-          //console.log('images received')
-        })
-        .catch(err => {
-          console.log('err:', err)
-        })
-    },
     onImageAdded(image) {
       console.log('imageAdded')
       console.log(image)
-      this.images.push(image)
       this.selectedImageData = image
       this.modalNewImage = false
     },
@@ -185,26 +182,14 @@ export default {
       this.imageFile = null
       this.imageUrl = null
       this.loading = false
-      this.method = null
+      this.showGallery = null
     },
-    async showGallery() {
-      if (this.method !== 'select') {
-        if (!this.images) {
-          await this.getImages()
-        }
-        this.method = 'select'
-      } else {
-        this.method = null
-      }
-    },
+
     saveImage() {
       this.loading = 'save'
-      //console.log('saveimage')
-      //emit save image
       this.$emit('updateImage', { ...this.currentImageData, src: this.image })
       this.reset()
       this.close()
-      // this.$store.dispatch('toggle')
     },
     selectImage(image) {
       this.selectedImageData = image
@@ -220,10 +205,9 @@ export default {
     }
   },
   mounted() {
-    console.log(this)
-    setTimeout(() => {
-      this.isLoaded = true
-    }, 1000)
+    // setTimeout(() => {
+    //   this.isLoaded = true
+    // }, 1000)
   }
 }
 </script>

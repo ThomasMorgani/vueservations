@@ -46,7 +46,7 @@
                 small
                 icon
                 color="error"
-                :disabled="!isediting(field.objectKey)"
+                :disabled="!isEditing(field.objectKey)"
                 @click="deleteField(field.objectKey)"
                 class="mr-2"
               >
@@ -60,13 +60,13 @@
               >
                 <v-icon>
                   {{
-                    isediting(field.objectKey) ? 'mdi-pencil-off' : 'mdi-pencil'
+                    isEditing(field.objectKey) ? 'mdi-pencil-off' : 'mdi-pencil'
                   }}
                 </v-icon>
               </v-btn>
             </v-col>
           </v-row>
-          <v-row dense v-if="!isediting(field.objectKey)">
+          <v-row dense v-if="!isEditing(field.objectKey)">
             <v-col cols="12">
               <v-row align="center" dense>
                 <v-col
@@ -120,10 +120,7 @@
                 label="Name"
                 return-object
                 @change="updateField(field.objectKey, $event)"
-                @search-input="
-                  fields[field.objectKey].name = $event.target.value
-                "
-                @
+                @update:search-input="cfEditingSearchInput = $event"
               >
                 <template #no-data>
                   <v-card>
@@ -147,17 +144,6 @@
                   </v-card>
                 </template>
               </v-autocomplete>
-              <!-- <v-autocomplete
-                v-model="autocomplete[field.objectKey]"
-                :items="orderBy(customFieldsAvailable, 'name')"
-                item-text="name"
-                item-value="name"
-                name="Name"
-                return-object
-                autocomplete="off"
-                label="Name"
-                @change="updateField(field.objectKey, $event)"
-              ></v-autocomplete>-->
             </v-col>
             <v-col cols="1">
               <v-btn
@@ -309,6 +295,7 @@ export default {
         text: 'True'
       }
     ],
+    cfEditingSearchInput: null,
     cfEditingIdx: null,
     fieldAddingNew: null,
     fields: {},
@@ -449,8 +436,10 @@ export default {
       this.editField(newKey)
       //console.log(this.fields)
     },
-    createNewCustomField(index, data) {
-      this.$store.dispatch('toggleModalCatalogCustomfield', { name: data.name })
+    createNewCustomField(index) {
+      this.$store.dispatch('toggleModalCatalogCustomfield', {
+        name: this.cfEditingSearchInput
+      })
       this.cfEditingIdx = index
     },
     customFieldById(id) {
@@ -470,7 +459,7 @@ export default {
         ? this.fieldsediting.push(key)
         : this.fieldsediting.splice(fieldKey, 1)
     },
-    isediting(key) {
+    isEditing(key) {
       //determine if "edit mode" is enabled for field from field.objectKey
       key = String(key)
       const fieldKey = this.fieldsediting.indexOf(key)
@@ -491,8 +480,7 @@ export default {
       return fields
     },
     updateField(fieldKey, fields = null) {
-      console.log(fieldKey)
-      console.log(fields)
+      this.cfEditingSearchInput = null
       if (fieldKey && fields == null) {
         this.$set(this.fields, fieldKey, { ...this.fieldTemplate })
         return
@@ -523,10 +511,10 @@ export default {
       this.fieldsediting = []
     },
     saveFields() {
-      if (Object.keys(this.fields).length < 1) {
-        //console.log('no fields. if fields !== fields_original:')
-        //console.log('confirm removing all fields, set new endpoint?')
-      }
+      // if (Object.keys(this.fields).length < 1) {
+      //console.log('no fields. if fields !== fields_original:')
+      //console.log('confirm removing all fields, set new endpoint?')
+      // }
       if (!this.catalogItemediting.id) {
         this.$store.dispatch('catalogitemeditingSetValue', {
           key: 'customFields',

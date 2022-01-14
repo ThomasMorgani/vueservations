@@ -73,23 +73,34 @@
               <v-col cols="12">
                 <v-row dense>
                   <v-col cols="6">
-                    <v-card outlined class="d-flex flex-column pa-2">
-                      <p>Color</p>
-                      <div>
+                    <v-card height="5rem" outlined class="d-flex pa-2">
+                      <v-sheet
+                        color="transparent"
+                        class="d-flex flex-shrink-1 align-start justify-start"
+                      >
+                        <p class="primary--text">Color</p>
+                      </v-sheet>
+                      <v-sheet
+                        color="transparent"
+                        height="100%"
+                        width="100%"
+                        class="d-flex flex-grow-1 align-center justify-center"
+                      >
                         <v-menu
                           :close-on-content-click="false"
                           :nudge-width="200"
                           offset-x
                         >
                           <template v-slot:activator="{ on }">
-                            <v-avatar
-                              tile
+                            <v-sheet
                               v-on="on"
                               :color="color"
-                              class="hoverPointer"
+                              height="100%"
+                              width="50%"
+                              class="hoverPointer d-flex align-center justify-center br-1"
                             >
                               <v-icon color="white">mdi-palette</v-icon>
-                            </v-avatar>
+                            </v-sheet>
                           </template>
                           <v-color-picker
                             v-model="color"
@@ -97,22 +108,39 @@
                             hide-inputs
                           ></v-color-picker>
                         </v-menu>
-                      </div>
+                      </v-sheet>
                     </v-card>
                   </v-col>
                   <v-col cols="6">
-                    <v-card outlined class="d-flex flex-column pa-2">
-                      <p>Image</p>
-                      <!-- <p class="mb-0"></p> -->
-                      <v-img
-                        :src="imageDisplayed"
-                        height="48"
-                        width="48"
-                        hover
-                        @click="modalEditImage = !modalEditImage"
-                        class="hoverPointer"
-                      ></v-img>
-                      <!-- <v-file-input formatsend-inner-icon="mdi-image" formatsend-icon label="Select Image"></v-file-input> -->
+                    <v-card height="5rem" outlined class="d-flex pa-2">
+                      <v-sheet
+                        color="transparent"
+                        class="d-flex flex-shrink-1 align-start justify-start"
+                      >
+                        <p class="primary--text">Image</p>
+                      </v-sheet>
+                      <v-sheet
+                        color="transparent"
+                        height="100%"
+                        width="100%"
+                        class="d-flex flex-grow-1 align-center justify-center"
+                      >
+                        <v-sheet
+                          color="transparent"
+                          height="100%"
+                          width="50%"
+                          class="hoverPointer d-flex align-center justify-center br-1"
+                        >
+                          <v-img
+                            :src="imageDisplayed"
+                            height="100%"
+                            width="100%"
+                            hover
+                            @click="modalEditImage = !modalEditImage"
+                            class="hoverPointer"
+                          ></v-img>
+                        </v-sheet>
+                      </v-sheet>
                     </v-card>
                   </v-col>
                 </v-row>
@@ -122,9 +150,10 @@
                 <v-textarea
                   v-model="description"
                   auto-grow
+                  color="primary"
                   dense
                   hide-details=""
-                  label="Decription"
+                  label="Description"
                   outlined
                   rows="4"
                   class="mt-2"
@@ -221,7 +250,7 @@
                 v-text="`mdi-${tab === 0 ? 'trash-can' : 'pencil'}`"
               ></v-icon>
 
-              {{ tab === 0 ? 'DELETE' : 'EDIT' }}</v-btn
+              {{ tab === 0 ? 'DELETE' : 'EDIT FIELDS' }}</v-btn
             >
           </div>
         </template>
@@ -232,6 +261,7 @@
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
+              color="warning"
               text
               large
               :disabled="!id || !isChanged"
@@ -281,7 +311,7 @@
       max-width="650px"
       persistent
       transition="dialog-transition"
-      :key="id + 'imgModal'"
+      :key="modalEditImage + 'imgModal'"
     >
       <editImageModal
         :originalImageData="image_data"
@@ -341,7 +371,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import customFieldsList from '@/components/catalog/catalogItem/ciCustomFieldsList'
 import * as formats from '@/modules/formats.js'
 import Vue2Filters from 'vue2-filters'
@@ -405,10 +435,12 @@ export default {
       catalogItems: state => state.catalogItems,
       catalogItemediting: state => state.catalogitemediting,
       categories: state => state.categories,
+      images: state => state.images,
       statusData: state => state.statusData,
       events: state => state.events,
       patrons: state => state.patrons
     }),
+    ...mapGetters(['appSettingsByName', 'defaultCiImage']),
     abbreviationAvailable() {
       const abvMatches = this.catalogItems.find(
         el =>
@@ -427,15 +459,13 @@ export default {
       return this.catalogItemediting.customFields
     },
     imageDisplayed() {
-      let img =
-        'https://www.eipl.org/reservations/images/default/catalogitem.png'
-      const baseUrl = 'https://www.eipl.org'
-      // const path = 'https://www.eipl.org/reservations/images/uploads/'
-      if (this.image_data.file_name) {
-        // img = path + this.image_data.file_name
-        img = baseUrl + this.image_data.file_path + this.image_data.file_name
-      }
-      return img
+      //TODO: CREATE GLOBAL (utils/formats) FORMAT IMAGE FUNCTION TO PROPERLY SET SRC
+
+      return this.image_data.srcType === 'url'
+        ? this.image_data.src
+        : this.image_data.file_name
+        ? this.$apiSettings.baseUrl + this.image_data.src
+        : this.defaultCiImage
     },
     isChanged() {
       //TODO: FIND WHY AFTER SAVING isChanged does not reset to false
@@ -630,7 +660,7 @@ export default {
       ]
       const ciData = {}
       itemValues.forEach(val => (ciData[val] = this[val]))
-      ciData.image = this.image_data.id
+      ciData.image_data = this.image_data
       const isNew = !ciData.id
       if (isNew) {
         //TODO: WE SHOULD BE ABLE TO WORK THIS INTO UPDATE FUNCTION ON SERVERSIDE
@@ -663,6 +693,8 @@ export default {
         message: 'Catalog item Saved.'
       })
 
+      if (isNew) this.$emit('ciAdded')
+
       this.loading = null
     },
     setItemeditingValues(values) {
@@ -676,7 +708,7 @@ export default {
       return isNaN(val) || val < 1 ? 'Number greater than 0 required' : true
     },
     updateImage(imageData) {
-      //console.log(imageData)
+      console.log(imageData)
       this.$set(this, 'image_data', imageData)
     }
   },
@@ -692,6 +724,8 @@ export default {
       //console.log(this.$vuetify)
       const theme = this.$vuetify.theme.isDark ? 'dark' : 'light'
       this.color = this.$vuetify.theme.themes[theme].primary
+      this.image_data = { ...this.image_data, ...this.defaultCiImage }
+      //??
       this.reservation_buffer =
         this?.catalogItemediting?.reservation_buffer || null
       this.reservation_length =

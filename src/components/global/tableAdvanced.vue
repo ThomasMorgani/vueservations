@@ -21,7 +21,7 @@
       :label="'ACTIONS'"
       align="right"
       fixed="right"
-      width="140"
+      :width="tableData.actions.length * 50"
     >
       <template slot-scope="scope">
         <v-btn

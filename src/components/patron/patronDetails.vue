@@ -81,11 +81,31 @@
         <v-col class="text-right flex-grow-0 flex-shrink-1">
           <v-tooltip color="primary" top>
             <template v-slot:activator="{ on }">
-              <v-btn text icon @click="showReservations" v-on="on">
-                <v-icon color="primary">mdi-calendar-clock</v-icon>
+              <v-btn
+                :color="hasEvents ? 'primary' : 'disabled'"
+                icon
+                text
+                @click="showReservations"
+                v-on="on"
+              >
+                <v-badge
+                  color="primary"
+                  :content="patronEvents.length"
+                  overlap
+                  :value="hasEvents"
+                >
+                  <v-icon :color="hasEvents ? 'primary' : 'disabled'"
+                    >mdi-calendar-clock</v-icon
+                  >
+                </v-badge>
               </v-btn>
             </template>
-            <span>View Reservations</span>
+            <v-sheet color="transparent" class="secondary--text"
+              >Reservation history</v-sheet
+            >
+            <v-sheet color="transparent" class="text-caption secondary--text"
+              >({{ patronEvents.length }} reservations)</v-sheet
+            >
           </v-tooltip>
         </v-col>
       </v-row>
@@ -203,6 +223,12 @@ export default {
           value: this.patron.notes || '-'
         }
       ]
+    },
+    hasEvents() {
+      return this.patronEvents.length > 0
+    },
+    patronEvents() {
+      return this.events.filter(e => e.patron_id == this.patron.id) || []
     }
   },
   methods: {
@@ -235,6 +261,7 @@ export default {
       this.modal = true
     },
     showReservations() {
+      if (this.patronEvents.length < 1) return
       this.modalCompData = {
         patron: this.patron,
         tableData: {
@@ -253,10 +280,7 @@ export default {
             }
           ],
           items: this.orderBy(
-            formats.patronHistorySimple(
-              this.events.filter(e => e.patron_id == this.patron.id),
-              this.catalogItems
-            ),
+            formats.patronHistorySimple(this.patronEvents, this.catalogItems),
             'start_date'
           ),
           height: 400

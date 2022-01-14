@@ -67,9 +67,26 @@
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <v-btn text color="primary" disabled>RESET</v-btn>
+      <v-tooltip color="primary" top>
+        <template v-slot:activator="{ on }">
+          <div v-on="on">
+            <v-btn
+              color="error"
+              :loading="loading === 'delete'"
+              text
+              @click="deletePatron"
+            >
+              <v-icon color="error">mdi-trash-can</v-icon>
+
+              DELETE</v-btn
+            >
+          </div>
+        </template>
+        <span>Delete patron</span>
+      </v-tooltip>
+
       <v-spacer></v-spacer>
-      <v-btn text color="primary" @click="$emit('close')">CLOSE</v-btn>
+      <v-btn text color="primary" @click="$emit('close')">CANCEL</v-btn>
       <v-btn text color="primary" @click="savePatron" :disabled="saveDisabled"
         >SAVE</v-btn
       >
@@ -87,6 +104,7 @@ export default {
     email: null,
     first_name: null,
     last_name: null,
+    loading: null,
     notes: null,
     phone: null,
     originalData: {
@@ -137,64 +155,54 @@ export default {
     // }
   },
   methods: {
+    deletePatron() {
+      this.$emit('actionBtn', { action: 'delete', item: this.patronEditing })
+    },
     savePatron() {
-      //console.log('save patron method')
-      const patronData = {
-        id: this.id,
-        barcode: this.barcode ? this.barcode.trim() : this.barcode,
-        email: this.email ? this.email.trim() : this.email,
-        first_name: this.first_name ? this.first_name.trim() : this.first_name,
-        last_name: this.last_name ? this.last_name.trim() : this.last_name,
-        notes: this.notes ? this.notes.trim() : this.notes,
-        phone: this.phone ? this.phone.trim() : this.phone
+      const patronFields = [
+        'barcode',
+        'email',
+        'first_name',
+        'last_name',
+        'notes',
+        'phone'
+      ]
+      const patronData = patronFields.reduce((fields, curr) => {
+        return { ...fields, [curr]: this?.[curr]?.trim() || '' }
+      }, {})
+      const isNew = this.id == null
+      if (isNew) {
+        patronData.id = new Date().getTime()
+        this.$store.dispatch('setStateValue', {
+          isPush: true,
+          key: 'patrons',
+          value: patronData
+        })
+        this.$emit('patronAdded', patronData)
+      } else {
+        const pKey = this.patrons.findIndex(p => p.id == this.id)
+        if (pKey > -1) {
+          this.$store.dispatch('setStateValueByKey', {
+            stateItem: 'patrons',
+            key: pKey,
+            value: patronData
+          })
+        }
+        this.$emit('patronSaved', patronData)
       }
-      this.$store
-        .dispatch('apiCall', {
-          endpoint: '/patron',
-          postData: patronData
-        })
-        .then(res => {
-          if (res.status) {
-            if (res.status === 'success') {
-              //dispatch snackbar
-              this.$store.dispatch('setStateValue', {
-                key: 'snackbarData',
-                value: { status: res.status, message: res.message }
-              })
-              this.$store.dispatch('setStateValue', {
-                key: 'snackbarState',
-                value: true
-              })
-              if (this.id) {
-                const pKey = this.patrons.findIndex(p => p.id == this.id)
-                //console.log(pKey)
-                //console.log(patronData)
-                if (pKey > -1) {
-                  this.$store.dispatch('setStateValueByKey', {
-                    stateItem: 'patrons',
-                    key: pKey,
-                    value: patronData
-                  })
-                  this.setValues(patronData)
-                }
-              } else {
-                patronData.id = res.data
-                this.$store.dispatch('setStateValue', {
-                  isPush: true,
-                  key: 'patrons',
-                  value: patronData
-                })
-                this.setValues(patronData)
-                this.$emit('patronAdded', patronData)
-              }
-              //TODO: START HERE, SET PATRON AS SELECTED PATRON
-              //CLOSE MODAL
-            }
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      this.setValues(patronData)
+      this.$store.dispatch('setStateValue', {
+        key: 'patronEditing',
+        value: patronData
+      })
+      this.$store.dispatch('localStorageWrite', {
+        key: 'patrons',
+        data: this.patrons
+      })
+      this.$store.dispatch('toggleSnackbar', {
+        status: 'success',
+        message: `Patron ${isNew ? 'added' : 'saved'}.`
+      })
     },
     setValues(newValues) {
       Object.keys(newValues).forEach(v => {

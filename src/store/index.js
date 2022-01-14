@@ -146,6 +146,18 @@ export default new Vuex.Store({
       }
       return cats
     },
+    defaultCiImage(state, getters) {
+      const defaultImageId = getters.appSettingsByName.Default_Image.setting
+      const defaultImage = state.images.filter(
+        image => image.id == defaultImageId
+      )[0]
+      return defaultImage
+      //$apiSettings set in .env.js
+      const baseUrl = Vue?.prototype?.$apiSettings?.baseUrl || ''
+      return defaultImage?.srcType === 'url'
+        ? defaultImage.src
+        : baseUrl + defaultImage.src
+    },
     filtersApplied(state) {
       //TODO: will need different names array dependant on view
       let filters = []
@@ -436,6 +448,7 @@ export default new Vuex.Store({
       commit('setStateValue', { key: data, value: !state[data] })
     },
     toggleModalCatalogCustomfield({ commit, state }, data = null) {
+      console.log(data)
       if (data !== null) {
         commit('setStateValue', { key: 'customFieldEditing', value: data })
       }
