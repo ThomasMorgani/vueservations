@@ -31,20 +31,63 @@
       <v-card-text
         class="d-flex flex-column align-center justify-center primary--text"
       >
-        <p class="text-center mt-4">
-          Warning! Resetting the demo will remove ALL changes and revert the
-          application to it's initial state
-        </p>
-        <p>Are you sure you would like to continue?</p>
-        <v-sheet color="transparent" max-width="400" width="100%">
-          <v-btn
-            block
-            color="success"
-            class="font-weight-bold"
-            @click="$store.dispatch('resetDemo')"
-            >CONFIRM</v-btn
-          >
-        </v-sheet>
+        <v-radio-group v-model="radioResetType" class="fullWidth">
+          <v-radio label="Reset demo." value="reset"> </v-radio>
+          <v-card flat :disabled="radioResetType !== 'reset'" width="100%">
+            <v-card-text>
+              <p>
+                Reset all data to demo defaults.
+              </p>
+              <v-sheet color="transparent" max-width="400" width="100%">
+                <v-btn
+                  block
+                  color="warning"
+                  class="font-weight-bold"
+                  @click="$store.dispatch('resetDemo')"
+                >
+                  <v-icon color="secondary" left>mdi-reload</v-icon>
+
+                  RESET DEMO</v-btn
+                >
+              </v-sheet>
+            </v-card-text>
+          </v-card>
+          <v-divider class="my-4"></v-divider>
+
+          <v-radio label="Delete specific data." value="select"></v-radio>
+
+          <v-card flat :disabled="radioResetType !== 'select'" width="100%">
+            <v-card-text>
+              <p>Select data to delete.</p>
+              <v-sheet color="transparent" max-width="400" width="100%">
+                <v-checkbox
+                  v-for="dataSet in dataDefaults"
+                  :key="dataSet.dataName"
+                  dense
+                  hide-details=""
+                  :label="dataSet.labelText"
+                  v-model="toDelete"
+                  :value="dataSet.dataName"
+                  class="mt-0"
+                ></v-checkbox>
+              </v-sheet>
+              <v-btn
+                block
+                color="error"
+                :disabled="toDelete.length < 1"
+                @click="deleteData"
+                class="font-weight-bold mt-6"
+              >
+                <v-icon color="secondary" left>mdi-trash-can</v-icon>
+                {{
+                  toDelete.length > 0
+                    ? `DELETE ${toDelete.length} ITEMS`
+                    : 'select items'
+                }}
+              </v-btn>
+            </v-card-text>
+          </v-card>
+        </v-radio-group>
       </v-card-text>
 
       <v-card-actions>
@@ -71,9 +114,58 @@ export default {
     btnWithTooltip
   },
   data: () => ({
-    modalConfirmReset: false
-  })
+    dataDefaults: [
+      {
+        labelText: 'App settings (defaults)',
+        defaultValue: null, //WILL BE PULLED IN METHOD
+        dataName: 'appSettings'
+      },
+      {
+        labelText: 'Catalog items',
+        defaultValue: [],
+        dataName: 'catalogItems'
+      },
+      {
+        labelText: 'Categories',
+        defaultValue: [],
+        dataName: 'categories'
+      },
+      {
+        labelText: 'Custom Fields',
+        defaultValue: [],
+        dataName: 'customFields'
+      },
+      {
+        labelText: 'Events',
+        defaultValue: [],
+        dataName: 'events'
+      },
+      {
+        labelText: 'Images',
+        defaultValue: [],
+        dataName: 'images'
+      },
+      {
+        labelText: 'Patrons',
+        defaultValue: [],
+        dataName: 'patrons'
+      }
+    ],
+    modalConfirmReset: false,
+    radioResetType: 'reset',
+    toDelete: []
+  }),
+  methods: {
+    deleteData() {
+      //TODO: move to component
+      console.log(this.toDelete)
+    }
+  }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.fullWidth {
+  width: 100%;
+}
+</style>

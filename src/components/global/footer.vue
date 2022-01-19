@@ -92,7 +92,7 @@ export default {
         return this.$store.state.viewMain
       },
       set(v) {
-        if (v === 'demoReset') return
+        if (typeof v === 'undefined' || v === 'demoReset') return
         this.$store.dispatch('setStateValue', {
           key: 'viewMain',
           value: v
