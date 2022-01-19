@@ -2,7 +2,7 @@
   <v-expansion-panel ref="panel">
     <v-expansion-panel-header class="pa-2">
       <v-row dense align="center" justify="center">
-        <v-col cols="2" align-self="center" class="d-flex justify-center">
+        <v-col cols="2" align-self="center" class="d-flex justify-center pa-2">
           <v-img
             contain
             :src="thumbnailSrc"

@@ -60,6 +60,7 @@ export default {
         return this.items.findIndex(i => i.value === this.$store.state.viewMain)
       },
       set(v) {
+        if (typeof v === 'undefined') return
         this.$store.dispatch('setStateValue', {
           key: 'viewMain',
           value: this.items[v].value

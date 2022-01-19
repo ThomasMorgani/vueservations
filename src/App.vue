@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <titlebarApp></titlebarApp>
+    <sideDrawer></sideDrawer>
     <v-main ref="content" v-resize="setDimmensions">
       <template v-if="isLoaded">
-        <sideDrawer></sideDrawer>
         <transition name="component-fade" appear mode="out-in">
           <component
             :is="viewMain"

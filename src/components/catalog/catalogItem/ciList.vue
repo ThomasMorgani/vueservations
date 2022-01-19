@@ -3,17 +3,18 @@
     <v-card-text :style="styleCiList" class="px-0 text-center">
       <p v-if="itemList.length < 1">No results found</p>
       <v-expansion-panels v-else popout v-model="panel" class="py-1">
-        <transition-group name="flip-list" mode="out-in" style="width: 100%">
-          <catalogItem
-            v-for="item in orderBy(itemList, 'name')"
-            :key="item.id"
-            :item="item"
-            @reserve="onReserve"
-            @showItemReservations="onShowReservations"
-            @showItemNotes="onShowNotes"
-            @showImage="onShowImage"
-          ></catalogItem>
-        </transition-group>
+        <!-- <transition-group name="flip-list" mode="out-in" style="width: 100%"> -->
+        <catalogItem
+          v-for="item in orderBy(itemList, 'name')"
+          :key="item.id"
+          :item="item"
+          :id="`CI${item.id}`"
+          @reserve="onReserve"
+          @showItemReservations="onShowReservations"
+          @showItemNotes="onShowNotes"
+          @showImage="onShowImage"
+        ></catalogItem>
+        <!-- </transition-group> -->
       </v-expansion-panels>
     </v-card-text>
     <v-dialog

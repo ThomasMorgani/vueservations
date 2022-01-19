@@ -448,7 +448,6 @@ export default new Vuex.Store({
       commit('setStateValue', { key: data, value: !state[data] })
     },
     toggleModalCatalogCustomfield({ commit, state }, data = null) {
-      console.log(data)
       if (data !== null) {
         commit('setStateValue', { key: 'customFieldEditing', value: data })
       }
