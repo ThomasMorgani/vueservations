@@ -1,15 +1,18 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center  primary--text">
+    <v-card-title class="d-flex align-center justify-center  primary--text">
       <TitleText :text="id ? 'EDIT CATEGORY' : 'ADD CATEGORY'"></TitleText>
-
-      <v-spacer></v-spacer>
-      <v-tooltip top v-if="id == defaultCategory.id">
-        <template v-slot:activator="{ on }">
-          <v-icon v-on="on" class="align-end">mdi-star-box</v-icon>
-        </template>
-        <span>This is the default category.</span>
-      </v-tooltip>
+      <!-- <v-spacer></v-spacer> -->
+      <v-sheet color="transparent" class="defaultCategoryIcon">
+        <v-tooltip color="primary" top v-if="isDefaultCategory">
+          <template v-slot:activator="{ on }">
+            <v-icon v-on="on" color="primary" class="align-end"
+              >mdi-star-box</v-icon
+            >
+          </template>
+          <span>This is the default category.</span>
+        </v-tooltip>
+      </v-sheet>
     </v-card-title>
     <v-card-text>
       <form @submit.prevent="saveCategory">
@@ -17,7 +20,9 @@
           <v-col cols="2">
             <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
               <template v-slot:activator="{ on }">
-                <v-avatar v-on="on" :color="color"> </v-avatar>
+                <v-avatar v-on="on" :color="color" class="hoverPointer">
+                  <v-icon color="secondary">mdi-palette</v-icon>
+                </v-avatar>
               </template>
               <v-color-picker
                 v-model="color"
@@ -75,15 +80,42 @@
       </v-dialog>
     </v-card-text>
     <v-card-actions>
-      <v-btn
-        text
-        small
-        color="error"
-        :disabled="!id"
-        :loading="loading === 'delete'"
-        @click="modalConfirmDelete = !modalConfirmDelete"
-        >DELETE</v-btn
-      >
+      <v-tooltip color="primary" :value="!id" top>
+        <template v-slot:activator="{ on }">
+          <v-sheet v-on="on" color="transparent">
+            <v-btn
+              text
+              small
+              color="error"
+              :disabled="!id || isDefaultCategory"
+              :loading="loading === 'delete'"
+              @click="modalConfirmDelete = !modalConfirmDelete"
+              >DELETE</v-btn
+            >
+          </v-sheet>
+        </template>
+        <span>{{
+          isDefaultCategory
+            ? 'Cannot delete default category.'
+            : 'Delete category'
+        }}</span>
+      </v-tooltip>
+      <v-tooltip v-if="id && !isDefaultCategory" color="primary" top>
+        <template v-slot:activator="{ on }">
+          <v-sheet v-on="on" color="transparent">
+            <v-btn
+              text
+              small
+              color="primary"
+              :disabled="!id || isDefaultCategory"
+              :loading="loading === 'delete'"
+              @click="setDefaultCategory"
+              >MAKE DEFAULT</v-btn
+            >
+          </v-sheet>
+        </template>
+        <span>Make this the default category.</span>
+      </v-tooltip>
       <v-spacer></v-spacer>
       <v-btn text small color="primary" @click="cancel">CANCEL</v-btn>
       <v-btn
@@ -139,8 +171,18 @@ export default {
         'Default_Category',
         'setting'
       )
+      //pick up here...
+      //when deleting cats breaks normal editing,
+      console.log({ ...this.categories })
+      console.log({ ...this.settings })
+      console.log(defaultCat)
+      console.log({ ...defaultCat })
       const cat = filters.getObjectFromArray(this.categories, 'id', defaultCat)
+      console.log(cat)
       return cat
+    },
+    isDefaultCategory() {
+      return this.id == this.defaultCategory.id
     },
     nameAvailable() {
       const nameMatches = this.categories.find(
@@ -175,12 +217,7 @@ export default {
       this.$emit('close')
       // this.$store.dispatch('toggleModalEditCategory')
     },
-    resetForm() {
-      this.color = this.$vuetify.theme.primary || 'primary'
-      this.id = null
-      this.loading = false
-      this.name = null
-    },
+
     deleteCategory() {
       this.loading = 'delete'
       this.modalConfirmDelete = false
@@ -198,6 +235,13 @@ export default {
           console.log(err)
         })
       this.loading = null
+    },
+
+    resetForm() {
+      this.color = this.$vuetify.theme.primary || 'primary'
+      this.id = null
+      this.loading = false
+      this.name = null
     },
     saveCategory() {
       if (this.saveDisabled) return
@@ -220,6 +264,20 @@ export default {
         .catch(err => {
           console.log('ERROR: ' + err)
         })
+    },
+    setDefaultCategory() {
+      this.$store.dispatch('appSettingUpdate', {
+        settingName: 'Default_Category',
+        settingValue: this.id
+      })
+      this.$store.dispatch('localStorageWrite', {
+        key: `appSettings`,
+        data: [...this.settings]
+      })
+      this.$store.dispatch('toggleSnackbar', {
+        status: 'success',
+        message: `${this.categoryeditingData.name} set as default category.`
+      })
     }
   },
 
@@ -237,4 +295,10 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.defaultCategoryIcon {
+  position: absolute;
+  right: 1rem;
+  top: 0.75rem;
+}
+</style>

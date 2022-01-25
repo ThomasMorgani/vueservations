@@ -82,8 +82,8 @@ export default {
   },
   methods: {
     appTitle() {
-      const setting = this.appSettings.find(s => s.name === 'App_Name')
-      return setting.setting || 'VUESERVATIONS'
+      const setting = this?.appSettings?.find(s => s.name === 'App_Name')
+      return setting?.setting || 'VUESERVATIONS'
     }
   }
 }

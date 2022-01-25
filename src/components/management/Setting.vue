@@ -16,7 +16,7 @@
         btnText="Default"
         btnTextSide="right"
         :iconProps="{ icon: 'mdi-undo', left: true }"
-        :tooltipProps="{ disabled: false, top: true }"
+        :tooltipProps="{ color: 'primary', disabled: false, top: true }"
         :tooltipText="`Set to default value (${setting.default_value})`"
         @click="
           $emit('updateSetting', {
@@ -38,7 +38,7 @@
         btnText="Save"
         btnTextSide="right"
         :iconProps="{ icon: 'mdi-content-save', left: true }"
-        :tooltipProps="{ disabled: false, top: true }"
+        :tooltipProps="{ color: 'primary', disabled: false, top: true }"
         :tooltipText="'Save Setting'"
         @click="$emit('saveSetting', setting.name)"
       ></btnWithTooltip>

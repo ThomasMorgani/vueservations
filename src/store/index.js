@@ -234,6 +234,11 @@ export default new Vuex.Store({
         )
       })
     },
+    // deleteAppData({ dispatch, commit }, toDelete) {
+    //   //console.log()
+    //   //pickup here, all conditions of dataSets
+
+    // },
     initializeApp({ commit }) {
       return new Promise(resolve => {
         Object.keys(defaultData).forEach(key => {
@@ -245,6 +250,167 @@ export default new Vuex.Store({
           commit('setStateValue', { key: key, value: data })
         })
         return resolve()
+      })
+    },
+    appDataDelete({ dispatch, commit, getters, state }, datasetsDeleting) {
+      return new Promise((resolve) => {
+
+      console.log(getters, state)
+      console.log(datasetsDeleting)
+      //defaultData
+      //affected Data to be saved
+      // const currentSettings = { ...getters.appSettingsByName }
+      const defaultDataByName = {}
+      Object.values(defaultData.appSettings).forEach(setting => {
+        defaultDataByName[setting.name] = setting
+      })
+      // console.log(defaultDataByName)
+      // const toSave = [...datasetsDeleting]
+
+      //order datasetDeleting by effeciency
+      for (let dataSet of datasetsDeleting) {
+        //commit('setStateValue', { key: key, value: data })
+        commit('setStateValue', { key: dataSet, value: [] })
+        switch (dataSet) {
+          case 'catalogItems':
+            commit('setStateValue', { key: 'events', value: [] })
+            break
+          case 'categories': {
+            const defaultCategory = defaultData.categories.find(
+              c => c.id === defaultDataByName.Default_Category.setting
+            )
+            const catalogItems = state.catalogItems.map(ci => {
+              return { ...ci, category: defaultCategory.id }
+            })
+            dispatch('appSettingUpdate', {
+              settingName: 'Default_Category',
+              settingValue: defaultCategory
+            })
+            commit('setStateValue', {
+              key: 'categories',
+              value: [defaultCategory]
+            })
+            commit('setStateValue', {
+              key: 'catalogItems',
+              value: catalogItems
+            })
+            break
+          }
+          case 'customFields': {
+            const catalogItems = state.catalogItems.map(ci => {
+              return { ...ci, customFields: [] }
+            })
+            commit('setStateValue', {
+              key: 'catalogItems',
+              value: catalogItems
+            })
+            commit('setStateValue', {
+              key: 'customFields',
+              value: []
+            })
+
+            break
+          }
+          case 'events': {
+            commit('setStateValue', {
+              key: 'events',
+              value: []
+            })
+            const catalogItems = state.catalogItems.map(ci => {
+              return { ...ci, lastReservation: null }
+              
+            })
+            commit('setStateValue', {
+              key: 'catalogItems',
+              value: catalogItems
+            })
+            break
+          }
+          case 'images': {
+            const defaultImage = defaultData.images.find(
+              i => i.id === defaultDataByName.Default_Image.setting
+            )
+            const catalogItems = state.catalogItems.map(ci => {
+              return { ...ci, image: defaultImage.id, image_data: defaultImage }
+            })
+
+            commit('setStateValue', {
+              key: 'images',
+              value: [defaultImage]
+            })
+            commit('setStateValue', {
+              key: 'catalogItems',
+              value: catalogItems
+            })
+            break
+          }
+          case 'patrons': {
+
+            commit('setStateValue', {
+              key: 'patrons',
+              value: []
+            })
+
+            commit('setStateValue', {
+              key: 'events',
+              value: []
+            })
+            
+            const catalogItems = state.catalogItems.map(ci => {
+              return { ...ci, lastReservation: null }
+              
+            })
+            commit('setStateValue', {
+              key: 'catalogItems',
+              value: catalogItems
+            })
+
+
+            break
+          }
+          case 'xxxxx': {
+            break
+          }
+
+          default:
+            commit('setStateValue', { key: dataSet, value: [] })
+        }
+
+
+        for (let dataSet in defaultData) {
+          dispatch('localStorageWrite', {
+            key: dataSet,
+            data: state[dataSet] || null
+          })
+        }
+        resolve(true)
+
+        // console.log(dataSet)
+      }
+      // console.log(toSave)
+
+
+      //save affected dataSets
+      //foreach itemDeleting
+
+    })
+
+    },
+    appSettingUpdate(
+      { dispatch, getters, state },
+      { settingName, settingValue }
+    ) {
+      const setting = {
+        ...getters.appSettingsByName[settingName],
+        setting: settingValue
+      }
+      const settings = [
+        ...state.appSettings.filter(s => s.name !== settingName),
+        setting
+      ]
+      dispatch('setStateValue', {
+        key: 'appSettings',
+        value: [...settings]
       })
     },
     catalogitemAdd({ commit }, data) {
@@ -397,12 +563,12 @@ export default new Vuex.Store({
     },
     resetDemo() {
       localStorage.clear()
-      window.location.replace('/login')
+      window.location.replace('/')
     },
     settingsNew({ commit, dispatch }, data) {
       return new Promise((resolve, reject) => {
         dispatch('apiCall', {
-          endpoint: '/settings_new',
+          endpoint: '/rm',
           postData: data
         })
           .then(res => {
@@ -419,6 +585,7 @@ export default new Vuex.Store({
           })
       })
     },
+
     setStateValue({ commit }, data) {
       //console.log(data)
       if (data.isPush) {

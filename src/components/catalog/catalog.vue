@@ -19,7 +19,7 @@
       </v-toolbar>
     </v-col>
     <v-col cols="12" class="mt-4 pa-0 flex-grow-1">
-      <CatalogItemList :view="view"></CatalogItemList>
+      <CatalogItemList :view="view" @newItem="catalogItemAdd"></CatalogItemList>
     </v-col>
     <!-- Edit Catalog Item Modal  -->
     <v-dialog

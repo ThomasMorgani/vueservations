@@ -100,27 +100,26 @@ export default {
       setting.setting = setting.currentValue
       delete setting.currentValue
 
-      this.$store
-        .dispatch('apiPost', {
-          endpoint: '/settings_update',
-          postData: { data: setting }
-        })
-        .then(resp => {
-          if (resp?.status === 'success') {
-            this.currentSettings[settingName].setting = setting.setting
-            const settings = Object.values(this.currentSettings).map(
-              setting => {
-                delete setting.currentValue
-                return setting
-              }
-            )
-            this.$store.dispatch('setStateValue', {
-              key: 'settings',
-              value: [...settings]
-            })
-            this.currentSettings = { ...this.settingsByName }
-          }
-        })
+      // this.currentSettings[settingName].setting = setting.setting
+      const settings = Object.values(this.currentSettings).map(setting => {
+        setting.setting = setting.currentValue
+        delete setting.currentValue
+        return setting
+      })
+      this.$store.dispatch('setStateValue', {
+        key: 'appSettings',
+        value: [...settings]
+      })
+
+      this.$store.dispatch('localStorageWrite', {
+        key: `appSettings`,
+        data: [...this.settings]
+      })
+      this.$store.dispatch('toggleSnackbar', {
+        status: 'success',
+        message: 'Setting saved.'
+      })
+      this.currentSettings = { ...this.settingsByName }
     },
     settingUpdate({ setting, value }) {
       this.currentSettings = {

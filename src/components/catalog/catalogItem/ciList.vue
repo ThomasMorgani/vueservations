@@ -1,7 +1,11 @@
 <template>
   <v-card flat>
     <v-card-text :style="styleCiList" class="px-0 text-center">
-      <p v-if="itemList.length < 1">No results found</p>
+      <v-sheet v-if="!itemList || itemList.length < 1">
+        <p class="font-weight-bold primary--text">No catalog items found.</p>
+        <v-btn color="primary" outlined @click="$emit('newItem')"> <v-icon left>mdi-note-plus</v-icon>  NEW ITEM </v-btn>
+        
+      </v-sheet>
       <v-expansion-panels v-else popout v-model="panel" class="py-1">
         <!-- <transition-group name="flip-list" mode="out-in" style="width: 100%"> -->
         <catalogItem
