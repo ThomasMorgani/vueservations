@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip v-bind="tooltipProps">
+  <v-tooltip v-bind="{ color: 'primary', ...tooltipProps}">
     <template v-slot:activator="{ on }">
       <div v-on="on">
         <v-btn v-bind="btnProps" :class="btnClass" @click="$emit('click')">
@@ -17,6 +17,7 @@
 
 <script>
 export default {
+
   props: {
     btnClass: {
       type: Array

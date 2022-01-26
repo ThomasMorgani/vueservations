@@ -252,11 +252,11 @@ export default new Vuex.Store({
         return resolve()
       })
     },
-    appDataDelete({ dispatch, commit, getters, state }, datasetsDeleting) {
+    appDataDelete({ dispatch, commit,  state }, datasetsDeleting) {
       return new Promise((resolve) => {
-
-      console.log(getters, state)
-      console.log(datasetsDeleting)
+      // console.log({...getters})
+      // console.log({...state})
+      // console.log(datasetsDeleting)
       //defaultData
       //affected Data to be saved
       // const currentSettings = { ...getters.appSettingsByName }
@@ -266,7 +266,7 @@ export default new Vuex.Store({
       })
       // console.log(defaultDataByName)
       // const toSave = [...datasetsDeleting]
-
+      
       //order datasetDeleting by effeciency
       for (let dataSet of datasetsDeleting) {
         //commit('setStateValue', { key: key, value: data })
@@ -275,21 +275,23 @@ export default new Vuex.Store({
           case 'catalogItems':
             commit('setStateValue', { key: 'events', value: [] })
             break
-          case 'categories': {
-            const defaultCategory = defaultData.categories.find(
-              c => c.id === defaultDataByName.Default_Category.setting
-            )
-            const catalogItems = state.catalogItems.map(ci => {
-              return { ...ci, category: defaultCategory.id }
-            })
-            dispatch('appSettingUpdate', {
-              settingName: 'Default_Category',
-              settingValue: defaultCategory
-            })
-            commit('setStateValue', {
-              key: 'categories',
-              value: [defaultCategory]
-            })
+            case 'categories': {
+              // console.log({...defaultData})
+              const defaultCategory = defaultData.categories.find(
+                c => c.id == defaultDataByName.Default_Category.setting
+                )
+                defaultCategory.setting = defaultDataByName.Default_Category.setting
+                const catalogItems = state.catalogItems.map(ci => {
+                  return { ...ci, category: defaultCategory.id }
+                })
+                dispatch('appSettingUpdate', {
+                  settingName: 'Default_Category',
+                  settingValue: defaultCategory.setting
+                })
+                commit('setStateValue', {
+                  key: 'categories',
+                  value: [defaultCategory]
+                })
             commit('setStateValue', {
               key: 'catalogItems',
               value: catalogItems
@@ -383,18 +385,10 @@ export default new Vuex.Store({
             data: state[dataSet] || null
           })
         }
+
         resolve(true)
-
-        // console.log(dataSet)
       }
-      // console.log(toSave)
-
-
-      //save affected dataSets
-      //foreach itemDeleting
-
     })
-
     },
     appSettingUpdate(
       { dispatch, getters, state },

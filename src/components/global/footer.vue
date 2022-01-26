@@ -50,7 +50,7 @@ export default {
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-shape' },
           tooltipProps: { color: 'primary', disabled: false, top: true },
-          tooltipText: 'Category Management',
+          tooltipText: 'Categories',
           value: 'category'
         },
         {
@@ -58,7 +58,7 @@ export default {
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-card-text-outline' },
           tooltipProps: { color: 'primary', disabled: false, top: true },
-          tooltipText: 'Custom Fields Management',
+          tooltipText: 'Custom Fields',
           value: 'customFields'
         },
         {
@@ -66,7 +66,7 @@ export default {
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-image-multiple' },
           tooltipProps: { color: 'primary', disabled: false, top: true },
-          tooltipText: 'Image Management',
+          tooltipText: 'Images',
           value: 'images'
         },
         {
@@ -74,7 +74,7 @@ export default {
           btnProps: { icon: true },
           iconProps: { icon: 'mdi-account' },
           tooltipProps: { color: 'primary', disabled: false, top: true },
-          tooltipText: 'Patron Management',
+          tooltipText: 'Patrons',
           value: 'patron'
         },
         {

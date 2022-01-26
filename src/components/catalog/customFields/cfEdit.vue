@@ -1,8 +1,8 @@
 <template>
-  <v-card>
-    <v-card-title>
+  <v-card text>
+    <v-card-title class="justify-center">
       <TitleText
-        :text="this.id ? 'EDIT CUSTOM FIELD' : 'NEW FIELD'"
+        :text="id ? 'EDIT CUSTOM FIELD' : 'NEW FIELD'"
       ></TitleText>
     </v-card-title>
     <v-card-text>
@@ -227,7 +227,7 @@ export default {
       }
       const isNew = this.id === null
       const resp = {
-        data: isNew ? this.id : new Date().getTime(),
+        data: isNew ? new Date().getTime() :this.id,
         message: `Custom field ${isNew ? 'added' : 'updated'}.`,
         status: 'success'
       }

@@ -79,6 +79,15 @@
                   ></v-icon>
                 </v-list-item-action>
               </template>
+              <!-- NO ITEMS -->
+              <template v-slot:no-data>
+                <EmptyDataWBtn
+                  missingItemName="catalog items"
+                  btnIcon="mdi-note-plus"
+                  btnText="ADD ITEM"
+                  @btnClicked="$store.dispatch('toggleModalCatalogitemEdit')"
+                ></EmptyDataWBtn>
+              </template>
             </v-autocomplete>
           </v-col>
           <v-col cols="8" class="text-xs-right py-0 mt-0">
@@ -145,14 +154,12 @@
                 </v-list-item-content>
               </template>
               <template v-slot:no-data>
-                <v-sheet class="d-flex align-center justify-space-between pa-3">
-                  <span class="font-weight-medium">
-                    NO RESULTS FOUND.
-                    <v-icon color="primary" class="ml-3 mr-1 mb-1"
-                      >mdi-account-plus</v-icon
-                    >TO ADD A NEW PATRON
-                  </span>
-                </v-sheet>
+                <EmptyDataWBtn
+                  missingItemName="patrons"
+                  btnIcon="mdi-account-plus"
+                  btnText="ADD PATRON"
+                  @btnClicked="modalPatronEdit = true"
+                ></EmptyDataWBtn>
               </template>
             </v-autocomplete>
           </v-col>
@@ -403,10 +410,19 @@
         {{ id ? 'SAVE' : 'SUBMIT' }}
       </v-btn>
     </v-card-actions>
+    <!-- PICK UP HERE -->
+    <!-- HANDLE ADDING NEW CI ITEM FROM HERE -->
+    <v-dialog :value="modalCatalogitemEdit" transition="dialog-transition">
+      <ciEdit
+        :key="modalCiEdit + ''"
+        @close="modalCiEdit = false"
+        @patronAdded="onPatronAdd"
+      ></ciEdit>
+    </v-dialog>
     <v-dialog
       v-model="modalPatronEdit"
       transition="dialog-transition"
-      max-width="800"
+      max-width="999"
     >
       <patronEdit
         :key="modalPatronEdit"
@@ -474,6 +490,10 @@ export default {
   name: 'eventEdit',
   components: {
     // ciListMenu: () => import('@/components/global/listTiles')
+
+    ciEdit: () => import('@/components/catalog/catalogItem/ciEdit'),
+    EmptyDataWBtn: () => import('@/components/global/EmptyDataWBtn'),
+
     patronEdit: () => import('@/components/patron/patronEdit')
   },
   props: [],
@@ -485,6 +505,7 @@ export default {
       endDate: null,
       endTime: null,
       id: null,
+      modalCiEdit: false,
       modalConfirmDelete: false,
       modalEndDate: false,
       modalEndTime: false,
@@ -516,6 +537,7 @@ export default {
       events: state => state.events,
       eventediting: state => state.eventediting,
       filter: state => state.filter,
+      modalCatalogitemEdit: state => state.modalCatalogitemEdit,
       patrons: state => state.patrons,
       statusData: state => state.statusData
     }),

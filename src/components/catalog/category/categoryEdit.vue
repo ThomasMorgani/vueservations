@@ -171,17 +171,11 @@ export default {
         'Default_Category',
         'setting'
       )
-      //pick up here...
-      //when deleting cats breaks normal editing,
-      console.log({ ...this.categories })
-      console.log({ ...this.settings })
-      console.log(defaultCat)
-      console.log({ ...defaultCat })
       const cat = filters.getObjectFromArray(this.categories, 'id', defaultCat)
-      console.log(cat)
       return cat
     },
     isDefaultCategory() {
+      console.log(this.defaultCategory)
       return this.id == this.defaultCategory.id
     },
     nameAvailable() {

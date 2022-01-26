@@ -456,7 +456,7 @@ export default {
       return null
     },
     customFieldsDisplayed() {
-      return this.catalogItemediting.customFields
+      return this.catalogItemediting?.customFields
     },
     imageDisplayed() {
       //TODO: CREATE GLOBAL (utils/formats) FORMAT IMAGE FUNCTION TO PROPERLY SET SRC
@@ -693,7 +693,7 @@ export default {
         message: 'Catalog item Saved.'
       })
 
-      if (isNew) this.$emit('ciAdded')
+      if (isNew) this.$emit('ciAdded', ciData)
 
       this.loading = null
     },
@@ -717,7 +717,7 @@ export default {
   },
   mounted() {
     // //console.log('hh')
-    if (this.catalogItemediting.id) {
+    if (this.catalogItemediting?.id) {
       //console.log(this.catalogItemediting)
       this.setItemeditingValues(this.catalogItemediting)
     } else {

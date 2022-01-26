@@ -9,7 +9,7 @@
   >
     <v-col cols="12" class="pa-0 flex-shrink-1">
       <!-- <v-sheet height="10vh"> -->
-      <v-toolbar height="40" flat color="background" class="mb-4">
+      <v-toolbar height="56" flat color="background" class="mb-4">
         <v-toolbar-title
           class="title primary--text font-weight-bold d-flex align-center pb-0"
           >IMAGES</v-toolbar-title

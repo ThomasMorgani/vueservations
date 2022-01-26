@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card flat>
     <v-card-title
       class="title primary--text font-weight-bold d-flex align-center pb-0"
     >
@@ -27,8 +27,15 @@
       ></btnWithTooltip>
     </v-card-title>
 
-    <v-card-text class="pt-0">
+    <v-card-text class="pt-4 text-center">
+      <v-sheet v-if="!patronsList || patronsList.length < 1">
+        <p class="font-weight-bold primary--text">No patrons found.</p>
+        <v-btn color="primary" outlined @click="patronAdd()"
+          ><v-icon left>mdi-account-plus</v-icon> NEW PATRON</v-btn
+        >
+      </v-sheet>
       <tableAdvanced
+        v-else
         :tableData="tableData"
         @actionBtn="onAction"
       ></tableAdvanced>
@@ -65,7 +72,7 @@ export default {
   components: {
     btnWithTooltip,
     patronDelete: () => import('@/components/patron/patronDelete'),
-    patron: () => import('@/components/patron/patronDelete'),
+    // patron: () => import('@/components/patron/patronDelete'),
     patronDetails: () => import('@/components/patron/patronDetails'),
     patronEdit: () => import('@/components/patron/patronEdit'),
     patronHistory: () => import('@/components/patron/patronHistory'),

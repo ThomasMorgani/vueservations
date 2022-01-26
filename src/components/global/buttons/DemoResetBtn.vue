@@ -274,13 +274,13 @@ export default {
       catalogItems: {
         defaultValue: [],
         labelText: 'Catalog items',
-        warningText: 'All catalog items and associated events will be removed.'
+        warningText: 'All catalog items and  events will be removed.'
       },
       categories: {
         defaultValue: [],
         labelText: 'Categories',
         warningText:
-          'All categories will be removed. Applicable catalog items will have their image set to Vueservations default.'
+          'All categories will be removed. Catalog items will have their category set to Vueservations default.'
       },
       customFields: {
         defaultValue: [],

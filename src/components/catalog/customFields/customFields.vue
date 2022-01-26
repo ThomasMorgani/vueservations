@@ -1,7 +1,7 @@
 <template>
-  <v-card>
+  <v-card flat>
     <v-card-title
-      class="title primary--text font-weight-bold d-flex align-center pb-0"
+      class="title primary--text font-weight-bold d-flex align-center justify-center pb-0"
     >
       CUSTOM FIELDS
       <v-spacer></v-spacer>
@@ -27,8 +27,15 @@
       ></btnWithTooltip>
     </v-card-title>
 
-    <v-card-text class="pt-0">
+    <v-card-text class="text-center pt-0">
+            <v-sheet v-if="!customFields || customFields.length < 1" class="mt-8">
+        <p class="font-weight-bold primary--text">No fields found.</p>
+        <v-btn color="primary" outlined @click="fieldAdd"
+          ><v-icon left>mdi-card-plus-outline</v-icon> NEW FIELD</v-btn
+        >
+      </v-sheet>
       <tableAdvanced
+      v-else
         :tableData="tableData"
         @actionBtn="onAction"
       ></tableAdvanced>
