@@ -460,8 +460,7 @@ export default {
     },
     imageDisplayed() {
       //TODO: CREATE GLOBAL (utils/formats) FORMAT IMAGE FUNCTION TO PROPERLY SET SRC
-
-      return this.image_data.srcType === 'url'
+      return this.image_data?.srcType === 'url'
         ? this.image_data.src
         : this.image_data.file_name
         ? this.$apiSettings.baseUrl + this.image_data.src
@@ -619,9 +618,7 @@ export default {
       this.modalConfirmDelete = true
     },
     editCustomFields() {
-      const customFields = this.catalogItemediting.customFields
-        ? this.catalogItemediting.customFields
-        : []
+      const customFields = this.catalogItemediting?.customFields || []
       this.$store
         .dispatch('catalogitemeditingcustomfieldsSetediting', customFields)
         .then(() => {
@@ -664,7 +661,7 @@ export default {
       const isNew = !ciData.id
       if (isNew) {
         //TODO: WE SHOULD BE ABLE TO WORK THIS INTO UPDATE FUNCTION ON SERVERSIDE
-        ciData.customFields = this.catalogItemediting.customFields
+        ciData.customFields = this.catalogItemediting?.customFields || []
         ciData.id = new Date().getTime()
         //ADD ITEM TO LIST
         this.$store.dispatch('catalogitemAdd', ciData)
@@ -717,20 +714,11 @@ export default {
   },
   mounted() {
     // //console.log('hh')
-    if (this.catalogItemediting?.id) {
-      //console.log(this.catalogItemediting)
-      this.setItemeditingValues(this.catalogItemediting)
-    } else {
-      //console.log(this.$vuetify)
-      const theme = this.$vuetify.theme.isDark ? 'dark' : 'light'
-      this.color = this.$vuetify.theme.themes[theme].primary
-      this.image_data = { ...this.image_data, ...this.defaultCiImage }
-      //??
-      this.reservation_buffer =
-        this?.catalogItemediting?.reservation_buffer || null
-      this.reservation_length =
-        this?.catalogItemediting?.reservation_length || null
+    //
+    if (!this.catalogItemediting?.id) {
+      this.$store.dispatch('catalogItemNew', this.$vuetify)
     }
+    this.setItemeditingValues(this.catalogItemediting)
   }
 }
 </script>

@@ -9,7 +9,7 @@ export { apiSettings }
 
 const apiSettings = {
   appUrl: '',
-  baseUrl: '',
+  baseUrl: 'http://localhost:8080/',
   fqdn: ''
 }
 

@@ -13,20 +13,18 @@
             -->
             <v-autocomplete
               v-model="ciSelected"
-              clearable
-              :disabled="id !== null"
-              :error-messages="formErrors.ciSelected"
-              :filter="customFilter"
               :items="orderBy(itemList, 'name', 1)"
+              label="Catalog Item"
               item-text="name"
               item-value="name"
               item-disabled="isDisabled"
-              label="Catalog Item"
+              :disabled="id !== null"
               outlined
+              clearable
               prepend-icon="mdi-format-list-bulleted-type"
-              ref="autocompleteCi"
               return-object
-              @input="autocompleteBlur('autocompleteCi')"
+              :filter="customFilter"
+              :error-messages="formErrors.ciSelected"
             >
               <!-- selection -->
               <template v-slot:selection="data">
@@ -110,8 +108,6 @@
               :filter="customFilter"
               :error-messages="formErrors.patronSelected"
               class="mt-4"
-              ref="autocompletePatron"
-              @input="autocompleteBlur('autocompletePatron')"
             >
               <template v-slot:append>
                 <v-tooltip color="primary" top v-if="!patronSelected">
@@ -420,7 +416,7 @@
       <ciEdit
         :key="modalCiEdit + ''"
         @close="modalCiEdit = false"
-        @ciAdded="onCiAdd"
+        @patronAdded="onPatronAdd"
       ></ciEdit>
     </v-dialog>
     <v-dialog
@@ -649,7 +645,9 @@ export default {
         const category = filters.categoryById(ci.category, this.categories)
         ci.isDisabled = false
         ci.category = category && category.name ? category.name : 'unk'
-        ci.image = ci.image_data.src || this.defaultCiImage
+        ci.image =
+          ci.image_data.src ||
+          'https://www.eipl.org/reservations/images/uploads/458d8cab268259a7e676eadc42ec2c6d.gif'
         if (ci.status !== 'enabled') {
           ci.isDisabled = true
         } else if (this.startDate && this.endDate) {
@@ -714,10 +712,6 @@ export default {
     }
   },
   methods: {
-    autocompleteBlur(ref) {
-      // workaround for bug https://github.com/vuetifyjs/vuetify/issues/11066
-      this.$refs?.[ref]?.blur()
-    },
     allowedStart(val) {
       let events = []
       const startDate = val || '1980-01-01'
@@ -919,10 +913,6 @@ export default {
         // this.startTime = '00:00'
         // this.endTime = '00:00'
       }
-    },
-    onCiAdd(e) {
-      this.ciSelected = e
-      this.$store.dispatch('toggleModalCatalogitemEdit')
     },
     onPatronAdd(e) {
       this.patronSelected = e

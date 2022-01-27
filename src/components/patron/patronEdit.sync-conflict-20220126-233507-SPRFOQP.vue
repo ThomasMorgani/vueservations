@@ -3,13 +3,10 @@
     <v-card-title class="headline primary--text justify-center"
       >EDIT PATRON</v-card-title
     >
-    <v-card-text
-      style="max-height: 600px;"
-      :class="{ 'pa-8': $vuetify.breakpoint.smAndUp }"
-    >
+    <v-card-text style="max-height: 600px;" :class="{'pa-8': $vuetify.breakpoint.smAndUp}">
       <v-form ref="form">
         <v-row align="center" justify="space-around">
-          <v-col cols="12" sm="10" md="5" class="text-center pa-1"
+          <v-col cols="12" sm="10" md="5" class="text-center"
             ><v-text-field
               v-model="first_name"
               label="First Name"
@@ -20,7 +17,7 @@
               persistent-hint
             ></v-text-field
           ></v-col>
-          <v-col cols="12" sm="10" md="5" class="text-center pa-1"
+          <v-col cols="12" sm="10" md="5" class="text-center"
             ><v-text-field
               v-model="last_name"
               label="Last Name"
@@ -31,7 +28,7 @@
               persistent-hint
             ></v-text-field
           ></v-col>
-          <v-col cols="12" sm="10" md="5" class="text-center pa-1"
+          <v-col cols="12" sm="10" md="5" class="text-center"
             ><v-text-field
               v-model="email"
               label="Email"
@@ -39,7 +36,7 @@
               prepend-icon="mdi-email"
             ></v-text-field
           ></v-col>
-          <v-col cols="12" sm="10" md="5" class="text-center pa-1"
+          <v-col cols="12" sm="10" md="5" class="text-center"
             ><v-text-field
               v-model="phone"
               label="Telephone"
@@ -48,7 +45,7 @@
               mask="###-###-####"
             ></v-text-field
           ></v-col>
-          <v-col cols="12" sm="10" md="5" class="text-center pa-1"
+          <v-col cols="12" sm="10" md="5" class="text-center"
             ><v-text-field
               v-model="barcode"
               label="Barcode"
@@ -56,7 +53,7 @@
               prepend-icon="mdi-barcode"
             ></v-text-field
           ></v-col>
-          <v-col cols="12" sm="10" md="5" class="text-center pa-1"
+          <v-col cols="12" sm="10" md="5" class="text-center"
             ><v-textarea
               v-model="notes"
               label="Notes"

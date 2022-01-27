@@ -29,20 +29,19 @@ export default new Vuex.Store({
       categoryName: null,
       customFields: [],
       id: null,
-      image_data: {
-        id: '2',
-        file_name: '458d8cab268259a7e676eadc42ec2c6d.gif',
-        file_name_orig: 'eil2.gif',
-        file_ext: '.gif',
-        file_type: 'image/gif',
-        file_size: '94.93',
-        file_path: '/reservations/images/uploads/',
-        height: '768',
-        width: '844',
-        date_added: '2020-01-14 12:03:35',
-        src:
-          'https://www.eipl.org/reservations/images/uploads/458d8cab268259a7e676eadc42ec2c6d.gif'
-      },
+      // image_data: {
+      //   id: '2',
+      //   file_name: '458d8cab268259a7e676eadc42ec2c6d.gif',
+      //   file_name_orig: 'eil2.gif',
+      //   file_ext: '.gif',
+      //   file_type: 'image/gif',
+      //   file_size: '94.93',
+      //   file_path: '/reservations/images/uploads/',
+      //   height: '768',
+      //   width: '844',
+      //   date_added: '2020-01-14 12:03:35',
+      //   src:''
+      // },
       description: null,
       name: null,
       reservation_buffer: null,
@@ -419,6 +418,39 @@ export default new Vuex.Store({
         return resolve(true)
       })
     },
+    catalogItemNew({getters, state}, $vuetify) {
+      const newItem = { ...state.defaultCatalogItem }
+      const {
+        Default_reservation_length,
+        Default_reservation_buffer
+      } = state.appSettings.reduce((acc, setting) => {
+        if (
+          setting.name === 'Default_reservation_buffer' ||
+          setting.name === 'Default_reservation_length'
+        ) {
+          acc[setting.name] = setting
+        }
+        return acc
+      }, {})
+      newItem.reservation_buffer = Default_reservation_buffer.setting
+      newItem.reservation_length = Default_reservation_length.setting
+      const theme = $vuetify.theme.isDark ? 'dark' : 'light'
+      newItem.color = $vuetify.theme.themes[theme].primary
+      newItem.image_data = { ...getters.defaultCiImage }
+      newItem.category = getters?.appSettingsByName?.Default_Category.setting || null
+      newItem.reservation_buffer =
+      getters?.appSettingsByName?.Default_reservation_buffer.setting || null
+      newItem.reservation_length =
+      getters?.appSettingsByName?.Default_reservation_length.setting || null
+      newItem.status = 'enabled'
+
+     this.dispatch('setStateValue', {
+       key: 'catalogItemediting',
+       value: {...newItem}
+     })
+      
+    },
+    //PICK UP HERE, NOT POPULATING NEW CI ITEM FROM EVENT DIALOG
     catalogitemSetValue({ commit, state }, data) {
       //data : {id: id of cat item, item: key of value updating, data: value of item}
       const ciIndex = state.catalogItems.findIndex(el => el.id === data.id)
@@ -650,8 +682,8 @@ export default new Vuex.Store({
     //  NEW ABOVE, TODO: REFACTOR BELOW
     //
     //
-    catalogitemAdd(state, data) {
-      state.catalogItems.push(data)
+    catalogitemAdd(state, newCi) {
+      state.catalogItems = [...state.catalogItems, newCi]
     },
     catalogitemDelete(state, data) {
       Vue.delete(state.catalogItems, data)

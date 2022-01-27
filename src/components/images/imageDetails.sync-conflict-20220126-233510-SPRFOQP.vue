@@ -1,5 +1,5 @@
 <template>
-  <v-card flat>
+  <v-card>
     <v-card-title
       class="font-weight-bold primary--text headline justify-space-between mb-0 pb-0"
     >
