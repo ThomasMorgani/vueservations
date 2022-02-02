@@ -153,11 +153,11 @@ export default {
     ...mapState({
       catalogItems: state => state.catalogItems,
       categories: state => state.categories,
-      categoryediting: state => state.categoryediting,
+      categoryEditing: state => state.categoryEditing,
       settings: state => state.appSettings
     }),
-    categoryeditingData() {
-      return filters.categoryById(this.categoryediting, this.categories)
+    categoryEditingData() {
+      return filters.categoryById(this.categoryEditing, this.categories)
     },
     dataChanged() {
       return (
@@ -175,7 +175,6 @@ export default {
       return cat
     },
     isDefaultCategory() {
-      console.log(this.defaultCategory)
       return this.id == this.defaultCategory.id
     },
     nameAvailable() {
@@ -185,14 +184,11 @@ export default {
       if (!this.name) {
         return 'Name Required'
       }
-      //console.log(nameMatches)
-      //console.log(this.categoryeditingData)
-      //console.log(this.name)
       if (nameMatches !== undefined) {
         if (
           !this.id ||
-          (this.categoryeditingData &&
-            this.name !== this.categoryeditingData.name)
+          (this.categoryEditingData &&
+            this.name !== this.categoryEditingData.name)
         ) {
           return 'Category name already exists.'
         }
@@ -206,10 +202,8 @@ export default {
   },
   methods: {
     cancel() {
-      // this.resetForm();
       this.loading = null
       this.$emit('close')
-      // this.$store.dispatch('toggleModalEditCategory')
     },
 
     deleteCategory() {
@@ -217,7 +211,6 @@ export default {
       this.modalConfirmDelete = false
       this.$store
         .dispatch('categoryDelete', {
-          // id: 1999999
           id: this.id
         })
         .then(res => {
@@ -226,7 +219,7 @@ export default {
           }
         })
         .catch(err => {
-          console.log(err)
+          console.error(err)
         })
       this.loading = null
     },
@@ -256,7 +249,7 @@ export default {
           this.$store.dispatch('toggleSnackbar', res)
         })
         .catch(err => {
-          console.log('ERROR: ' + err)
+          console.error('ERROR: ' + err)
         })
     },
     setDefaultCategory() {
@@ -270,14 +263,14 @@ export default {
       })
       this.$store.dispatch('toggleSnackbar', {
         status: 'success',
-        message: `${this.categoryeditingData.name} set as default category.`
+        message: `${this.categoryEditingData.name} set as default category.`
       })
     }
   },
 
   mounted() {
-    if (this.categoryediting) {
-      const data = filters.categoryById(this.categoryediting, this.categories)
+    if (this.categoryEditing) {
+      const data = filters.categoryById(this.categoryEditing, this.categories)
       this.color = data?.color || this.$vuetify.theme.primary || 'primary'
       this.id = data?.id || null
       this.name = data?.name || null

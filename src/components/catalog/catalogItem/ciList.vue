@@ -3,8 +3,9 @@
     <v-card-text :style="styleCiList" class="px-0 text-center">
       <v-sheet v-if="!itemList || itemList.length < 1">
         <p class="font-weight-bold primary--text">No catalog items found.</p>
-        <v-btn color="primary" outlined @click="$emit('newItem')"> <v-icon left>mdi-note-plus</v-icon>  NEW ITEM </v-btn>
-        
+        <v-btn color="primary" outlined @click="$emit('newItem')">
+          <v-icon left>mdi-note-plus</v-icon> NEW ITEM
+        </v-btn>
       </v-sheet>
       <v-expansion-panels v-else popout v-model="panel" class="py-1">
         <!-- <transition-group name="flip-list" mode="out-in" style="width: 100%"> -->
@@ -92,7 +93,7 @@ export default {
 
       if (Array.isArray(this.catalogItems)) {
         this.catalogItems.forEach(ci => {
-          cItemsFiltered.push(this.formatCatalogItemData(ci))
+          cItemsFiltered.push(this.formatcatalogItemData(ci))
         })
       }
 
@@ -153,7 +154,7 @@ export default {
     }
   },
   methods: {
-    formatCatalogItemData(catalogItem) {
+    formatcatalogItemData(catalogItem) {
       //format data to be passed to list item
       if (catalogItem && catalogItem.name) {
         const category = filters.categoryById(
@@ -180,7 +181,7 @@ export default {
     onModalClose() {
       this.modal = false
       this.$store.dispatch('setStateValue', {
-        key: 'eventediting',
+        key: 'eventEditing',
         value: null
       })
     },
@@ -207,7 +208,7 @@ export default {
         eventData.ciData = { ...ci }
         this.modalComp = 'eventEdit'
         this.$store.dispatch('setStateValue', {
-          key: 'eventediting',
+          key: 'eventEditing',
           value: eventData
         })
       } else {

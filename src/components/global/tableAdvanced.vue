@@ -99,25 +99,8 @@ export default {
   },
   methods: {
     actionBtn(a, b) {
-      //console.log('action')
-      //console.log(a)
-      //console.log(b)
       return { a, b }
     }
-  },
-  created() {
-    const test = {
-      isOk: false,
-      setting: {
-        isOn: true
-      }
-    }
-    if (test?.setting?.isOn) {
-      //console.log('it works')
-    }
-  },
-  mounted() {
-    // //console.log(this.$refs.table)
   }
 }
 </script>

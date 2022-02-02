@@ -87,7 +87,7 @@
                   missingItemName="catalog items"
                   btnIcon="mdi-note-plus"
                   btnText="ADD ITEM"
-                  @btnClicked="$store.dispatch('toggleModalCatalogitemEdit')"
+                  @btnClicked="$store.dispatch('toggleModalCatalogItemEdit')"
                 ></EmptyDataWBtn>
               </template>
             </v-autocomplete>
@@ -416,7 +416,7 @@
     </v-card-actions>
     <!-- PICK UP HERE -->
     <!-- HANDLE ADDING NEW CI ITEM FROM HERE -->
-    <v-dialog :value="modalCatalogitemEdit" transition="dialog-transition">
+    <v-dialog :value="ModalCatalogItemEdit" transition="dialog-transition">
       <ciEdit
         :key="modalCiEdit + ''"
         @close="modalCiEdit = false"
@@ -539,9 +539,9 @@ export default {
       catalogItems: state => state.catalogItems,
       categories: state => state.categories,
       events: state => state.events,
-      eventediting: state => state.eventediting,
+      eventEditing: state => state.eventEditing,
       filter: state => state.filter,
-      modalCatalogitemEdit: state => state.modalCatalogitemEdit,
+      ModalCatalogItemEdit: state => state.ModalCatalogItemEdit,
       patrons: state => state.patrons,
       statusData: state => state.statusData
     }),
@@ -676,10 +676,10 @@ export default {
         }
 
         if (
-          this.eventediting &&
-          this.eventediting.ciData &&
-          this.eventediting.ciData.id === ci.id &&
-          this.eventediting.ciData.statue === 'enabled'
+          this.eventEditing &&
+          this.eventEditing.ciData &&
+          this.eventEditing.ciData.id === ci.id &&
+          this.eventEditing.ciData.statue === 'enabled'
         ) {
           ci.isDisabled = false
           ci.status = 'enabled'
@@ -920,9 +920,9 @@ export default {
         // this.endTime = '00:00'
       }
     },
-    onCiAdd(e) {
-      this.ciSelected = e
-      this.$store.dispatch('toggleModalCatalogitemEdit')
+    onCiAdd(newCi) {
+      this.ciSelected = newCi
+      this.$store.dispatch('toggleModalCatalogItemEdit')
     },
     onPatronAdd(e) {
       this.patronSelected = e
@@ -957,13 +957,13 @@ export default {
         key: `events`,
         data: [...events]
       })
-      this.$emit('eventUpdated', this.eventediting)
+      this.$emit('eventUpdated', this.eventEditing)
     }
   },
   mounted() {
-    // if (this.eventediting && this.eventediting.id) {
-    if (this.eventediting) {
-      const event = { ...this.eventediting }
+    // if (this.eventEditing && this.eventEditing.id) {
+    if (this.eventEditing) {
+      const event = { ...this.eventEditing }
       const valPairs = {
         id: 'id',
         ciData: 'ciSelected',

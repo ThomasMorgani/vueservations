@@ -159,12 +159,10 @@ export default {
       return this.images.find(i => i.id === setting.setting)
     },
     getImages() {
-      //console.log('get images')
       this.$store
         .dispatch('apiCall', { endpoint: '/images_get_all' })
         .then(resp => {
           this.images = resp
-          //console.log('images received')
         })
         .catch(err => {
           console.log('err:', err)
@@ -227,8 +225,6 @@ export default {
       })
     },
     updateImage(image) {
-      //TODO:ageData, display_name: this.imageRename })
-      //Will images be moved to state? prob not but keep for now
       const key = this.images.findIndex(i => i.id === image.id)
       if (key > -1) {
         this.$set(this.images, key, image)
@@ -243,7 +239,6 @@ export default {
   },
   async mounted() {
     this.loading = true
-    // await this.getImages()
     this.loading = false
   }
 }

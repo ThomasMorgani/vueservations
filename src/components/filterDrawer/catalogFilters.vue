@@ -189,12 +189,10 @@ export default {
         return this.filterAvailability
       },
       set(val) {
-        //console.log(val)
         this.$store.dispatch('setStateValue', {
           key: 'filterAvailability',
           value: typeof val == 'string' ? val.toLowerCase() : val
         })
-        // this.$store.commit('eventsFilterCategorySelect', val)
       }
     },
     categorySelect: {
@@ -206,7 +204,6 @@ export default {
           key: 'filterCategory',
           value: val
         })
-        // this.$store.commit('eventsFilterCategorySelect', val)
       }
     },
     dateRangeText() {
@@ -221,7 +218,6 @@ export default {
           key: 'filterRangeDate',
           value: val
         })
-        // this.$store.commit('eventsFilterDateRange', val)
       }
     },
     searchField: {
@@ -233,7 +229,6 @@ export default {
           key: 'filterSearch',
           value: val
         })
-        // this.$store.commit('eventsFilterSearchbox', val)
       }
     },
     statusOptions() {
@@ -251,7 +246,6 @@ export default {
           key: 'filterStatus',
           value: val
         })
-        // this.$store.commit('eventsFilterCategorySelect', val)
       }
     },
     visibilityOptions() {
@@ -276,7 +270,6 @@ export default {
           key: 'filterVisibility',
           value: val
         })
-        // this.$store.commit('eventsFilterCategorySelect', val)
       }
     }
   },

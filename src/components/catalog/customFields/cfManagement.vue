@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title
+    <v-card-title class="justify-center"
       ><ModalTitleText text="NEW FIELD"></ModalTitleText
     ></v-card-title>
     <v-card-text>
@@ -71,10 +71,10 @@
       </v-row>
     </v-card-text>
     <v-card-actions>
-      <v-btn text small color="primary" @click="cancel">cancel</v-btn>
+      <v-btn text small color="warning" @click="cancel">cancel</v-btn>
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" :disabled="isDisabled" @click="save"
-        >save</v-btn
+      <v-btn text small color="success" :disabled="isDisabled" @click="save"
+        >SAVE</v-btn
       >
     </v-card-actions>
   </v-card>
@@ -171,7 +171,7 @@ export default {
   },
   methods: {
     cancel() {
-      this.$store.dispatch('toggleModalCatalogCustomfield')
+      this.$store.dispatch('togglemodalCatalogCustomfield')
     },
     resetFields() {
       this.alertText = null
@@ -197,7 +197,7 @@ export default {
       if (resp.status === 'success') {
         if (resp.data) {
           this.$store.dispatch('customfieldsAddField', resp.data)
-          this.$store.dispatch('toggleModalCatalogCustomfield')
+          this.$store.dispatch('togglemodalCatalogCustomfield')
           this.$store.dispatch('localStorageWrite', {
             key: `customFields`,
             data: this.customFields

@@ -10,11 +10,11 @@ export default new Vuex.Store({
   state: {
     appSettings: [],
     catalogItems: [],
-    catalogitemediting: null, //category id ? set id,
-    catalogitemFieldsediting: [], //category id ? set id,
+    catalogItemEditing: null, //category id ? set id,
+    ciFieldsEditing: [], //category id ? set id,
     catalogView: 'overview',
     categories: [],
-    categoryediting: null, //category id ? set id,
+    categoryEditing: null, //category id ? set id,
     content: {
       main: {
         height: 0,
@@ -55,7 +55,7 @@ export default new Vuex.Store({
       width: 'unset'
     },
     events: [],
-    eventediting: null,
+    eventEditing: null,
     filterAvailability: [],
     filterCategory: [],
     filterRangeDate: [],
@@ -66,8 +66,8 @@ export default new Vuex.Store({
     imagePreviewData: {},
     modalCatalogCustomfield: false,
     modalImageFullPreview: false,
-    modalCatalogitemEdit: false,
-    modalCatalogitemEditCustomfields: false,
+    modalCatalogItemEdit: false,
+    modalEditCatalogItemFields: false,
     modalCategoryEdit: false,
     patronEditing: null,
     patrons: [],
@@ -188,7 +188,6 @@ export default new Vuex.Store({
 
   actions: {
     apiCall({ dispatch }, data) {
-      // //console.log(data)
       return new Promise((resolve, reject) => {
         apiFunctions.callApi(data.endpoint, data.postData || null).then(
           resp => {
@@ -211,7 +210,6 @@ export default new Vuex.Store({
       })
     },
     apiPost({ dispatch }, data) {
-      console.log(data)
       return new Promise((resolve, reject) => {
         apiFunctions.postApi(data.endpoint, data.postData).then(
           resp => {
@@ -233,11 +231,7 @@ export default new Vuex.Store({
         )
       })
     },
-    // deleteAppData({ dispatch, commit }, toDelete) {
-    //   //console.log()
-    //   //pickup here, all conditions of dataSets
 
-    // },
     initializeApp({ commit }) {
       return new Promise(resolve => {
         Object.keys(defaultData).forEach(key => {
@@ -251,143 +245,134 @@ export default new Vuex.Store({
         return resolve()
       })
     },
-    appDataDelete({ dispatch, commit,  state }, datasetsDeleting) {
-      return new Promise((resolve) => {
-      // console.log({...getters})
-      // console.log({...state})
-      // console.log(datasetsDeleting)
-      //defaultData
-      //affected Data to be saved
-      // const currentSettings = { ...getters.appSettingsByName }
-      const defaultDataByName = {}
-      Object.values(defaultData.appSettings).forEach(setting => {
-        defaultDataByName[setting.name] = setting
-      })
-      // console.log(defaultDataByName)
-      // const toSave = [...datasetsDeleting]
-      
-      //order datasetDeleting by effeciency
-      for (let dataSet of datasetsDeleting) {
-        //commit('setStateValue', { key: key, value: data })
-        commit('setStateValue', { key: dataSet, value: [] })
-        switch (dataSet) {
-          case 'catalogItems':
-            commit('setStateValue', { key: 'events', value: [] })
-            break
+    appDataDelete({ dispatch, commit, state }, datasetsDeleting) {
+      return new Promise(resolve => {
+        //defaultData
+        //affected Data to be saved
+        const defaultDataByName = {}
+        Object.values(defaultData.appSettings).forEach(setting => {
+          defaultDataByName[setting.name] = setting
+        })
+        //order datasetDeleting by effeciency
+        for (let dataSet of datasetsDeleting) {
+          commit('setStateValue', { key: dataSet, value: [] })
+          switch (dataSet) {
+            case 'catalogItems':
+              commit('setStateValue', { key: 'events', value: [] })
+              break
             case 'categories': {
-              // console.log({...defaultData})
               const defaultCategory = defaultData.categories.find(
                 c => c.id == defaultDataByName.Default_Category.setting
-                )
-                defaultCategory.setting = defaultDataByName.Default_Category.setting
-                const catalogItems = state.catalogItems.map(ci => {
-                  return { ...ci, category: defaultCategory.id }
-                })
-                dispatch('appSettingUpdate', {
-                  settingName: 'Default_Category',
-                  settingValue: defaultCategory.setting
-                })
-                commit('setStateValue', {
-                  key: 'categories',
-                  value: [defaultCategory]
-                })
-            commit('setStateValue', {
-              key: 'catalogItems',
-              value: catalogItems
-            })
-            break
+              )
+              defaultCategory.setting =
+                defaultDataByName.Default_Category.setting
+              const catalogItems = state.catalogItems.map(ci => {
+                return { ...ci, category: defaultCategory.id }
+              })
+              dispatch('appSettingUpdate', {
+                settingName: 'Default_Category',
+                settingValue: defaultCategory.setting
+              })
+              commit('setStateValue', {
+                key: 'categories',
+                value: [defaultCategory]
+              })
+              commit('setStateValue', {
+                key: 'catalogItems',
+                value: catalogItems
+              })
+              break
+            }
+            case 'customFields': {
+              const catalogItems = state.catalogItems.map(ci => {
+                return { ...ci, customFields: [] }
+              })
+              commit('setStateValue', {
+                key: 'catalogItems',
+                value: catalogItems
+              })
+              commit('setStateValue', {
+                key: 'customFields',
+                value: []
+              })
+
+              break
+            }
+            case 'events': {
+              commit('setStateValue', {
+                key: 'events',
+                value: []
+              })
+              const catalogItems = state.catalogItems.map(ci => {
+                return { ...ci, lastReservation: null }
+              })
+              commit('setStateValue', {
+                key: 'catalogItems',
+                value: catalogItems
+              })
+              break
+            }
+            case 'images': {
+              const defaultImage = defaultData.images.find(
+                i => i.id === defaultDataByName.Default_Image.setting
+              )
+              const catalogItems = state.catalogItems.map(ci => {
+                return {
+                  ...ci,
+                  image: defaultImage.id,
+                  image_data: defaultImage
+                }
+              })
+
+              commit('setStateValue', {
+                key: 'images',
+                value: [defaultImage]
+              })
+              commit('setStateValue', {
+                key: 'catalogItems',
+                value: catalogItems
+              })
+              break
+            }
+            case 'patrons': {
+              commit('setStateValue', {
+                key: 'patrons',
+                value: []
+              })
+
+              commit('setStateValue', {
+                key: 'events',
+                value: []
+              })
+
+              const catalogItems = state.catalogItems.map(ci => {
+                return { ...ci, lastReservation: null }
+              })
+              commit('setStateValue', {
+                key: 'catalogItems',
+                value: catalogItems
+              })
+
+              break
+            }
+            case 'xxxxx': {
+              break
+            }
+
+            default:
+              commit('setStateValue', { key: dataSet, value: [] })
           }
-          case 'customFields': {
-            const catalogItems = state.catalogItems.map(ci => {
-              return { ...ci, customFields: [] }
-            })
-            commit('setStateValue', {
-              key: 'catalogItems',
-              value: catalogItems
-            })
-            commit('setStateValue', {
-              key: 'customFields',
-              value: []
-            })
 
-            break
-          }
-          case 'events': {
-            commit('setStateValue', {
-              key: 'events',
-              value: []
+          for (let dataSet in defaultData) {
+            dispatch('localStorageWrite', {
+              key: dataSet,
+              data: state[dataSet] || null
             })
-            const catalogItems = state.catalogItems.map(ci => {
-              return { ...ci, lastReservation: null }
-              
-            })
-            commit('setStateValue', {
-              key: 'catalogItems',
-              value: catalogItems
-            })
-            break
-          }
-          case 'images': {
-            const defaultImage = defaultData.images.find(
-              i => i.id === defaultDataByName.Default_Image.setting
-            )
-            const catalogItems = state.catalogItems.map(ci => {
-              return { ...ci, image: defaultImage.id, image_data: defaultImage }
-            })
-
-            commit('setStateValue', {
-              key: 'images',
-              value: [defaultImage]
-            })
-            commit('setStateValue', {
-              key: 'catalogItems',
-              value: catalogItems
-            })
-            break
-          }
-          case 'patrons': {
-
-            commit('setStateValue', {
-              key: 'patrons',
-              value: []
-            })
-
-            commit('setStateValue', {
-              key: 'events',
-              value: []
-            })
-            
-            const catalogItems = state.catalogItems.map(ci => {
-              return { ...ci, lastReservation: null }
-              
-            })
-            commit('setStateValue', {
-              key: 'catalogItems',
-              value: catalogItems
-            })
-
-
-            break
-          }
-          case 'xxxxx': {
-            break
           }
 
-          default:
-            commit('setStateValue', { key: dataSet, value: [] })
+          resolve(true)
         }
-
-
-        for (let dataSet in defaultData) {
-          dispatch('localStorageWrite', {
-            key: dataSet,
-            data: state[dataSet] || null
-          })
-        }
-
-        resolve(true)
-      }
-    })
+      })
     },
     appSettingUpdate(
       { dispatch, getters, state },
@@ -406,19 +391,19 @@ export default new Vuex.Store({
         value: [...settings]
       })
     },
-    catalogitemAdd({ commit }, data) {
-      commit('catalogitemAdd', data)
+    catalogItemAdd({ commit }, data) {
+      commit('catalogItemAdd', data)
     },
-    catalogitemDelete({ commit, state }, data) {
+    catalogItemDelete({ commit, state }, data) {
       return new Promise(resolve => {
         commit(
-          'catalogitemDelete',
+          'catalogItemDelete',
           state.catalogItems.findIndex(el => el.id === data.id)
         )
         return resolve(true)
       })
     },
-    catalogItemNew({getters, state}, $vuetify) {
+    catalogItemNew({ getters, state }, $vuetify) {
       const newItem = { ...state.defaultCatalogItem }
       const {
         Default_reservation_length,
@@ -437,38 +422,37 @@ export default new Vuex.Store({
       const theme = $vuetify.theme.isDark ? 'dark' : 'light'
       newItem.color = $vuetify.theme.themes[theme].primary
       newItem.image_data = { ...getters.defaultCiImage }
-      newItem.category = getters?.appSettingsByName?.Default_Category.setting || null
+      newItem.category =
+        getters?.appSettingsByName?.Default_Category.setting || null
       newItem.reservation_buffer =
-      getters?.appSettingsByName?.Default_reservation_buffer.setting || null
+        getters?.appSettingsByName?.Default_reservation_buffer.setting || null
       newItem.reservation_length =
-      getters?.appSettingsByName?.Default_reservation_length.setting || null
+        getters?.appSettingsByName?.Default_reservation_length.setting || null
       newItem.status = 'enabled'
 
-     this.dispatch('setStateValue', {
-       key: 'catalogItemediting',
-       value: {...newItem}
-     })
-      
+      this.dispatch('setStateValue', {
+        key: 'catalogItemEditing',
+        value: { ...newItem }
+      })
     },
     //PICK UP HERE, NOT POPULATING NEW CI ITEM FROM EVENT DIALOG
-    catalogitemSetValue({ commit, state }, data) {
+    catalogItemSetValue({ commit, state }, data) {
       //data : {id: id of cat item, item: key of value updating, data: value of item}
       const ciIndex = state.catalogItems.findIndex(el => el.id === data.id)
-      //console.log(ciIndex)
       if (ciIndex > -1) {
-        commit('catalogitemSetValue', { ...data, index: ciIndex })
+        commit('catalogItemSetValue', { ...data, index: ciIndex })
       } else {
         return false
       }
     },
-    catalogitemeditingSetValue({ commit }, data) {
+    catalogItemEditingSetValue({ commit }, data) {
       //data:{key: item editing int, data: fields obj}
-      commit('catalogitemeditingSetValue', data)
+      commit('catalogItemEditingSetValue', data)
     },
-    catalogitemeditingcustomfieldsSetediting({ commit }, data) {
+    ciEditingcfEditingSet({ commit }, data) {
       return new Promise(resolve => {
-        commit('customfieldsSetediting', data)
-        resolve()
+        commit('COMMIT_CUSTOM_FIELDS_Editing', data)
+         resolve()
       })
     },
     categoryDelete({ commit, dispatch, state }, data) {
@@ -496,7 +480,7 @@ export default new Vuex.Store({
         )
         state.catalogItems.forEach((ci, i) => {
           if (ci.category === data.id) {
-            commit('catalogitemSetValue', {
+            commit('catalogItemSetValue', {
               index: i,
               key: 'category',
               data: defaultCat
@@ -509,7 +493,6 @@ export default new Vuex.Store({
         })
         commit('setStateValue', { key: 'snackbarState', value: true })
         //SAVE CATEGORIES
-        console.log('SAVE TGO LOCAL STORAGE HERE')
         dispatch('localStorageWrite', {
           key: 'categories',
           data: state.categories
@@ -518,7 +501,6 @@ export default new Vuex.Store({
       })
     },
     categoryEditSave({ commit, dispatch, state }, data) {
-      // //console.log('data', data)
       return new Promise((resolve, reject) => {
         const result = {
           status: 'success',
@@ -598,11 +580,9 @@ export default new Vuex.Store({
           postData: data
         })
           .then(res => {
-            //console.log('res', res)
             if (res.status === 'success') {
               commit('pushStateValue', { key: 'settings', value: data })
             }
-            //console.log(res)
             resolve(res)
           })
           .catch(err => {
@@ -613,7 +593,6 @@ export default new Vuex.Store({
     },
 
     setStateValue({ commit }, data) {
-      //console.log(data)
       if (data.isPush) {
         //console.log('is push')
         commit('pushStateValue', { key: data.key, value: data.value })
@@ -622,7 +601,6 @@ export default new Vuex.Store({
       }
     },
     setStateValueByKey({ commit }, data) {
-      //console.log(data)
       if (data.isPush) {
         commit('pushStateValueByKey', {
           stateItem: data.stateItem,
@@ -640,19 +618,19 @@ export default new Vuex.Store({
     toggleStateValue({ commit, state }, data) {
       commit('setStateValue', { key: data, value: !state[data] })
     },
-    toggleModalCatalogCustomfield({ commit, state }, data = null) {
+    togglemodalCatalogCustomfield({ commit, state }, data = null) {
       if (data !== null) {
         commit('setStateValue', { key: 'customFieldEditing', value: data })
       }
-      commit('toggleModalCatalogCustomfield', !state.modalCatalogCustomfield)
+      commit('togglemodalCatalogCustomfield', !state.modalCatalogCustomfield)
     },
-    toggleModalCatalogitemEdit({ commit, state }) {
-      commit('toggleModalCatalogitemEdit', !state.modalCatalogitemEdit)
+    toggleModalCatalogItemEdit({ commit, state }) {
+      commit('toggleModalCatalogItemEdit', !state.modalCatalogItemEdit)
     },
-    toggleModalCatalogitemEditCustomfields({ commit, state }) {
+    togglemodalEditCatalogItemFields({ commit, state }) {
       commit(
-        'toggleModalCatalogitemEditCustomfields',
-        !state.modalCatalogitemEditCustomfields
+        'togglemodalEditCatalogItemFields',
+        !state.modalEditCatalogItemFields
       )
     },
     toggleModalEditCategory({ commit, state }) {
@@ -667,6 +645,10 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    COMMIT_CUSTOM_FIELDS_Editing(state, data) {
+      //data expects: {key: state.category key, value: state.category value}
+      state.ciFieldsEditing = data
+    },
     COMMIT_EVENTS(state, events) {
       state.events = [...events]
     },
@@ -682,19 +664,18 @@ export default new Vuex.Store({
     //  NEW ABOVE, TODO: REFACTOR BELOW
     //
     //
-    catalogitemAdd(state, newCi) {
+    catalogItemAdd(state, newCi) {
       state.catalogItems = [...state.catalogItems, newCi]
     },
-    catalogitemDelete(state, data) {
+    catalogItemDelete(state, data) {
       Vue.delete(state.catalogItems, data)
     },
-    catalogitemeditingSetValue(state, data) {
+    catalogItemEditingSetValue(state, data) {
       //data : {key: value editing, data: value of item }
-      state.catalogitemediting[data.key] = data.data
+      state.catalogItemEditing[data.key] = data.data
     },
-    catalogitemSetValue(state, data) {
+    catalogItemSetValue(state, data) {
       //data : {key: value editing, data: value of item }
-      //console.log(data)
       state.catalogItems[data.index][data.key] = data.data
     },
     catalogView(state, data) {
@@ -748,14 +729,14 @@ export default new Vuex.Store({
       // state[data.stateItem][data.key] = data.value
       Vue.set(state[data.stateItem], data.key, data.value)
     },
-    toggleModalCatalogCustomfield(state, data) {
+    togglemodalCatalogCustomfield(state, data) {
       state.modalCatalogCustomfield = data
     },
-    toggleModalCatalogitemEdit(state, data) {
-      state.modalCatalogitemEdit = data
+    toggleModalCatalogItemEdit(state, data) {
+      state.modalCatalogItemEdit = data
     },
-    toggleModalCatalogitemEditCustomfields(state, data) {
-      state.modalCatalogitemEditCustomfields = data
+    togglemodalEditCatalogItemFields(state, data) {
+      state.modalEditCatalogItemFields = data
     },
     toggleModalEditCategory(state, data) {
       state.modalCategoryEdit = data

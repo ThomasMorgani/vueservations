@@ -227,8 +227,6 @@ export default {
     isReservedText() {
       //merge this with last reservaiton method?
       const resData = this.item.lastReservation['0']
-      console.log(resData)
-      console.log(resData.start_date)
       let wYear =
         resData.start_date.substring(0, 4) !== resData.end_date.substring(0, 4)
       let dateStart = this.formatDate(resData.start_date, wYear, true)
@@ -238,7 +236,6 @@ export default {
       return text
     },
     formatDate(timestamp, withYear, withTime) {
-      console.log(timestamp)
       return timestampHuman(timestamp, withYear, withTime)
     },
     lastReservedText() {

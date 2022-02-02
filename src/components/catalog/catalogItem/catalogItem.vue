@@ -215,10 +215,7 @@ export default {
         const now = new Date()
         const startDate = new Date(this.item.lastReservation.start_date)
         const endDate = new Date(this.item.lastReservation.end_date)
-        // console.log(now)
-        // console.log(endDate)
         if (startDate < now && endDate > now) {
-          console.log('end is less than now')
           reserved = this.isReservedText()
         }
       }
@@ -266,13 +263,12 @@ export default {
   },
   methods: {
     edit() {
-      //console.log('edit', this.item)
       this.$store.dispatch('setStateValue', {
-        key: 'catalogitemediting',
+        key: 'catalogItemEditing',
         value: { ...this.item }
       })
       setTimeout(() => {
-        this.$store.dispatch('toggleModalCatalogitemEdit')
+        this.$store.dispatch('toggleModalCatalogItemEdit')
       }, 500)
     },
     isReservedText() {

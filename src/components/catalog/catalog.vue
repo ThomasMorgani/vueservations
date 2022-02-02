@@ -19,42 +19,26 @@
       </v-toolbar>
     </v-col>
     <v-col cols="12" class="mt-4 pa-0 flex-grow-1">
-      <CatalogItemList :view="view" @newItem="catalogItemAdd"></CatalogItemList>
+      <catalogItemList :view="view" @newItem="catalogItemAdd"></catalogItemList>
     </v-col>
     <!-- Edit Catalog Item Modal  -->
     <v-dialog
-      v-model="modalCatalogitemEdit"
+      v-model="modalCatalogItemEdit"
       persistent
       max-width="800px"
       transition="dialog-transition"
       :key="
         `ciEdit${String(
-          catalogItemediting && catalogItemediting.id
-            ? catalogItemediting.id
+          catalogItemEditing && catalogItemEditing.id
+            ? catalogItemEditing.id
             : 'none'
         )}`
       "
     >
       <catalogItemEdit :isNew="true"></catalogItemEdit>
     </v-dialog>
-    <!-- Edit Catalog Item Modal  -->
-    <v-dialog
-      v-model="modalEditCatalogItemFields"
-      persistent
-      max-width="700px"
-      transition="dialog-transition"
-      :key="
-        `cifEdit${String(
-          catalogItemediting && catalogItemediting.id
-            ? catalogItemediting.id
-            : 'none'
-        )}`
-      "
-    >
-      <catalogItemEditFields
-        :key="modalEditCatalogItemFields + ''"
-      ></catalogItemEditFields>
-    </v-dialog>
+    <!-- Edit Catalog Item Custom fields Modal  -->
+
     <v-dialog
       :value="modalImageFullPreview"
       transition="dialog-transition"
@@ -72,17 +56,15 @@
 
 <script>
 import { mapState } from 'vuex'
-import CatalogItemList from '@/components/catalog/catalogItem/ciList'
+import catalogItemList from '@/components/catalog/catalogItem/ciList'
 import catalogItemEdit from '@/components/catalog/catalogItem/ciEdit'
-import catalogItemEditFields from '@/components/catalog/catalogItem/ciEditFields'
 import filterBtn from '@/components/global/buttons/filterDrawerToggle'
 import imagePreviewModal from '@/components/images/imagePreviewModal'
 export default {
   name: 'catalog',
   components: {
-    CatalogItemList,
+    catalogItemList,
     catalogItemEdit,
-    catalogItemEditFields,
     filterBtn,
     imagePreviewModal
   },
@@ -101,14 +83,12 @@ export default {
   computed: {
     ...mapState({
       catalogView: state => state.catalogView,
-      catalogItemediting: state => state.catalogitemediting,
-      catalogitemFieldsediting: state => state.catalogitemFieldsediting,
-      categoryediting: state => state.categoryediting,
+      catalogItemEditing: state => state.catalogItemEditing,
+      ciFieldsEditing: state => state.ciFieldsEditing,
+      categoryEditing: state => state.categoryEditing,
       imagePreviewData: state => state.imagePreviewData,
-      modalCatalogitemEdit: state => state.modalCatalogitemEdit,
-      modalCatalogCustomfield: state => state.modalCatalogCustomfield,
-      modalEditCatalogItemFields: state =>
-        state.modalCatalogitemEditCustomfields,
+      modalCatalogItemEdit: state => state.modalCatalogItemEdit,
+
       modalCategoryEdit: state => state.modalCategoryEdit,
       modalImageFullPreview: state => state.modalImageFullPreview,
       settings: state => state.appSettings
@@ -125,12 +105,9 @@ export default {
   },
   methods: {
     catalogItemAdd() {
-      this.$store.dispatch('setStateValue', {
-        key: 'catalogitemediting',
-        value: this.catalogItemCreateNew()
-      })
+      this.$store.dispatch('catalogItemNew', this.$vuetify)
       setTimeout(() => {
-        this.$store.dispatch('toggleModalCatalogitemEdit')
+        this.$store.dispatch('toggleModalCatalogItemEdit')
       }, 500)
     },
     categoryAdd() {
@@ -140,25 +117,6 @@ export default {
         value: null
       })
       this.$store.dispatch('toggleModalEditCategory')
-    },
-    catalogItemCreateNew() {
-      const newItem = { ...this.$store.state.defaultCatalogItem }
-      const {
-        Default_reservation_length,
-        Default_reservation_buffer
-      } = this.settings.reduce((acc, setting) => {
-        if (
-          setting.name === 'Default_reservation_buffer' ||
-          setting.name === 'Default_reservation_length'
-        ) {
-          acc[setting.name] = setting
-        }
-        return acc
-      }, {})
-      newItem.reservation_buffer = Default_reservation_buffer.setting
-      newItem.reservation_length = Default_reservation_length.setting
-
-      return newItem
     }
   },
   mounted() {

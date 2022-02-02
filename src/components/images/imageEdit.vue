@@ -169,7 +169,7 @@ export default {
       this.modalDelete = false
       this.modalEdit = false
       if (this.imageDeleteData.affectedItems.items.length > 0) {
-        this.updateCatalogItems()
+        this.updatecatalogItems()
       }
       this.isLoadingDelete = false
       this.$emit('imageDeleted', this.imageData)
@@ -184,7 +184,7 @@ export default {
         this.modalEdit = false
       }
     },
-    updateCatalogItems() {
+    updatecatalogItems() {
       const items = this.$store.state.catalogItems.map(ci => {
         return ci.image === this.imageDeleteData.image.id
           ? {

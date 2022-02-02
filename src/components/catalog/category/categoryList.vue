@@ -154,12 +154,6 @@ export default {
           break
       }
     },
-    // categoryAdd() {
-    //   this.editCategoryModal = true
-    //   //console.log('categoryAdd')
-    //   this.$store.dispatch('categoryEdit', null)
-    //   this.$store.dispatch('toggleModalEditCategory')
-    // },
     countText(count, category) {
       if (count === 1) {
         return 'There is 1 item under ' + category
@@ -170,19 +164,9 @@ export default {
       }
     },
     details(id) {
-      //console.log('details', id)
       return id
     },
-    // edit(id) {
-    //   //console.log('edit', id)
-    //   this.$store.dispatch('setStateValue', {
-    //     key: 'categoryediting',
-    //     value: id
-    //   })
-    //   this.$store.dispatch('toggleModalEditCategory')
-    // },
     selectAll() {
-      // this.categorySelect = [...this.categories.keys()]
       this.categoryList.forEach(c =>
         this.$store.dispatch('setStateValue', {
           key: 'filterCategory',
@@ -208,7 +192,6 @@ export default {
       }
     },
     selectNone() {
-      // this.categorySelect = []
       this.$store.dispatch('setStateValue', {
         key: 'filterCategory',
         value: []
@@ -219,7 +202,6 @@ export default {
     }
   },
   created() {
-    //console.log('category list created')
     //set category filter back to array if overview to statisfy multiselect requirement
     if (!Array.isArray(this.categorySelect)) {
       this.categorySelect = []

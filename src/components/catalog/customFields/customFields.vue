@@ -28,14 +28,14 @@
     </v-card-title>
 
     <v-card-text class="text-center pt-0">
-            <v-sheet v-if="!customFields || customFields.length < 1" class="mt-8">
+      <v-sheet v-if="!customFields || customFields.length < 1" class="mt-8">
         <p class="font-weight-bold primary--text">No fields found.</p>
         <v-btn color="primary" outlined @click="fieldAdd"
           ><v-icon left>mdi-card-plus-outline</v-icon> NEW FIELD</v-btn
         >
       </v-sheet>
       <tableAdvanced
-      v-else
+        v-else
         :tableData="tableData"
         @actionBtn="onAction"
       ></tableAdvanced>
@@ -138,47 +138,10 @@ export default {
     }
   },
   methods: {
-    // detailsShow(field) {
-    //   console.log('details show')
-    //   console.log(field)
-    //   console.log(
-    //     this.orderBy(
-    //       formats.cfCiValuesSimple(field.id, this.catalogItems),
-    //       'ci_name'
-    //     )
-    //   )
-    //   this.modalCompData = {
-    //     field: field,
-    //     tableData: {
-    //       headers: [
-    //         {
-    //           value: 'catalog_item',
-    //           text: 'CATALOG ITEM'
-    //         },
-    //         {
-    //           value: 'field_value',
-    //           text: 'VALUE'
-    //         }
-    //       ],
-    //       items: this.orderBy(
-    //         formats.cfCiValuesSimple(
-    //          field.id,
-    //           this.catalogItems
-    //         ),
-    //         'catalog_item'
-    //       ),
-    //       height: 400
-    //     }
-    //   }
-    //   this.modalComp = 'patronHistory'
-    //   this.modalAction = true
-    // },
     modalClose() {
       this.modalAction = false
     },
-    // onAction({ action, rowIndex, item }) {
     onAction({ action, item }) {
-      // //console.log(item)
       const field = this.customFields.find(f => f.id == item.id)
       switch (action) {
         case 'add':
@@ -201,9 +164,9 @@ export default {
           this.detailsShow(field)
           break
         default:
-        //console.log('default reached')
-        //console.log(action)
-        //console.log(item)
+          console.log('default reached')
+          console.log(action)
+          console.log(item)
       }
     },
     fieldAdd() {
@@ -215,7 +178,6 @@ export default {
       this.modalAction = true
     },
     fieldDelete(field) {
-      //dispatch api
       const fKey = this.customFields.findIndex(f => f.id == field.id)
       if (fKey > -1) {
         this.$store.dispatch('deleteStateValueByKey', {
@@ -289,13 +251,11 @@ export default {
       this.modalAction = true
     },
     fieldUpdateCatalogItems(field) {
-      //console.log(field)
       this.catalogItems.forEach((ci, ciIndex) => {
         if (ci.custom_fields?.length > 0) {
           const fieldIndex = ci.custom_fields.findIndex(
             f => f.field_id == field.id
           )
-          //console.log(fieldIndex)
           if (fieldIndex > -1) {
             this.$set(this.catalogItems[ciIndex].custom_fields, fieldIndex, {
               ...this.catalogItems[ciIndex].custom_fields[fieldIndex],

@@ -238,8 +238,6 @@ export default {
     ...mapGetters(['categoriesById']),
     eventsList() {
       let eventsFiltered = []
-      // let modalVis = this.modalDetailsShow
-      //console.log(modalVis)
       const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
       let filtersSet = {}
       filterNames.forEach(f =>
@@ -364,7 +362,6 @@ export default {
         : this.categoriesById[item.category].color
     },
     eventLabel(v) {
-      // console.log(v)
       let start = timestampHuman(v.start_date, false, false)
       let end = timestampHuman(v.end_date, false, false)
       if (start === end) {
@@ -382,11 +379,9 @@ export default {
       return label
     },
     eventAdd() {
-      //console.log('eventAdd')
       this.showDetails({ type: 'edit' })
     },
     eventEdit(e) {
-      //console.log(this.$refs)
       if (e) {
         this.$store.dispatch('setStateValue', {
           key: 'eventediting',
@@ -394,9 +389,6 @@ export default {
         })
         this.modalDetailsComp = 'eventEdit'
         setTimeout(() => (this.modalDetailsShow = true), 19)
-        //console.log('event found open modal')
-      } else {
-        //console.log('error: event not found')
       }
     },
     contextDay(e) {
@@ -428,7 +420,7 @@ export default {
     onDetailsClose(e) {
       this.modalDetailsShow = false
       this.$store.dispatch('setStateValue', {
-        key: 'eventediting',
+        key: 'eventEditing',
         value: null
       })
       if (e && e.wasDeleted) {

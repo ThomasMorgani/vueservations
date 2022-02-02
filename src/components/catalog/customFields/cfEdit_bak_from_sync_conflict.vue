@@ -1,7 +1,7 @@
 <template>
   <v-card text>
-    <v-card-title class="align-center justify-center">
-      <TitleText :text="id ? 'EDIT CUSTOM FIELD' : 'NEW FIELsssD'"></TitleText>
+    <v-card-title class="justify-center">
+      <TitleText :text="id ? 'EDIT CUSTOM FIELD' : 'NEW FIELD'"></TitleText>
     </v-card-title>
     <v-card-text>
       <v-row dense>
@@ -70,7 +70,7 @@
       </v-row>
     </v-card-text>
     <v-card-actions>
-      <v-btn text small color="warning" @click="cancel">cancel</v-btn>
+      <v-btn text small color="primary" @click="cancel">cancel</v-btn>
       <v-spacer></v-spacer>
       <v-btn
         text
@@ -241,7 +241,6 @@ export default {
             })
           }
         } else {
-          //console.log('no id, inserting field')
           fieldData.id = resp.data
           this.$store.dispatch('setStateValue', {
             isPush: true,

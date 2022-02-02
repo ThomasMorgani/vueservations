@@ -69,7 +69,6 @@ export default {
       }
     },
     saveNote() {
-      //console.log('save')
       this.saveLoading = true
       const isNew = this.id === null
       const now = new Date()

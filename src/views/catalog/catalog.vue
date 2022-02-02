@@ -12,9 +12,6 @@ import catalogItemList from '@/components/catalog/catalogItem/ciList'
 export default {
   components: {
     catalogItemList
-  },
-  created() {
-    //console.log(this)
   }
 }
 </script>

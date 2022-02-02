@@ -14,17 +14,12 @@
     </v-dialog>
     <v-card-title class="justify-center title primary--text outlined">
       <ModalTitleText
-        :text="catalogItemEditing.id ? `EDIT DETAILS` : 'ADD FIELDS'"
+        :text="catalogItemediting.id ? `EDIT DETAILS` : 'ADD FIELDS'"
       ></ModalTitleText>
       {{
     }}</v-card-title>
     <v-card-text class="modalBody">
-      <template
-        v-if="
-          fieldsDisplayed.length < 1 &&
-            catalogItemEditing.customFields.length < 1
-        "
-      >
+      <template v-if="fieldsDisplayed.length < 1">
         <p class="mt-6 text-center">
           No custom fields set for this catalog item.
         </p>
@@ -256,17 +251,17 @@
           <div v-on="on">
             <v-btn
               text
-              color="success"
+              color="primary"
               :disabled="saveDisabled"
               :loading="loading === 'save'"
               @click="saveFields"
             >
               <v-icon
-                color="success"
+                color="warning"
                 class="mr-1"
                 v-if="isChanged && !saveDisabled"
                 >mdi-content-save-alert</v-icon
-              >SAVE FIELDS
+              >SAVE
             </v-btn>
           </div>
         </template>
@@ -305,6 +300,7 @@ export default {
     fieldAddingNew: null,
     fields: {},
     fieldsediting: [],
+    fieldsOriginal: {},
     loading: null,
     fieldTemplate: {
       internal: null,
@@ -340,8 +336,8 @@ export default {
   computed: {
     ...mapState({
       catalogItems: state => state.catalogItems,
-      catalogItemEditing: state => state.catalogItemEditing,
-      catalogItemFieldsediting: state => state.catalogItemFieldsediting,
+      catalogItemediting: state => state.catalogitemediting,
+      catalogitemFieldsediting: state => state.catalogitemFieldsediting,
       customFields: state => state.customFields,
       modalCatalogCustomfield: state => state.modalCatalogCustomfield
     }),
@@ -382,14 +378,12 @@ export default {
       let changed = false
       changed =
         Object.keys(this.fields).length !==
-        Object.keys(this.catalogItemEditing?.customFields).length
+        Object.keys(this.fieldsOriginal).length
       Object.keys(this.fields).forEach(key => {
-        if (this.catalogItemEditing?.customFields?.[key]) {
+        if (this.fieldsOriginal?.[key]) {
           if (
-            this.fields[key].name !==
-              this.catalogItemEditing?.customFields[key].name ||
-            this.fields[key].value !==
-              this.catalogItemEditing?.customFields[key].value
+            this.fields[key].name !== this.fieldsOriginal[key].name ||
+            this.fields[key].value !== this.fieldsOriginal[key].value
           ) {
             changed = true
           }
@@ -400,8 +394,6 @@ export default {
       return changed
     },
     saveDisabled() {
-      if (this.catalogItemEditing?.customFields?.length > this.fields.length)
-        return false
       return !this.isChanged || this.fieldsRequired.length > 0
     },
     saveTooltipText() {
@@ -471,7 +463,6 @@ export default {
       return fieldKey > -1
     },
     formatFields() {
-      //FORMATE BEFORE SAVING
       let fields = []
       Object.values(this.fields).forEach(field => {
         fields.push({
@@ -490,8 +481,10 @@ export default {
         this.$set(this.fields, fieldKey, { ...this.fieldTemplate })
         return
       }
+      //SWITCH?
       for (let key in fields) {
         if (key !== 'id' && key !== 'default_value') {
+          //SET VALUE TO DEFAULT VALUE ?
           this.$set(this.fields[fieldKey], key, fields[key])
         } else {
           if (key === 'id') {
@@ -504,16 +497,17 @@ export default {
       }
     },
     reset() {
+      this.$store.dispatch('catalogitemeditingcustomfieldsSetediting', [])
       this.fieldsediting = []
       this.loading = null
     },
     restoreValues() {
-      this.fields = { ...this.catalogItemEditing?.customFields }
+      this.fields = { ...this.fieldsOriginal }
       this.fieldsediting = []
     },
     saveFields() {
-      if (!this.catalogItemEditing.id) {
-        this.$store.dispatch('catalogItemEditingSetValue', {
+      if (!this.catalogItemediting.id) {
+        this.$store.dispatch('catalogitemeditingSetValue', {
           key: 'customFields',
           data: this.formatFields()
         })
@@ -527,12 +521,12 @@ export default {
         status: 'success'
       }
 
-      this.$store.dispatch('catalogItemEditingSetValue', {
+      this.$store.dispatch('catalogitemeditingSetValue', {
         key: 'customFields',
         data: resp.data
       })
-      this.$store.dispatch('catalogItemSetValue', {
-        id: this.catalogItemEditing.id,
+      this.$store.dispatch('catalogitemSetValue', {
+        id: this.catalogItemediting.id,
         key: 'custom_fields',
         data: resp.data
       })
@@ -547,12 +541,24 @@ export default {
     }
   },
   created() {
-    this.fields = this?.catalogItemEditing?.customFields
-      ? [...this.catalogItemEditing.customFields]
-      : []
-    this.autocomplete = this?.catalogItemEditing?.customFields
-      ? [...this.catalogItemEditing.customFields]
-      : []
+    if (
+      this.catalogitemFieldsediting &&
+      this.catalogItemediting.customFields &&
+      this.catalogItemediting.customFields.length > 0
+    ) {
+      for (let key in this.catalogitemFieldsediting) {
+        this.$set(this.fields, key, {
+          ...this.catalogitemFieldsediting[key]
+        })
+        this.$set(this.fieldsOriginal, key, {
+          ...this.catalogitemFieldsediting[key]
+        })
+        this.$set(this.autocomplete, key, {
+          ...this.catalogitemFieldsediting[key]
+        })
+        this.$delete(this.autocomplete[key], 'field_id')
+      }
+    }
   }
 }
 </script>

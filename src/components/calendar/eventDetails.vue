@@ -71,7 +71,7 @@
                 text
                 icon
                 color="primary"
-                @click="showCatalogItem"
+                @click="showcatalogItem"
                 v-on="on"
               >
                 <v-icon color="primary">mdi-layers-search</v-icon>
@@ -263,12 +263,12 @@ export default {
     reserve() {
       this.modalComp = 'eventEdit'
       this.$store.dispatch('setStateValue', {
-        key: 'eventediting',
+        key: 'eventEditing',
         value: { ciData: { ...this.event.eventData.ciData } }
       })
       this.modal = true
     },
-    showCatalogItem() {
+    showcatalogItem() {
       this.modalComp = 'ciDetails'
       this.modalCompData = { item: this.event.eventData.ciData }
       this.modal = true

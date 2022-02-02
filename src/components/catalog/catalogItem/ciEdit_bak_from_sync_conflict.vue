@@ -235,16 +235,6 @@
       </v-tabs-items>
     </v-card-text>
     <v-card-actions>
-      <v-dialog
-        :value="modalEditCatalogItemFields"
-        persistent
-        max-width="700px"
-        transition="dialog-transition"
-      >
-        <catalogItemEditFields
-          :key="modalEditCatalogItemFields + ''"
-        ></catalogItemEditFields>
-      </v-dialog>
       <v-tooltip color="primary" top :disabled="!id">
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -282,26 +272,23 @@
         </template>
         <span>Revert all unsaved changes</span>
       </v-tooltip>
+
       <v-spacer></v-spacer>
-      <v-btn text large color="primary" @click="cancel">{{
-        saveDisabled && catalogItemEditing && catalogItemEditing.id
-          ? 'CLOSE'
-          : 'CANCEL'
-      }}</v-btn>
+      <v-btn text large color="primary" @click="cancel">CLOSE</v-btn>
       <v-tooltip color="primary" top :disabled="!saveDisabled && !isChanged">
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
               text
               large
-              color="success"
+              color="primary"
               :disabled="saveDisabled"
               :loading="loading === 'save'"
               @click="save"
             >
               <transition name="bounce-top">
                 <v-icon
-                  color="success"
+                  color="warning"
                   class="mr-1"
                   v-if="isChanged && !saveDisabled"
                   >mdi-content-save-alert</v-icon
@@ -374,7 +361,7 @@
             @click="modalConfirmDelete = !modalConfirmDelete"
             >CANCEL</v-btn
           >
-          <v-btn color="error" text @click="deletecatalogItem"
+          <v-btn color="error" text @click="deleteCatalogitem"
             >CONFIRM DELETE</v-btn
           >
         </v-card-actions>
@@ -395,9 +382,7 @@ export default {
     customFieldsList,
     editImageModal: () =>
       import('@/components/catalog/catalogItem/ciEditImage'),
-    eventTableSimple: () => import('@/components/global/tableSimple'),
-    catalogItemEditFields: () =>
-      import('@/components/catalog/catalogItem/ciEditFields')
+    eventTableSimple: () => import('@/components/global/tableSimple')
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({
@@ -448,10 +433,9 @@ export default {
   computed: {
     ...mapState({
       catalogItems: state => state.catalogItems,
-      catalogItemEditing: state => state.catalogItemEditing,
+      catalogItemediting: state => state.catalogitemediting,
       categories: state => state.categories,
       images: state => state.images,
-      modalEditCatalogItemFields: state => state.modalEditCatalogItemFields,
       statusData: state => state.statusData,
       events: state => state.events,
       patrons: state => state.patrons
@@ -472,7 +456,7 @@ export default {
       return null
     },
     customFieldsDisplayed() {
-      return this.catalogItemEditing?.customFields
+      return this.catalogItemediting?.customFields
     },
     imageDisplayed() {
       //TODO: CREATE GLOBAL (utils/formats) FORMAT IMAGE FUNCTION TO PROPERLY SET SRC
@@ -483,12 +467,10 @@ export default {
         : this.defaultCiImage
     },
     isChanged() {
-      if (
-        JSON.stringify(this.originalValues?.customFields) !=
-        JSON.stringify(this.catalogItemEditing?.customFields)
-      )
-        return true
+      //TODO: FIND WHY AFTER SAVING isChanged does not reset to false
       let isChanged = false
+      // let origStr = this.originalValues.toString()
+      // let loadingState = this.loading
       Object.keys(this.defaultItem).forEach(field => {
         if (field !== 'customFields' && field !== 'categoryName') {
           if (field === 'image_data') {
@@ -575,12 +557,13 @@ export default {
   },
   methods: {
     cancel() {
+      // this.resetForm();
       this.loading = null
-      this.$store.dispatch('toggleModalCatalogItemEdit')
+      this.$store.dispatch('toggleModalCatalogitemEdit')
     },
-    deletecatalogItem() {
+    deleteCatalogitem() {
       this.$store
-        .dispatch('catalogItemDelete', { id: this.id })
+        .dispatch('catalogitemDelete', { id: this.id })
         .then(() => {
           this.$store.dispatch('setStateValue', {
             key: 'events',
@@ -599,10 +582,10 @@ export default {
             status: 'success',
             message: 'Catalog item deleted.'
           })
-          this.$store.dispatch('toggleModalCatalogItemEdit')
+          this.$store.dispatch('toggleModalCatalogitemEdit')
         })
         .catch(err => {
-          console.error('err: ' + err)
+          console.log('err: ' + err)
         })
     },
     deletePrompt() {
@@ -631,11 +614,12 @@ export default {
       this.modalConfirmDelete = true
     },
     editCustomFields() {
-      // const customFields = this.catalogItemEditing?.customFields || []
-      this.$store.dispatch('togglemodalEditCatalogItemFields')
-      // this.$store.dispatch('ciEditingcfEditingSet', customFields).then(() => {
-      //   this.$store.dispatch('togglemodalEditCatalogItemFields')
-      // })
+      const customFields = this.catalogItemediting?.customFields || []
+      this.$store
+        .dispatch('catalogitemeditingcustomfieldsSetediting', customFields)
+        .then(() => {
+          this.$store.dispatch('togglemodalEditCatalogItemFields')
+        })
     },
     resetChanges() {
       let isChanged = false
@@ -670,22 +654,27 @@ export default {
       const ciData = {}
       itemValues.forEach(val => (ciData[val] = this[val]))
       ciData.image_data = this.image_data
-      ciData.customFields = [...this.catalogItemEditing?.customFields] || []
       const isNew = !ciData.id
       if (isNew) {
+        //TODO: WE SHOULD BE ABLE TO WORK THIS INTO UPDATE FUNCTION ON SERVERSIDE
+        ciData.customFields = this.catalogItemediting?.customFields || []
         ciData.id = new Date().getTime()
-        this.$store.dispatch('catalogItemAdd', ciData)
+        //ADD ITEM TO LIST
+        this.$store.dispatch('catalogitemAdd', ciData)
+        // this.$store.dispatch('catalogitemediting', ciData)
+        this.setItemeditingValues(ciData)
+        //SET CATALOG ITEM editing ID
       } else {
-        Object.keys(ciData).forEach(key => {
-          this.$store.dispatch('catalogItemSetValue', {
+        const itemData = { ...ciData, image_data: this.image_data }
+        Object.keys(itemData).forEach(key => {
+          this.$store.dispatch('catalogitemSetValue', {
             id: this.id,
             key: key,
-            data: ciData[key]
+            data: itemData[key]
           })
         })
+        this.setItemeditingValues(itemData)
       }
-
-      this.setItemEditingValues(ciData)
 
       this.$store.dispatch('localStorageWrite', {
         key: `catalogItems`,
@@ -700,7 +689,7 @@ export default {
 
       this.loading = null
     },
-    setItemEditingValues(values) {
+    setItemeditingValues(values) {
       for (let item in values) {
         this[item] = values[item]
         this.$set(this.originalValues, item, values[item])
@@ -716,10 +705,10 @@ export default {
   },
 
   mounted() {
-    if (!this.catalogItemEditing?.id) {
+    if (!this.catalogItemediting?.id) {
       this.$store.dispatch('catalogItemNew', this.$vuetify)
     }
-    this.setItemEditingValues(this.catalogItemEditing)
+    this.setItemeditingValues(this.catalogItemediting)
   }
 }
 </script>

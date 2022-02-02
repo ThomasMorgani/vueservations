@@ -109,7 +109,6 @@ export default {
       const now = new Date()
       const nowSql = timestampSql(now)
       const imageData = this.$refs.imgPreview
-      console.log(imageData)
       const newImage = {
         date_added: nowSql,
         date_updated: nowSql,

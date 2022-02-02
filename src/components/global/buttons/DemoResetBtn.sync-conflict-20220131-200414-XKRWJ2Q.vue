@@ -211,10 +211,8 @@
                   </v-card-title>
                   <v-card-text>
                     <v-card flat width="100%">
-                      <v-card-text
-                        class="d-flex align-center justify-center px-5"
-                      >
-                        <p class="font-weight-bold warning--text">
+                      <v-card-text class="d-flex align-center justify-center">
+                        <p class="font-weight-bold primary--text">
                           Please confirm removal of the following items.
                         </p>
                       </v-card-text>
@@ -333,6 +331,7 @@ export default {
   }),
   methods: {
     async deleteData() {
+      console.log('delete')
       await this.$store.dispatch('appDataDelete', this.toDelete)
       window.location.reload()
     }

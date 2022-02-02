@@ -40,7 +40,7 @@
       max-width="500px"
       transition="dialog-transition"
     >
-      <categoryEdit :key="'cEdit' + String(categoryediting)"></categoryEdit>
+      <categoryEdit :key="'cEdit' + String(categoryEditing)"></categoryEdit>
     </v-dialog> -->
 
     <v-dialog
@@ -101,7 +101,7 @@ export default {
     categoryEdit(id = null) {
       //console.log('edit', id)
       this.$store.dispatch('setStateValue', {
-        key: 'categoryediting',
+        key: 'categoryEditing',
         value: id
       })
       this.$store.dispatch('toggleModalEditCategory')

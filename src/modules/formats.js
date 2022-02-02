@@ -3,15 +3,18 @@ import filters from '@/modules/filters.js'
 
 //TODO: WHEN SETTINGS ARE SETUP, IMPORT DEFAULTS, DONT HARDCODE
 const catalogItem = item => {
+  //customFields may come from backend as camel or sname
+  const customFields = item.custom_fields ? 
+  [...item.custom_fields] : 
+  item.customFields ? 
+  [...item.customFields] : 
+  [] 
   return {
     abbreviation: item.abbreviation || 'EIPL',
     category: item.category || null,
     categoryName: item.categoryName || 'MISC',
     color: item.color || null,
-    customFields:
-      item.custom_fields && item.custom_fields.length > 0
-        ? item.custom_fields
-        : null,
+    customFields,
     description: item.description || '',
     id: item.id,
     image_data: item.image_data || {},
@@ -66,9 +69,6 @@ const dateDifference = (date1, date2) => {
 }
 
 const eventDetailed = (event, catalogItems, patrons) => {
-  // console.log('eventDetailedeventDetailedeventDetailed')
-  // console.log(event)
-  // console.log(patrons)
   return {
     ...event,
     ciData: filters.getObjectFromArray(catalogItems, 'id', event.item_id), //
@@ -81,8 +81,6 @@ const eventDetailed = (event, catalogItems, patrons) => {
 }
 
 const eventListSimple = (events, patrons) => {
-  // console.log(events)
-  // console.log(patrons)
   const currYear = new Date().getFullYear().toString()
   return events.map(e => {
     const patron = patrons.find(p => p.id === parseInt(e.patron_id))
@@ -101,9 +99,6 @@ const eventListSimple = (events, patrons) => {
 }
 
 const eventPreview = event => {
-  // const eventPreview = (event, categories) => {
-  // console.log(event)
-  // console.log(categories)
   if (typeof event !== 'object') return
   event = event?.event ? { ...event.event } : { ...event }
   const data = {
@@ -210,7 +205,6 @@ const timestampHuman = (timestamp, withYear = true, withTime = true) => {
     human = human + `  ${h}:${m} ${ampm}`
   }
   return human
-  // return timestamp`
 }
 
 export {

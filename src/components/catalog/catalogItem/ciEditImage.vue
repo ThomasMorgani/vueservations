@@ -31,14 +31,14 @@
         >{{ !showGallery ? 'CHANGE IMAGE' : 'CLOSE' }}
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" @click="close">CANCEL</v-btn>
+      <v-btn text small color="warning" @click="close">CANCEL</v-btn>
       <v-tooltip top :disabled="!saveDisabled">
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
               text
               small
-              color="primary"
+              color="success"
               :disabled="saveDisabled"
               :loading="loading === 'save'"
               @click="saveImage"
@@ -173,8 +173,6 @@ export default {
       this.$emit('closeImageModal')
     },
     onImageAdded(image) {
-      console.log('imageAdded')
-      console.log(image)
       this.selectedImageData = image
       this.modalNewImage = false
     },
@@ -203,11 +201,6 @@ export default {
       })
       this.$store.dispatch('toggleModalImageFullPreview')
     }
-  },
-  mounted() {
-    // setTimeout(() => {
-    //   this.isLoaded = true
-    // }, 1000)
   }
 }
 </script>
