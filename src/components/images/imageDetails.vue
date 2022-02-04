@@ -7,7 +7,7 @@
         imageData.display_name ? imageData.display_name : 'Name Here'
       }}</span>
       <v-spacer></v-spacer>
-      <v-tooltip top v-if="isDefaultImage">
+      <v-tooltip color="primary" top v-if="isDefaultImage">
         <template v-slot:activator="{ on }">
           <v-icon color="primary" v-on="on">mdi-star</v-icon>
         </template>

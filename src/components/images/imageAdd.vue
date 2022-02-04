@@ -67,6 +67,7 @@
 <script>
 import { timestampSql } from '@/modules/formats'
 export default {
+  name: 'ImageAdd',
   data: () => ({
     imgSrcItems: [
       {

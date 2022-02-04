@@ -8,22 +8,30 @@ export default new Vuetify({
     iconfont: 'mdi'
   },
   theme: {
-    dark: false,
+    options: {
+      customProperties: true,
+    },
     themes: {
       light: {
-        background: '#fafafa',
-        primary: '#623fa7',
-        secondary: '#fff',
-        accent: '#8c9eff',
-        error: '#b71c1c'
+        background: '#a1b2cc',
+        primary: '#2c4776',
+        secondary: '#FFFFFF',
+        accent: '#a1b2cc',
+        error: '#FF5252',
+        info: '#2196F3',
+        success: '#4CAF50',
+        warning: '#FFC107',
       },
       dark: {
-        background: '#fafafa',
-        primary: '#623fa7',
-        secondary: '#b0bec5',
-        accent: '#8c9eff',
-        error: '#b71c1c'
-      }
-    }
-  }
+        background: '#a1b2cc',
+        primary: '#2c4776',
+        secondary: '#FFFFFF',
+        accent: '#a1b2cc',
+        error: '#FF5252',
+        info: '#2196F3',
+        success: '#4CAF50',
+        warning: '#FFC107',
+      },
+    },
+  },
 })

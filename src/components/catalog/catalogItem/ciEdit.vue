@@ -86,10 +86,10 @@
                         width="100%"
                         class="d-flex flex-grow-1 align-center justify-center"
                       >
-                        <v-menu
+                        <v-dialog
+                          v-model="modalColor"
+                          width="400"
                           :close-on-content-click="false"
-                          :nudge-width="200"
-                          offset-x
                         >
                           <template v-slot:activator="{ on }">
                             <v-sheet
@@ -102,12 +102,13 @@
                               <v-icon color="white">mdi-palette</v-icon>
                             </v-sheet>
                           </template>
-                          <v-color-picker
-                            v-model="color"
-                            class="ma-2"
-                            hide-inputs
-                          ></v-color-picker>
-                        </v-menu>
+                          <ColorPicker
+                            :color="color"
+                            @cancel="colorPickCancel"
+                            @input="color = $event"
+                            @save="modalColor = false"
+                          ></ColorPicker>
+                        </v-dialog>
                       </v-sheet>
                     </v-card>
                   </v-col>
@@ -136,7 +137,7 @@
                             height="100%"
                             width="100%"
                             hover
-                            @click="modalEditImage = !modalEditImage"
+                            @click="modalImage = !modalImage"
                             class="hoverPointer"
                           ></v-img>
                         </v-sheet>
@@ -320,16 +321,16 @@
 
     <!-- EDIT IMAGE -->
     <v-dialog
-      v-model="modalEditImage"
+      v-model="modalImage"
       max-width="650px"
       persistent
       transition="dialog-transition"
-      :key="modalEditImage + 'imgModal'"
+      :key="modalImage + 'imgModal'"
     >
       <editImageModal
         :originalImageData="image_data"
         :isNew="Boolean(!id)"
-        @closeImageModal="modalEditImage = false"
+        @closeImageModal="modalImage = false"
         @updateImage="updateImage"
       ></editImageModal>
     </v-dialog>
@@ -392,12 +393,13 @@ import Vue2Filters from 'vue2-filters'
 export default {
   name: 'catalogItemEdit',
   components: {
+    catalogItemEditFields: () =>
+      import('@/components/catalog/catalogItem/ciEditFields'),
     customFieldsList,
+    ColorPicker: () => import('@/components/global/colorPicker'),
     editImageModal: () =>
       import('@/components/catalog/catalogItem/ciEditImage'),
-    eventTableSimple: () => import('@/components/global/tableSimple'),
-    catalogItemEditFields: () =>
-      import('@/components/catalog/catalogItem/ciEditFields')
+    eventTableSimple: () => import('@/components/global/tableSimple')
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({
@@ -437,9 +439,10 @@ export default {
     internal: '0',
     loading: false,
     modalConfirmDelete: false,
-    modalEditImage: false,
+    modalImage: false,
+    modalColor: false,
     name: null,
-    originalValues: {},
+    // originalValues: {},
     reservation_buffer: null,
     reservation_length: null,
     status: null,
@@ -471,6 +474,7 @@ export default {
       }
       return null
     },
+
     customFieldsDisplayed() {
       return this.catalogItemEditing?.customFields
     },
@@ -484,24 +488,23 @@ export default {
     },
     isChanged() {
       if (
-        JSON.stringify(this.originalValues?.customFields) !=
+        JSON.stringify(this?.customFields) !=
         JSON.stringify(this.catalogItemEditing?.customFields)
       )
         return true
       let isChanged = false
       Object.keys(this.defaultItem).forEach(field => {
-        if (field !== 'customFields' && field !== 'categoryName') {
+        // if (field !== 'customFields' && field !== 'categoryName') {
+        if (field !== 'customFields') {
           if (field === 'image_data') {
-            if (
-              this[field] &&
-              this.originalValues[field] &&
-              this[field].id &&
-              this[field].id !== this.originalValues[field].id
-            ) {
+            // this.originalValues[field] &&
+            // this[field] &&
+            // this[field].id &&
+            if (this?.[field]?.id !== this.catalogItemEditing[field].id) {
               isChanged = true
             }
           } else {
-            if (this.originalValues[field] !== this[field]) {
+            if (this[field] !== this.catalogItemEditing[field]) {
               isChanged = true
             }
           }
@@ -578,6 +581,10 @@ export default {
       this.loading = null
       this.$store.dispatch('toggleModalCatalogItemEdit')
     },
+    colorPickCancel() {
+      this.color = this.catalogItemEditing.color // ; primary
+      this.modalColor = false
+    },
     deletecatalogItem() {
       this.$store
         .dispatch('catalogItemDelete', { id: this.id })
@@ -639,12 +646,13 @@ export default {
     },
     resetChanges() {
       let isChanged = false
-      Object.keys(this.originalValues).forEach(field => {
+      Object.keys(this.catalogItemEditing).forEach(field => {
         if (field !== 'customFields' && field !== 'categoryName') {
-          this.$set(this, field, this.originalValues[field])
+          // this.$set(this, field, this.originalValues[field])
+          this[field] = this.catalogItemEditing[field]
         }
       })
-      return !isChanged
+      return !isChanged //??
     },
     resetForm() {
       this.color = this.$vuetify.theme.primary || 'primary'
@@ -673,6 +681,7 @@ export default {
       ciData.customFields = [...this.catalogItemEditing?.customFields] || []
       const isNew = !ciData.id
       if (isNew) {
+        console.log('is new')
         ciData.id = new Date().getTime()
         this.$store.dispatch('catalogItemAdd', ciData)
       } else {
@@ -685,7 +694,12 @@ export default {
         })
       }
 
+      console.log({ ...ciData })
       this.setItemEditingValues(ciData)
+      this.$store.dispatch('setStateValue', {
+        key: 'catalogItemEditing',
+        value: { ...ciData }
+      })
 
       this.$store.dispatch('localStorageWrite', {
         key: `catalogItems`,
@@ -703,7 +717,7 @@ export default {
     setItemEditingValues(values) {
       for (let item in values) {
         this[item] = values[item]
-        this.$set(this.originalValues, item, values[item])
+        // this.$set(this.originalValues, item, values[item])
       }
     },
     testReservationLength(val) {
