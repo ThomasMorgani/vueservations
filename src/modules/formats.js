@@ -49,6 +49,22 @@ const cfCiValuesSimple = (fieldId, catalogItems) => {
   return items
 }
 
+const  contrastingColor = (backgroundColor) => {
+    // attribution
+    // https://convertingcolors.com/blog/article/convert_hex_to_rgb_with_javascript.html
+    
+
+    if (typeof backgroundColor !== 'string' || backgroundColor?.substring(0, 1) !== '#') {
+      return 'secondary'
+    }
+    const R = parseInt(backgroundColor.substr(1, 2), 16)
+    const G = parseInt(backgroundColor.substr(3, 2), 16)
+    const B = parseInt(backgroundColor.substr(5, 2), 16)
+    const hsp = Math.sqrt(R * R * 0.241 + G * G * 0.691 + B * B * 0.068)
+    return hsp > 220 ? 'primary' : 'secondary'
+    // return hsp > 127.5 ? 'black' : 'white'
+  }
+
 const dateDifference = (date1, date2) => {
   //TODO: need to extend? pass units needed, days, hours, etc
   //need choice return string or number?
@@ -210,6 +226,7 @@ const timestampHuman = (timestamp, withYear = true, withTime = true) => {
 export {
   catalogItem,
   cfCiValuesSimple,
+  contrastingColor,
   dateDifference,
   eventDetailed,
   eventListSimple,

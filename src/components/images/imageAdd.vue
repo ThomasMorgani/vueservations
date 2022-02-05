@@ -50,7 +50,7 @@
 
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" @click="cancelUpload">CANCEL</v-btn>
+      <v-btn text small color="warning" @click="cancelUpload">CANCEL</v-btn>
       <v-btn
         text
         small

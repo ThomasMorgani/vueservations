@@ -152,12 +152,6 @@ export default {
     })
   },
   methods: {
-    getDefaultImage() {
-      const setting = this.$store.state.appSettings.find(
-        s => s.name === 'Default_Image'
-      )
-      return this.images.find(i => i.id === setting.setting)
-    },
     getImages() {
       this.$store
         .dispatch('apiCall', { endpoint: '/images_get_all' })
@@ -182,7 +176,6 @@ export default {
     onImageClicked(image) {
       this.modalComp = 'imageEdit'
       this.modalCompData = {
-        defaultImage: this.getDefaultImage(),
         imageData: image
       }
       this.modalVisible = true

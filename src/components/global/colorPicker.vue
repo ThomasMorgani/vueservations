@@ -1,8 +1,6 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center">
-      <modal-title-text text="COLOR SELECT"> </modal-title-text>
-    </v-card-title>
+    <modal-title text="COLOR SELECT"> </modal-title>
     <v-card-text>
       <v-select
         v-model="selection"
@@ -46,9 +44,7 @@
 
 <script>
 // import colors from 'vuetify/lib/util/colors'
-import modalTitleText from './modalTitleText.vue'
 export default {
-  components: { modalTitleText },
   name: 'ColorPicker',
   props: {
     color: {

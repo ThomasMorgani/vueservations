@@ -1,8 +1,7 @@
 <template>
-  <v-sheet
-    color="transparent"
+  <v-card-title
     v-text="text"
-    class="text-h6 primary--text font-weight-bold"
+    class="justify-center text-h6 font-weight-bold primary secondary--text mb-4"
   />
 </template>
 

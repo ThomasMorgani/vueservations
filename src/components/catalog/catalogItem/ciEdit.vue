@@ -1,15 +1,13 @@
 <template>
   <v-card height="100%">
-    <v-card-title class="justify-center title primary--text">
-      {{ id ? 'EDIT ITEM' : 'ADD ITEM' }}
-    </v-card-title>
-    <v-card-text class="pr-0">
+    <modal-title :text="id ? 'EDIT ITEM' : 'ADD ITEM'"></modal-title>
+    <v-card-text>
       <v-tabs v-model="tab" background-color="transparent" color="primary" grow>
         <v-tab key="0">INFO</v-tab>
         <v-tab key="1">DETAILS</v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="tab" class="modalBody pr-6">
+      <v-tabs-items v-model="tab" class="modalBody mt-2">
         <v-tab-item key="0" class="tabItem">
           <form>
             <v-row align="center" justify="center" dense>
@@ -99,7 +97,9 @@
                               width="50%"
                               class="hoverPointer d-flex align-center justify-center br-1"
                             >
-                              <v-icon color="white">mdi-palette</v-icon>
+                              <v-icon :color="colorIconColor()"
+                                >mdi-palette</v-icon
+                              >
                             </v-sheet>
                           </template>
                           <ColorPicker
@@ -284,11 +284,21 @@
         <span>Revert all unsaved changes</span>
       </v-tooltip>
       <v-spacer></v-spacer>
-      <v-btn text large color="primary" @click="cancel">{{
-        saveDisabled && catalogItemEditing && catalogItemEditing.id
-          ? 'CLOSE'
-          : 'CANCEL'
-      }}</v-btn>
+      <v-btn
+        text
+        large
+        :color="
+          saveDisabled && catalogItemEditing && catalogItemEditing.id
+            ? 'primary'
+            : 'warning'
+        "
+        @click="cancel"
+        >{{
+          saveDisabled && catalogItemEditing && catalogItemEditing.id
+            ? 'CLOSE'
+            : 'CANCEL'
+        }}</v-btn
+      >
       <v-tooltip color="primary" top :disabled="!saveDisabled && !isChanged">
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -370,7 +380,7 @@
         </v-card-text>
         <v-card-actions class="d-flex justify-space-around">
           <v-btn
-            color="primary"
+            color="warning"
             text
             @click="modalConfirmDelete = !modalConfirmDelete"
             >CANCEL</v-btn
@@ -387,7 +397,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import customFieldsList from '@/components/catalog/catalogItem/ciCustomFieldsList'
-import * as formats from '@/modules/formats.js'
+import { contrastingColor, eventListSimple } from '@/modules/formats.js'
 import Vue2Filters from 'vue2-filters'
 
 export default {
@@ -585,6 +595,11 @@ export default {
       this.color = this.catalogItemEditing.color // ; primary
       this.modalColor = false
     },
+    colorIconColor() {
+      console.log(this.color)
+      console.log(contrastingColor(this.color))
+      return contrastingColor(this.color)
+    },
     deletecatalogItem() {
       this.$store
         .dispatch('catalogItemDelete', { id: this.id })
@@ -615,7 +630,7 @@ export default {
     deletePrompt() {
       let affectedEvents = this.events.filter(e => e.item_id === this.id)
       if (affectedEvents.length > 0) {
-        affectedEvents = formats.eventListSimple(affectedEvents, this.patrons)
+        affectedEvents = eventListSimple(affectedEvents, this.patrons)
       }
       this.affectedEventData = {
         headers: [

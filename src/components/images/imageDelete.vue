@@ -28,7 +28,7 @@
       </p>
     </v-card-text>
     <v-card-actions>
-      <v-btn text color="primary" @click="$emit('closeDelete')">CANCEL</v-btn>
+      <v-btn text color="warning" @click="$emit('closeDelete')">CANCEL</v-btn>
       <v-spacer></v-spacer>
       <v-btn
         text

@@ -1,5 +1,5 @@
 <template>
-  <v-card @click="onLeftClick">
+  <v-card max-height="90vh" max-width="90vw" @click="onLeftClick">
     <v-img
       ref="imageDisplayed"
       :src="image.src"

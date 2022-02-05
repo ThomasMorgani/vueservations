@@ -18,7 +18,7 @@
         <filterBtn></filterBtn>
       </v-toolbar>
     </v-col>
-    <v-col cols="12" class="mt-4 pa-0 flex-grow-1">
+    <v-col cols="12" class="pa-0 flex-grow-1">
       <catalogItemList :view="view" @newItem="catalogItemAdd"></catalogItemList>
     </v-col>
     <!-- Edit Catalog Item Modal  -->

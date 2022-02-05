@@ -1,9 +1,6 @@
 <template>
   <v-card>
-    <v-card-title
-      v-text="`${id ? 'EDIT' : 'ADD NEW'} RESERVATION`"
-      class="headline primary--text justify-center"
-    ></v-card-title>
+    <modal-title :text="`${id ? 'EDIT' : 'ADD NEW'} RESERVATION`"></modal-title>
     <v-card-text style="max-width: 1000px; max-height: 70vh; overflow-y: auto;">
       <v-form ref="form" v-model="valid">
         <v-row align="center" justify="center">
@@ -197,7 +194,7 @@
                 :allowed-dates="allowedStart"
               >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartDate = false"
+                <v-btn text color="warning" @click="modalStartDate = false"
                   >Cancel</v-btn
                 >
                 <v-btn
@@ -238,7 +235,7 @@
                 :allowed-dates="allowedEnd"
               >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndDate = false"
+                <v-btn text color="warning" @click="modalEndDate = false"
                   >Cancel</v-btn
                 >
                 <v-btn
@@ -323,7 +320,7 @@
               </template>
               <v-time-picker v-if="modalStartTime" v-model="startTime">
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalStartTime = false"
+                <v-btn text color="warning" @click="modalStartTime = false"
                   >Cancel</v-btn
                 >
                 <v-btn
@@ -473,7 +470,7 @@
         </v-card-text>
         <v-card-actions class="d-flex justify-space-around">
           <v-btn
-            color="primary"
+            color="warning"
             text
             @click="modalConfirmDelete = !modalConfirmDelete"
             >CANCEL</v-btn

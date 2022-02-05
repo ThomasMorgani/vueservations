@@ -1,6 +1,21 @@
 <template>
   <v-card>
-    <imageDetails :imageData="imageData"></imageDetails>
+    <v-card-text>
+      <imageDetails :imageData="imageData"></imageDetails>
+
+      <v-switch
+        :disabled="isDefaultImage"
+        :key="isDefaultImage"
+        :messages="
+          isDefaultImage ? 'Toggle default on another image to remove.' : ''
+        "
+        label="Default Image"
+        :input-value="isDefaultImage"
+        @change="setDefaultImage"
+        class="ml-4"
+      ></v-switch>
+    </v-card-text>
+
     <v-card-actions>
       <btnWithTooltip
         :btnClass="['mx-2']"
@@ -104,10 +119,6 @@ export default {
   mixins: [Vue2Filters.mixin],
   components: { btnWithTooltip, imageDetails, imageDelete },
   props: {
-    defaultImage: {
-      type: Object,
-      required: true
-    },
     imageData: {
       type: Object,
       required: true
@@ -128,7 +139,9 @@ export default {
       )
     },
     isDefaultImage() {
-      return this.defaultImage.id === this.imageData.id
+      const defaultImage =
+        this.$store.getters.appSettingsByName.Default_Image.setting || null
+      return defaultImage === this.imageData.id
     }
   },
   methods: {
@@ -183,6 +196,20 @@ export default {
         })
         this.modalEdit = false
       }
+    },
+    setDefaultImage() {
+      this.$store.dispatch('appSettingUpdate', {
+        settingName: 'Default_Image',
+        settingValue: this.imageData.id
+      })
+      this.$store.dispatch('localStorageWrite', {
+        key: `appSettings`,
+        data: [...this.$store.state.appSettings]
+      })
+      this.$store.dispatch('toggleSnackbar', {
+        status: 'success',
+        message: 'Default imaged saved.'
+      })
     },
     updatecatalogItems() {
       const items = this.$store.state.catalogItems.map(ci => {

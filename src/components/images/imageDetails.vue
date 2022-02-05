@@ -3,16 +3,7 @@
     <v-card-title
       class="font-weight-bold primary--text headline justify-space-between mb-0 pb-0"
     >
-      <span>{{
-        imageData.display_name ? imageData.display_name : 'Name Here'
-      }}</span>
-      <v-spacer></v-spacer>
-      <v-tooltip color="primary" top v-if="isDefaultImage">
-        <template v-slot:activator="{ on }">
-          <v-icon color="primary" v-on="on">mdi-star</v-icon>
-        </template>
-        <span>This is the default image.</span>
-      </v-tooltip>
+      {{ imageData.display_name ? imageData.display_name : 'Name Here' }}
     </v-card-title>
     <v-card-text>
       <v-row align="center">
@@ -22,6 +13,7 @@
             :src="imageData.src"
             @click="showPreview"
             class="hoverPointer"
+            max-height="80%"
           ></v-img>
         </v-col>
         <v-col

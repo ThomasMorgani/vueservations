@@ -1,8 +1,6 @@
 <template>
   <v-card>
-    <v-card-title class="title justify-center primary--text"
-      >NOTES LOG</v-card-title
-    >
+    <modal-title text="NOTES LOG"></modal-title>
     <v-card-text>
       <v-data-table
         :headers="[
@@ -16,19 +14,7 @@
         :height="tableData.height"
       >
         <template v-slot:top>
-          <v-toolbar flat color="white">
-            <v-toolbar-title class="headline primary--text">
-              {{ catalogItem.name }}
-              <v-chip
-                label
-                small
-                :color="catalogItem.color ? catalogItem.color : 'grey'"
-                v-text="catalogItem.abbreviation"
-                class="font-weight-bold white--text mx-2"
-              ></v-chip>
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
-          </v-toolbar>
+          <CiHeading :item="catalogItem" class="ma-4 mt-8"></CiHeading>
         </template>
         <template v-slot:item.action="{ item }">
           <v-menu
@@ -47,7 +33,7 @@
                 CONFIRM DELETE
               </v-card-title>
               <v-card-actions>
-                <v-btn text color="primary">CANCEL</v-btn>
+                <v-btn text color="warning">CANCEL</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn text color="error" @click="noteDelete(item)"
                   >CONFIRM</v-btn
@@ -68,7 +54,7 @@
     <v-card-actions>
       <v-dialog v-model="modalEditNote" persistent max-width="500">
         <template v-slot:activator="{ on }">
-          <v-btn text color="primary" class="mb-2" v-on="on">+ ADD</v-btn>
+          <v-btn text color="success" class="mb-2" v-on="on">+ ADD</v-btn>
         </template>
         <editNote
           :key="modalEditNote"
@@ -85,9 +71,13 @@
 </template>
 
 <script>
+import { contrastingColor } from '@/modules/formats.js'
+import CiHeading from '@/components/catalog/catalogItem/ciHeading'
+
 export default {
   name: 'ciNotes',
   components: {
+    CiHeading,
     editNote: () => import('@/components/catalog/catalogItem/ciNoteEdit')
   },
   props: {
@@ -111,10 +101,12 @@ export default {
     }
   }),
   methods: {
+    categoryChipTextColor() {
+      return contrastingColor(this.catalogItem.color)
+    },
     noteAdd(note) {
       this.tableData.items.push(note)
       this.catalogItem.notes.push(note)
-      this.saveNotesToLocal()
     },
     noteDelete(note) {
       this.saveLoading = true

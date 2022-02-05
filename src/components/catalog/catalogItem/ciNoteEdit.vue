@@ -9,16 +9,16 @@
     <v-card-actions>
       <v-btn
         text
-        color="primary"
+        color="warning"
         :disabled="!isChanged"
         @click="note = originalNote"
         >RESET</v-btn
       >
       <v-spacer></v-spacer>
-      <v-btn text color="primary" @click="close">CANCEL</v-btn>
+      <v-btn text color="warning" @click="close">CANCEL</v-btn>
       <v-btn
         text
-        color="primary"
+        color="success"
         :disabled="!isChanged"
         :loading="saveLoading"
         @click="saveNote"

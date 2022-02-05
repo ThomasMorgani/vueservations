@@ -87,12 +87,10 @@
 
 <script>
 import { mapState } from 'vuex'
-import TitleText from '@/components/global/modalTitleText.vue'
+
 export default {
   name: 'cfEdit',
-  components: {
-    TitleText
-  },
+
   data: () => ({
     alertText: null,
     alertVisible: false,

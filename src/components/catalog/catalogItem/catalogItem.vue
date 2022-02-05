@@ -13,69 +13,10 @@
           ></v-img>
         </v-col>
         <v-col cols="10">
-          <v-row dense class="display-flex align-center justify-start">
-            <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
-            <span class="font-weight-medium title primary--text">
-              {{ item.name }}
-            </span>
-            <v-tooltip color="primary" top>
-              <template v-slot:activator="{ on }">
-                <v-chip
-                  label
-                  small
-                  :color="item.color ? item.color : 'grey'"
-                  v-text="item.abbreviation"
-                  class="font-weight-bold white--text mx-2"
-                  v-on="on"
-                ></v-chip>
-              </template>
-              <span>
-                <p>
-                  <strong>Abbreviation:</strong>
-                  {{ item.abbreviation }}
-                </p>
-                <p>
-                  <strong>Color:</strong>
-                  {{ item.color }}
-                </p>
-                <div
-                  :style="{ height: '10px', 'background-color': item.color }"
-                ></div>
-              </span>
-            </v-tooltip>
-          </v-row>
-
-          <v-row dense class="display-flex align-center justify-start">
-            <v-tooltip color="primary" top>
-              <template v-slot:activator="{ on }">
-                <div v-on="on">
-                  <v-avatar
-                    size="10"
-                    :color="categoriesById[item.category].color"
-                    class="mr-1"
-                  ></v-avatar>
-                  <p
-                    v-html="item.categoryName"
-                    class="font-italic subheading text-capitalize"
-                    style="display: inline;"
-                  ></p>
-                </div>
-              </template>
-              <span>
-                <p class="mb-1">
-                  <strong>Category</strong>
-                </p>
-                <v-avatar
-                  size="15"
-                  :color="categoriesById[item.category].color"
-                  class="mr-1"
-                ></v-avatar>
-                {{ item.categoryName }}
-              </span>
-            </v-tooltip>
-          </v-row>
           <v-row dense class="display-flex align-start justify-start my-2">
             <v-col class="text-xs-left">
+              <CiHeading :item="item"></CiHeading>
+
               <p class="caption body-1 pa-2" v-html="item.description"></p>
             </v-col>
           </v-row>
@@ -192,9 +133,11 @@ import { mapGetters, mapState } from 'vuex'
 import { timestampHuman } from '@/modules/formats.js'
 
 import customFieldsList from '@/components/catalog/catalogItem/ciCustomFieldsList'
+import CiHeading from '@/components/catalog/catalogItem/ciHeading'
 export default {
   name: 'catalogItem',
   components: {
+    CiHeading,
     customFieldsList
   },
   props: {

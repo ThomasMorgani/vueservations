@@ -4,7 +4,7 @@ import store from './store' //vuex
 import vuetify from './plugins/vuetify'
 import { Table, TableColumn } from 'element-ui'
 
-import ModalTitleText from '@/components/global/modalTitleText.vue'
+import ModalTitle from '@/components/global/modalTitle.vue'
 
 import { apiSettings } from './.env.local.js'
 
@@ -18,7 +18,7 @@ Vue.prototype.$apiSettings = apiSettings
 
 Vue.use(Table)
 Vue.use(TableColumn)
-Vue.component('ModalTitleText', ModalTitleText)
+Vue.component('ModalTitle', ModalTitle)
 
 Vue.config.productionTip = false
 new Vue({

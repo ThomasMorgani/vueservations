@@ -250,7 +250,7 @@
         <span>Revert all unsaved changes</span>
       </v-tooltip>
       <v-spacer></v-spacer>
-      <v-btn text color="primary" @click="cancel">CANCEL</v-btn>
+      <v-btn text color="warning" @click="cancel">CANCEL</v-btn>
       <v-tooltip color="primary" top :disabled="!saveDisabled && !isChanged">
         <template v-slot:activator="{ on }">
           <div v-on="on">

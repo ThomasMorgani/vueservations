@@ -1,20 +1,8 @@
 <template>
   <v-card>
-    <v-card-title class="d-flex align-center justify-center  primary--text">
-      <TitleText :text="id ? 'EDIT CATEGORY' : 'ADD CATEGORY'"></TitleText>
-      <!-- <v-spacer></v-spacer> -->
-      <v-sheet color="transparent" class="defaultCategoryIcon">
-        <v-tooltip color="primary" top v-if="isDefaultCategory">
-          <template v-slot:activator="{ on }">
-            <v-icon v-on="on" color="primary" class="align-end"
-              >mdi-star-box</v-icon
-            >
-          </template>
-          <span>This is the default category.</span>
-        </v-tooltip>
-      </v-sheet>
-    </v-card-title>
-    <v-card-text>
+    <modal-title :text="id ? 'EDIT CATEGORY' : 'ADD CATEGORY'"></modal-title>
+
+    <v-card-text class="pt-4">
       <form @submit.prevent="saveCategory">
         <v-row class="justify-center align-center">
           <v-col cols="2">
@@ -39,6 +27,19 @@
               textarea
               :error-messages="nameAvailable"
             ></v-text-field>
+          </v-col>
+          <v-col cols="10" offset="2">
+            <v-switch
+              :disabled="isDefaultCategory"
+              :messages="
+                isDefaultCategory
+                  ? 'Toggle default on another category to remove.'
+                  : ''
+              "
+              label="Default Category"
+              :value="isDefaultCategory"
+              @change="setDefaultCategory"
+            ></v-switch>
           </v-col>
         </v-row>
       </form>
@@ -69,7 +70,7 @@
           </v-card-text>
           <v-card-actions class="d-flex justify-space-around">
             <v-btn
-              color="primary"
+              color="warning"
               text
               @click="modalConfirmDelete = !modalConfirmDelete"
               >CANCEL</v-btn
@@ -100,24 +101,11 @@
             : 'Delete category'
         }}</span>
       </v-tooltip>
-      <v-tooltip v-if="id && !isDefaultCategory" color="primary" top>
-        <template v-slot:activator="{ on }">
-          <v-sheet v-on="on" color="transparent">
-            <v-btn
-              text
-              small
-              color="primary"
-              :disabled="!id || isDefaultCategory"
-              :loading="loading === 'delete'"
-              @click="setDefaultCategory"
-              >MAKE DEFAULT</v-btn
-            >
-          </v-sheet>
-        </template>
-        <span>Make this the default category.</span>
-      </v-tooltip>
+
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" @click="cancel">CANCEL</v-btn>
+      <v-btn text small color="primary" @click="cancel">{{
+        saveDisabled ? 'CLOSE' : 'CANCEL'
+      }}</v-btn>
       <v-btn
         text
         small
@@ -134,12 +122,9 @@
 <script>
 import { mapState } from 'vuex'
 import filters from '@/modules/filters'
-import TitleText from '@/components/global/modalTitleText.vue'
 export default {
   name: 'categoryEdit',
-  components: {
-    TitleText
-  },
+
   data: () => ({
     color: 'primary',
     id: null,
