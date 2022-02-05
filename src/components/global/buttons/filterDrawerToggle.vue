@@ -2,8 +2,12 @@
   <v-tooltip top :disabled="!isFiltered">
     <template v-slot:activator="{ on }">
       <div v-on="on">
-        <v-btn text icon @click="toggle" :disabled="isDisabled">
-          <v-icon :color="isFiltered ? 'success' : 'primary'">
+        <v-btn
+          v-bind="{ color: 'primary', icon: true, ...btnProps }"
+          @click="toggle"
+          :disabled="isDisabled"
+        >
+          <v-icon :color="isFiltered ? 'success' : 'primary'" left>
             {{ isActive ? 'mdi-filter-minus' : 'mdi-filter' }}
           </v-icon>
         </v-btn>
@@ -24,6 +28,12 @@
 //COLORS FOR ACTIVE FILTERS, BADGE MAYBE?
 export default {
   name: 'filterDrawerToggle',
+  props: {
+    btnProps: {
+      type: Object,
+      default: () => ({})
+    }
+  },
   computed: {
     isActive() {
       return this.$store.state.sideDrawer

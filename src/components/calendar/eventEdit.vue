@@ -356,7 +356,7 @@
               </template>
               <v-time-picker v-if="modalEndTime" v-model="endTime" full-width>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="modalEndTime = false"
+                <v-btn text color="warning" @click="modalEndTime = false"
                   >Cancel</v-btn
                 >
                 <v-btn text color="primary" @click="$refs.dialog.save(endTime)"
@@ -398,7 +398,19 @@
         >RESET</v-btn
       >
       <v-spacer></v-spacer>
-      <v-btn color="primary" text @click="$emit('close')">CANCEL</v-btn>
+      <v-btn
+        :color="
+          eventEditing && eventEditing.id && saveDisabled
+            ? 'primary'
+            : 'warning'
+        "
+        text
+        @click="$emit('close')"
+      >
+        {{
+          eventEditing && eventEditing.id && saveDisabled ? 'CLOSE' : 'CANCEL'
+        }}
+      </v-btn>
       <v-btn
         color="success"
         text
@@ -408,7 +420,7 @@
         <transition name="bounce-top">
           <v-icon v-if="!saveDisabled" left>mdi-content-save</v-icon>
         </transition>
-        {{ id ? 'SAVE' : 'SUBMIT' }}
+        {{ id ? 'SAVE' : 'CREATE' }}
       </v-btn>
     </v-card-actions>
     <!-- PICK UP HERE -->

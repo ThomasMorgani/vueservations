@@ -15,7 +15,7 @@
         <v-btn icon color="primary" @click="catalogItemAdd">
           <v-icon color="primary">mdi-note-plus</v-icon>
         </v-btn>
-        <filterBtn></filterBtn>
+        <filterBtn v-if="!sideDrawer"></filterBtn>
       </v-toolbar>
     </v-col>
     <v-col cols="12" class="pa-0 flex-grow-1">
@@ -91,7 +91,8 @@ export default {
 
       modalCategoryEdit: state => state.modalCategoryEdit,
       modalImageFullPreview: state => state.modalImageFullPreview,
-      settings: state => state.appSettings
+      settings: state => state.appSettings,
+      sideDrawer: state => state.sideDrawer
     }),
     view: {
       set(val) {

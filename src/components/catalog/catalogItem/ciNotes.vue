@@ -14,7 +14,7 @@
         :height="tableData.height"
       >
         <template v-slot:top>
-          <CiHeading :item="catalogItem" class="ma-4 mt-8"></CiHeading>
+          <CiHeading :item="catalogItem" class="pl-4 mt-8"></CiHeading>
         </template>
         <template v-slot:item.action="{ item }">
           <v-menu

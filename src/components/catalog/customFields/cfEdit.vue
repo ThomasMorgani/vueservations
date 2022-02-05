@@ -1,8 +1,6 @@
 <template>
   <v-card text>
-    <v-card-title class="align-center justify-center">
-      <TitleText :text="id ? 'EDIT CUSTOM FIELD' : 'NEW FIELsssD'"></TitleText>
-    </v-card-title>
+    <modal-title :text="id ? 'EDIT  FIELD' : 'NEW FIELD'"></modal-title>
     <v-card-text>
       <v-row dense>
         <v-col cols="12">

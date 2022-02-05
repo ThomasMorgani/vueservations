@@ -596,8 +596,8 @@ export default {
       this.modalColor = false
     },
     colorIconColor() {
-      console.log(this.color)
-      console.log(contrastingColor(this.color))
+      // console.log(this.color)
+      // console.log(contrastingColor(this.color))
       return contrastingColor(this.color)
     },
     deletecatalogItem() {

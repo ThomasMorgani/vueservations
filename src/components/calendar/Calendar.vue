@@ -384,7 +384,7 @@ export default {
     eventEdit(e) {
       if (e) {
         this.$store.dispatch('setStateValue', {
-          key: 'eventediting',
+          key: 'eventEditing',
           value: e
         })
         this.modalDetailsComp = 'eventEdit'

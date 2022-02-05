@@ -13,8 +13,10 @@
       <v-sheet
         color="transparent"
         @click="$store.dispatch('toggleStateValue', 'sideDrawer')"
-        class="title font-weight-bold align-center primary--text"
-        >FILTERS</v-sheet
+        class="d-flex font-weight-bold align-center primary--text"
+      >
+        <filterBtn :btnProps="{ small: true }"></filterBtn>
+        FILTERS</v-sheet
       >
       <v-tooltip color="primary" left>
         <template v-slot:activator="{ on }">
@@ -41,10 +43,12 @@
 </template>
 <script>
 import { mapGetters, mapState } from 'vuex'
+import filterBtn from '@/components/global/buttons/filterDrawerToggle'
 export default {
   components: {
     calendar: () => import('@/components/filterDrawer/calendarFilters'),
-    catalog: () => import('@/components/filterDrawer/catalogFilters')
+    catalog: () => import('@/components/filterDrawer/catalogFilters'),
+    filterBtn
   },
   computed: {
     ...mapGetters(['filtersApplied']),
