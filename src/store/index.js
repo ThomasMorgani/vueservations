@@ -127,8 +127,6 @@ export default new Vuex.Store({
         value: 'unkown'
       }
     },
-    viewMain: null,
-    viewSub: null
   },
   getters: {
     appSettingsByName(state) {

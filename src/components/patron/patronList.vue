@@ -126,7 +126,7 @@ export default {
         ],
         items: this.patronsList,
         actions: ['edit', 'details'],
-        height: this.$store.state.content.main.y - 200
+        height: this.$store.state.content.main.y - 230
       }
     }
   },

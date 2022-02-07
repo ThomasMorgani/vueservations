@@ -44,13 +44,6 @@ export default {
     },
     isFiltered() {
       return this.filtersApplied.length > 0
-    },
-
-    viewMain() {
-      return this.$store.state.viewMain
-    },
-    viewSub() {
-      return this.$store.state.viewSub
     }
   },
   methods: {

@@ -63,8 +63,6 @@ export default {
     ...mapGetters(['filtersApplied']),
     ...mapState({
       contentHeight: state => state.content.main.y,
-      viewMain: state => state.viewMain,
-      catalogView: state => state.viewMain,
       filterDrawer: state => state.filterDrawer
     }),
     contentHeight() {

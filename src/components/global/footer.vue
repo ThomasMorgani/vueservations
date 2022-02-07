@@ -1,24 +1,9 @@
 <template>
-  <v-footer color="primary" app dark clipped-right>
-    <v-tabs
-      v-model="viewMain"
-      optional
-      right
-      background-color="primary"
-      slider-color="secondary"
-    >
-      <!-- TODO: MOVE TO DATA OBJECT, V-for over -->
-      <v-tab key="demoReset" value="demoReset">
-        <DemoResetBtn></DemoResetBtn>
-      </v-tab>
-      <v-spacer></v-spacer>
-      <v-tab
-        v-for="item in items"
-        :href="'#' + item.value"
-        :key="item.value"
-        :to="item.to"
-        :value="item.value"
-      >
+  <v-footer color="primary" app dark clipped-right class="d-flex flex-nowrap">
+    <demo-tabs></demo-tabs>
+    <v-spacer></v-spacer>
+    <v-tabs optional right background-color="primary" slider-color="secondary">
+      <v-tab v-for="item in items" :key="item.value" :to="item.to">
         <BtnWithTooltip v-bind="item"></BtnWithTooltip>
       </v-tab>
     </v-tabs>
@@ -26,12 +11,12 @@
 </template>
 
 <script>
-import DemoResetBtn from '@/components/global/buttons/DemoResetBtn'
+import DemoTabs from '@/components/demo/DemoFooterTabs'
 
 export default {
   name: 'footerApp',
   components: {
-    DemoResetBtn
+    DemoTabs
   },
   computed: {
     items() {
@@ -51,7 +36,7 @@ export default {
           to: { name: 'Categories' },
           tooltipProps: { color: 'primary', disabled: false, top: true },
           tooltipText: 'Categories',
-          value: 'category'
+          value: 'Categories'
         },
         {
           btnClass: ['mx-2'],
@@ -60,7 +45,7 @@ export default {
           to: { name: 'CustomFields' },
           tooltipProps: { color: 'primary', disabled: false, top: true },
           tooltipText: 'Custom Fields',
-          value: 'customFields'
+          value: 'CustomFields'
         },
         {
           btnClass: ['mx-2'],
@@ -69,7 +54,7 @@ export default {
           to: { name: 'Images' },
           tooltipProps: { color: 'primary', disabled: false, top: true },
           tooltipText: 'Images',
-          value: 'images'
+          value: 'Images'
         },
         {
           btnClass: ['mx-2'],
@@ -78,7 +63,7 @@ export default {
           to: { name: 'Patrons' },
           tooltipProps: { color: 'primary', disabled: false, top: true },
           tooltipText: 'Patrons',
-          value: 'patron'
+          value: 'Patrons'
         },
         {
           btnClass: ['mx-2'],
@@ -87,33 +72,9 @@ export default {
           to: { name: 'Settings' },
           tooltipProps: { color: 'primary', disabled: false, top: true },
           tooltipText: 'Settings',
-          value: 'settings'
+          value: 'Settings'
         }
       ]
-    },
-    viewMain: {
-      get() {
-        return this.$store.state.viewMain
-      },
-      set(v) {
-        if (typeof v === 'undefined' || v === 'demoReset') return
-        this.$store.dispatch('setStateValue', {
-          key: 'viewMain',
-          value: v
-        })
-        localStorage.setItem('lastView', v)
-      }
-    },
-    viewSub: {
-      get() {
-        return this.$store.state.viewSub
-      },
-      set(v) {
-        this.$store.dispatch('setStateValue', {
-          key: 'viewSub',
-          value: v
-        })
-      }
     }
   }
 }

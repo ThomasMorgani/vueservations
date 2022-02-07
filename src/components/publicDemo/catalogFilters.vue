@@ -174,8 +174,7 @@ export default {
       filterSearch: state => state.filterSearch,
       filterStatus: state => state.filterStatus,
       filterVisibility: state => state.filterVisibility,
-      statusData: state => state.statusData,
-      viewMain: state => state.viewMain
+      statusData: state => state.statusData
     }),
     ...mapGetters(['categoriesById']),
     availabilityOptions() {

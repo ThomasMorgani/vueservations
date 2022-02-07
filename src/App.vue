@@ -6,11 +6,6 @@
       <template v-if="isLoaded">
         <transition name="component-fade" appear mode="out-in">
           <router-view :key="$route.name"> </router-view>
-          <!-- <component
-            :is="viewMain"
-            :key="viewMain"
-            class="mainView"
-          ></component> -->
         </transition>
       </template>
     </v-main>
@@ -36,17 +31,6 @@ export default {
     isLoaded: false
   }),
   computed: {
-    viewMain: {
-      get() {
-        return this.$store.state.viewMain
-      },
-      set(v) {
-        this.$store.dispatch('setStateValue', {
-          key: 'viewMain',
-          value: v
-        })
-      }
-    },
     viewSub: {
       get() {
         return this.$store.state.viewSub
@@ -70,14 +54,12 @@ export default {
         value: contentState
       })
       this.isLoaded = true
-    },
-    setView(view) {
-      this.viewMain = view
-      localStorage.setItem('lastView', this.viewMain)
     }
   },
   created() {
-    this.viewMain = localStorage.getItem('lastView') || 'calendar'
+    const lastRoute = localStorage.getItem('lastRoute') || 'calendar'
+    if (lastRoute && lastRoute !== this.$route.name)
+      this.$router.push({ name: lastRoute })
     this.$store.dispatch('initializeApp')
   },
   mounted() {

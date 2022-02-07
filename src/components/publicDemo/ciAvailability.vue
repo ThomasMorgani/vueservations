@@ -1,9 +1,7 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center primary--text">
-      CHECK AVAILABILITY
-    </v-card-title>
-    <v-card-text>
+    <modal-title text="CHECK AVAILABILITY"></modal-title>
+    <v-card-text class="pt-4">
       <v-row dense align="center" justify="start">
         <v-col cols="2" align-self="center" class="d-flex justify-center">
           <v-img
@@ -57,16 +55,14 @@
               class="mt-6"
             ></v-date-picker>
           </v-col>
-          <v-col cols="10" class="text-center mt-6">
-            <p>
+          <v-col cols="10" class="text-center ">
+            <p class="py-4">
               Use the calendar above to find days this item is available for
               reservation. Dark, black dates signify availability.
             </p>
-            <p class="font-weight-bold">
-              To place reservations or inquiries please call the library.
-            </p>
-            <v-btn block color="primary" href="tel:631-581-9200">
-              <v-icon left>mdi-phone</v-icon>631-581-9200
+
+            <v-btn block color="primary">
+              <v-icon left>mdi-calendar-outline</v-icon>RESERVE
             </v-btn>
           </v-col>
         </v-row>
@@ -83,6 +79,7 @@
 
 <script>
 import filters from '@/modules/filters'
+import { mapState } from 'vuex'
 // import * as formats from '@/modules/formats.js'
 
 export default {
@@ -92,6 +89,7 @@ export default {
       type: Object,
       required: true
     },
+
     item: {
       type: Object,
       required: true
@@ -99,14 +97,16 @@ export default {
   },
   data: () => ({
     endDate: null,
-    isLoading: true,
+    isLoading: false,
     modalEndDate: false,
     modalStartDate: false,
-    reservations: [],
     startDate: null,
     valid: true
   }),
   computed: {
+    ...mapState({
+      events: state => state.events
+    }),
     formErrors() {
       return {
         endDate: '',
@@ -119,7 +119,7 @@ export default {
       const startDate = val || '1980-01-01'
       const startTime = '00:00'
       const startDateTime = new Date(startDate + 'T' + startTime)
-      const events = this.reservations.filter(e => {
+      const events = this.events.filter(e => {
         return !filters.testRangeOverlap(
           e.start_date,
           e.end_date,
@@ -130,55 +130,11 @@ export default {
           1
         )
       })
-      return events.length >= this.reservations.length
-      // return val && true
-
-      // const endDate = this.endDate || '3000-01-01'
-      // const endTime = this.endTime || '00:00'
-      // const endDateTime = new Date(endDate + 'T' + endTime)
-      // if (this.ciSelected) {
-      //   const ci = { ...this.ciSelected }
-      //   events = this.events.filter(e => {
-      //     if (e.item_id === ci.id) {
-      //       return (
-      //         !filters.testRangeOverlap(
-      //           e.start_date,
-      //           e.end_date,
-      //           startDateTime,
-      //           startDateTime,
-      //           // this.allDay
-      //           // ci.reservation_buffer
-      //           1
-      //         ) || e.id == this.id
-      //       )
-      //     } else {
-      //       return true
-      //     }
-      //   })
-      //   return (
-      //     events.length >= this.events.length &&
-      //     startDateTime.getTime() < endDateTime.getTime()
-      //   )
-      // } else {
-      //   return true
-      // }
+      return events.length >= this.events.length
     },
     thumbnailSrc() {
       return this.item.image_data.src
     }
-  },
-  mounted() {
-    //PICKUP HERE
-    // this.axios
-    //   .get('https://www.eipl.org/api/Org/lotReservations/' + this.item.id)
-    //   .then(resp => {
-    //     if (resp?.data) {
-    //       this.reservations = resp.data || []
-    //     }
-    //     this.isLoading = false
-    //     console.log(resp)
-    //   })
-    //   .catch(err => console.error(err))
   }
 }
 </script>

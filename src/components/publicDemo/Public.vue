@@ -1,96 +1,100 @@
 <template>
-  <v-app>
-    <v-main ref="content">
-      <v-row align="center" justify="center">
-        <v-col cols="12" md="8">
-          <v-card class="d-flex flex-column justify-start">
-            <v-card-text class="pt-6">
-              <v-text-field
-                solo
-                rounded
-                clearable
-                prepend-inner-icon="mdi-magnify"
-                placeholder="Search"
-                color="primary"
-                class="flex-grow-0 flex-shrink-1"
-                v-model="filterSearch"
-              ></v-text-field>
-              <!--CATEGORY SELECT -->
-              <v-select
-                v-model="filterCategory"
-                :items="orderBy(categoriesAvailable, 'name')"
-                item-text="name"
-                item-value="id"
-                label="Category"
-                attach="#mm"
-                multiple
-                :menu-props="{
-                  absolute: true,
-                  bottom: true,
-                  'min-width': '100%'
-                }"
-                chips
-                full-width
-                deletable-chips
-                no-hint
-                no-title
-                clearable
-                color="primary"
-                class="pt-0"
+  <v-row align="center" justify="center">
+    <v-col cols="12" sm="10" md="8" lg="5">
+      <v-card flat>
+        <v-card-text class="text-center primary--text font-weight-bold">
+          <p class="mb-0">
+            Add Vueservations widget to public facing site to allow online
+            reservations.
+          </p>
+          <p class="text-caption">(demo disabled)</p>
+        </v-card-text>
+      </v-card>
+    </v-col>
+    <v-col cols="12" sm="10" md="8" lg="5">
+      <v-card class="d-flex flex-column justify-start">
+        <v-card-text class="pt-6">
+          <v-text-field
+            solo
+            rounded
+            clearable
+            prepend-inner-icon="mdi-magnify"
+            placeholder="Search"
+            color="primary"
+            class="flex-grow-0 flex-shrink-1"
+            v-model="filterSearch"
+          ></v-text-field>
+          <!--CATEGORY SELECT -->
+          <v-select
+            v-model="filterCategory"
+            :items="orderBy(categoriesAvailable, 'name')"
+            item-text="name"
+            item-value="id"
+            label="Category"
+            attach="#mm"
+            multiple
+            :menu-props="{
+              absolute: true,
+              bottom: true,
+              'min-width': '100%'
+            }"
+            chips
+            full-width
+            deletable-chips
+            no-hint
+            no-title
+            clearable
+            color="primary"
+            class="pt-0"
+          >
+            <!--CATEGORY SELECT ITEM -->
+            <template v-slot:item="{ item }">
+              <v-list-item-icon>
+                <v-icon
+                  v-text="
+                    filterCategory.includes(item.id)
+                      ? 'mdi-checkbox-marked'
+                      : 'mdi-checkbox-blank-outline'
+                  "
+                ></v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title v-text="item.name"></v-list-item-title>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-icon
+                  :color="item.color"
+                  v-text="'mdi-checkbox-blank-circle'"
+                ></v-icon>
+              </v-list-item-action>
+            </template>
+            <template v-slot:selection="{ item }">
+              <v-chip
+                :color="item.color"
+                close
+                @click:close="
+                  filterCategory = filterCategory.filter(i => i !== item.id)
+                "
+                class="white--text font-weight-bold"
               >
-                <!--CATEGORY SELECT ITEM -->
-                <template v-slot:item="{ item }">
-                  <v-list-item-icon>
-                    <v-icon
-                      v-text="
-                        filterCategory.includes(item.id)
-                          ? 'mdi-checkbox-marked'
-                          : 'mdi-checkbox-blank-outline'
-                      "
-                    ></v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title v-text="item.name"></v-list-item-title>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-icon
-                      :color="item.color"
-                      v-text="'mdi-checkbox-blank-circle'"
-                    ></v-icon>
-                  </v-list-item-action>
-                </template>
-                <template v-slot:selection="{ item }">
-                  <v-chip
-                    :color="item.color"
-                    close
-                    @click:close="
-                      filterCategory = filterCategory.filter(i => i !== item.id)
-                    "
-                    class="white--text font-weight-bold"
-                  >
-                    <span>{{ item.name }}</span>
-                  </v-chip>
-                </template>
-              </v-select>
-              <v-sheet id="mm" height="10" width="100%"></v-sheet>
-            </v-card-text>
-          </v-card>
-        </v-col>
-        <v-col cols="12" lg="10" class="text-center">
-          <v-progress-circular
-            v-if="isLoading"
-            indeterminate
-          ></v-progress-circular>
-          <ciList
-            v-else
-            :items="itemList"
-            :categories="categories"
-            :categoriesById="categoriesById"
-          ></ciList>
-        </v-col>
-      </v-row>
-    </v-main>
-  </v-app>
+                <span>{{ item.name }}</span>
+              </v-chip>
+            </template>
+          </v-select>
+          <v-sheet id="mm" height="10" width="100%"></v-sheet>
+        </v-card-text>
+      </v-card>
+    </v-col>
+    <v-col cols="12" sm="11" lg="8" class="text-center">
+      <v-progress-circular v-if="isLoading" indeterminate></v-progress-circular>
+      <ciList
+        v-else
+        :items="itemList"
+        :categories="categories"
+        :categoriesById="categoriesById"
+      ></ciList>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -117,6 +121,7 @@ export default {
   computed: {
     ...mapState({
       categories: state => state.categories,
+      events: state => state.events,
       items: state => state.catalogItems
     }),
     categoriesAvailable() {
