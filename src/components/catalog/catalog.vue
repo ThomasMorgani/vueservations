@@ -15,7 +15,7 @@
         <v-btn icon color="primary" @click="catalogItemAdd">
           <v-icon color="primary">mdi-note-plus</v-icon>
         </v-btn>
-        <filterBtn v-if="!sideDrawer"></filterBtn>
+        <filterBtn v-if="!filterDrawer"></filterBtn>
       </v-toolbar>
     </v-col>
     <v-col cols="12" class="pa-0 flex-grow-1">
@@ -58,7 +58,7 @@
 import { mapState } from 'vuex'
 import catalogItemList from '@/components/catalog/catalogItem/ciList'
 import catalogItemEdit from '@/components/catalog/catalogItem/ciEdit'
-import filterBtn from '@/components/global/buttons/filterDrawerToggle'
+import filterBtn from '@/components/global/buttons/btnFilterDrawerToggle'
 import imagePreviewModal from '@/components/images/imagePreviewModal'
 export default {
   name: 'catalog',
@@ -92,7 +92,7 @@ export default {
       modalCategoryEdit: state => state.modalCategoryEdit,
       modalImageFullPreview: state => state.modalImageFullPreview,
       settings: state => state.appSettings,
-      sideDrawer: state => state.sideDrawer
+      filterDrawer: state => state.filterDrawer
     }),
     view: {
       set(val) {
@@ -121,11 +121,15 @@ export default {
     }
   },
   mounted() {
-    if (this.$vuetify.breakpoint.lgAndUp)
+    const lastFilterDrawerState = localStorage.getItem('filterDrawer')
+    if (lastFilterDrawerState === null && this.$vuetify.breakpoint.lgAndUp)
       this.$store.dispatch('setStateValue', {
-        key: 'sideDrawer',
+        key: 'filterDrawer',
         value: true
       })
+
+    if (lastFilterDrawerState === 'true' && !this.filterDrawer)
+      this.$store.dispatch('toggleStateValue', 'filterDrawer')
   }
 }
 </script>

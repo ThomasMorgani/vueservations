@@ -17,14 +17,14 @@
         color="primary"
       ></v-text-field>
 
-      <btnWithTooltip
+      <BtnWithTooltip
         :btnClass="['mx-4']"
         :btnProps="{ icon: true, color: 'primary' }"
         :iconProps="{ icon: 'mdi-account-plus' }"
         :tooltipProps="{ disabled: false, top: true }"
         :tooltipText="'Add Patron'"
         @click="patronAdd()"
-      ></btnWithTooltip>
+      ></BtnWithTooltip>
     </v-card-title>
 
     <v-card-text class="pt-4 text-center">
@@ -65,12 +65,10 @@ import filters from '@/modules/filters.js'
 import * as formats from '@/modules/formats.js'
 import Vue2Filters from 'vue2-filters'
 
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 import tableAdvanced from '@/components/global/tableAdvanced'
 export default {
   name: 'patronList',
   components: {
-    btnWithTooltip,
     patronDelete: () => import('@/components/patron/patronDelete'),
     // patron: () => import('@/components/patron/patronDelete'),
     patronDetails: () => import('@/components/patron/patronDetails'),

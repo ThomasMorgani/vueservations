@@ -12,27 +12,35 @@
     <v-sheet height="40" class="d-flex align-center justify-space-between pa-2">
       <v-sheet
         color="transparent"
-        @click="$store.dispatch('toggleStateValue', 'sideDrawer')"
         class="d-flex font-weight-bold align-center primary--text"
       >
-        <filterBtn :btnProps="{ small: true }"></filterBtn>
-        FILTERS</v-sheet
-      >
-      <v-tooltip color="primary" left>
-        <template v-slot:activator="{ on }">
-          <div v-on="on">
-            <v-btn
-              text
-              color="error"
-              :disabled="!isFiltered"
-              @click="$store.dispatch('filtersClearAll')"
-            >
-              <v-icon color="error" left>mdi-filter-remove</v-icon>CLEAR
-            </v-btn>
-          </div>
-        </template>
-        <span>{{ isFiltered ? 'Clear Filters' : '0 filters applied' }}</span>
-      </v-tooltip>
+        <filterBtn
+          :btnProps="{ small: true }"
+          :tooltipText="
+            isFiltered
+              ? 'Hide filter drawer. <br /> (retains applied filters)'
+              : ''
+          "
+        ></filterBtn>
+        <v-sheet color="transparent" class="text-h6 primary--text ml-6"
+          >FILTERS</v-sheet
+        >
+      </v-sheet>
+
+      <btn-with-tooltip
+        :btnProps="{ color: 'error', disabled: !isFiltered }"
+        btnText="CLEAR"
+        :iconProps="{ color: 'error', icon: 'mdi-filter-remove', small: true }"
+        :tooltipProps="{ bottom: true }"
+        :tooltipText="
+          !isFiltered
+            ? '0 filters applied'
+            : filtersApplied.length === 1
+            ? 'Clear applied filter'
+            : `Clear ${filtersApplied.length} applied filters`
+        "
+        @click="$store.dispatch('filtersClearAll')"
+      ></btn-with-tooltip>
     </v-sheet>
     <v-sheet :style="styleFiltersSheet">
       <v-expand-transition hide-on-leave origin="bottom center 0">
@@ -43,8 +51,9 @@
 </template>
 <script>
 import { mapGetters, mapState } from 'vuex'
-import filterBtn from '@/components/global/buttons/filterDrawerToggle'
+import filterBtn from '@/components/global/buttons/btnFilterDrawerToggle'
 export default {
+  name: 'FiltersDrawer',
   components: {
     calendar: () => import('@/components/filterDrawer/calendarFilters'),
     catalog: () => import('@/components/filterDrawer/catalogFilters'),
@@ -56,7 +65,7 @@ export default {
       contentHeight: state => state.content.main.y,
       viewMain: state => state.viewMain,
       catalogView: state => state.viewMain,
-      sideDrawer: state => state.sideDrawer
+      filterDrawer: state => state.filterDrawer
     }),
     contentHeight() {
       return this.$store.state.content.main.y
@@ -65,19 +74,16 @@ export default {
       return this.filtersApplied.length > 0
     },
     filterComp() {
-      switch (this.viewMain) {
-        case 'calendar':
-          return 'calendar'
-        case 'catalog':
-          return 'catalog'
+      const filterMap = {
+        Calendar: 'calendar',
+        Catalog: 'catalog'
       }
-      return null
+      return filterMap[this.$route.name] || null
     },
     show() {
       return (
-        this.sideDrawer &&
-        (this.viewMain === 'calendar' ||
-          (this.viewMain === 'catalog' && this.catalogView !== 'category'))
+        this.filterDrawer &&
+        (this.$route.name === 'Calendar' || this.$route.name === 'Catalog')
       )
     },
     styleFiltersSheet() {

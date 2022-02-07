@@ -5,14 +5,14 @@
     >
       SETTINGS
       <v-spacer></v-spacer>
-      <btnWithTooltip
+      <BtnWithTooltip
         :btnClass="['mx-4']"
         :btnProps="{ disabled: true, icon: true, color: 'primary' }"
         :iconProps="{ icon: 'mdi-puzzle-plus' }"
         :tooltipProps="{ disabled: false, top: true }"
         :tooltipText="'Add Setting'"
         @click="settingAdd"
-      ></btnWithTooltip>
+      ></BtnWithTooltip>
     </v-card-title>
 
     <v-card-text
@@ -63,14 +63,12 @@
 
 <script>
 import { mapState } from 'vuex'
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 import Setting from '@/components/management/Setting'
 // import newSetting from '@/components/management/newSetting'
 
 export default {
   name: 'Settings',
   components: {
-    btnWithTooltip,
     Setting
     // newSetting
   },

@@ -42,12 +42,10 @@
   </v-card>
 </template>
 <script>
-// import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
-
 export default {
   name: 'imageDetails',
   // components: {
-  //   btnWithTooltip
+  //   BtnWithTooltip
   // },
   props: {
     imageData: {

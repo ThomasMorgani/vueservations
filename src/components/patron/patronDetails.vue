@@ -123,10 +123,10 @@
           >
             <v-col
               cols="3"
-              class=" primary--text font-weight-bold text-left text-no-wrap"
+              class=" primary--text font-weight-bold text-left text-flex-nowrap"
               >{{ detail.name }}</v-col
             >
-            <v-col cols="8" class="text-no-wrap text-left font-weight-bold">
+            <v-col cols="8" class="text-flex-nowrap text-left font-weight-bold">
               {{ detail.value }}
             </v-col>
           </v-row>
@@ -160,11 +160,9 @@
 import { mapState } from 'vuex'
 import * as formats from '@/modules/formats.js'
 import Vue2Filters from 'vue2-filters'
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 export default {
   name: 'patronDetails',
   components: {
-    btnWithTooltip,
     patronHistory: () => import('@/components/patron/patronHistory')
   },
   mixins: [Vue2Filters.mixin],

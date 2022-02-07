@@ -61,10 +61,10 @@
       >
         <v-col
           cols="4"
-          class="subtitle-1 primary--text font-weight-bold text-no-wrap"
+          class="subtitle-1 primary--text font-weight-bold text-flex-nowrap"
           >{{ detail }}</v-col
         >
-        <v-col class="text-no-wrap text-left font-weight-bold">
+        <v-col class="text-flex-nowrap text-left font-weight-bold">
           {{ details }}
         </v-col>
       </v-row>

@@ -6,7 +6,7 @@
       <slot></slot>
     </v-card-text>
     <v-card-actions>
-      <btnWithTooltip
+      <BtnWithTooltip
         :btnProps="{
           disabled: setting.default_value == setting.currentValue,
           icon: false,
@@ -24,10 +24,10 @@
             value: setting.default_value
           })
         "
-        >Default</btnWithTooltip
+        >Default</BtnWithTooltip
       >
       <v-spacer></v-spacer>
-      <btnWithTooltip
+      <BtnWithTooltip
         :btnClass="['mx-4']"
         :btnProps="{
           disabled: setting.setting == setting.currentValue,
@@ -41,19 +41,14 @@
         :tooltipProps="{ color: 'primary', disabled: false, top: true }"
         :tooltipText="'Save Setting'"
         @click="$emit('saveSetting', setting.name)"
-      ></btnWithTooltip>
+      ></BtnWithTooltip>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
-
 export default {
   name: 'setting',
-  components: {
-    btnWithTooltip
-  },
   props: {
     setting: {
       type: Object,

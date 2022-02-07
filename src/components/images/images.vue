@@ -47,14 +47,14 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <btnWithTooltip
+        <BtnWithTooltip
           :btnClass="['mx-4']"
           :btnProps="{ icon: true, color: 'primary' }"
           :iconProps="{ icon: 'mdi-image-plus' }"
           :tooltipProps="{ disabled: false, top: true }"
           :tooltipText="'Add Image'"
           @click="newImage()"
-        ></btnWithTooltip>
+        ></BtnWithTooltip>
       </v-toolbar>
     </v-col>
     <v-col cols="12" class="pa-0 flex-grow-1">
@@ -105,11 +105,9 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import imageEdit from '@/components/images/imageEdit'
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 
 export default {
   components: {
-    btnWithTooltip,
     imageEdit,
     imagePreviewModal: () => import('@/components/images/imagePreviewModal'),
     imageUplaod: () => import('@/components/images/imageAdd'),

@@ -17,14 +17,14 @@
         color="primary"
       ></v-text-field>
 
-      <btnWithTooltip
+      <BtnWithTooltip
         :btnClass="['mx-4']"
         :btnProps="{ icon: true, color: 'primary' }"
         :iconProps="{ icon: 'mdi-card-plus-outline' }"
         :tooltipProps="{ disabled: false, top: true }"
         :tooltipText="'Add New Field'"
         @click="fieldAdd()"
-      ></btnWithTooltip>
+      ></BtnWithTooltip>
     </v-card-title>
 
     <v-card-text class="text-center pt-0">
@@ -65,12 +65,10 @@ import filters from '@/modules/filters.js'
 import * as formats from '@/modules/formats.js'
 import Vue2Filters from 'vue2-filters'
 
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 import tableAdvanced from '@/components/global/tableAdvanced'
 export default {
   name: 'cfList',
   components: {
-    btnWithTooltip,
     cfEdit: () => import('@/components/catalog/customFields/cfEdit'),
     cfDelete: () => import('@/components/catalog/customFields/cfDelete'),
     tableAdvanced

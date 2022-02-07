@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <titlebarApp></titlebarApp>
-    <sideDrawer></sideDrawer>
+    <filterDrawer></filterDrawer>
     <v-main ref="content" v-resize="setDimmensions">
       <template v-if="isLoaded">
         <transition name="component-fade" appear mode="out-in">
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
+import BtnWithTooltip from '@/components/global/buttons/BtnWithTooltip'
 import Snackbar from '@/components/global/snackbar'
 import footerApp from '@/components/global/footer'
 import titlebarApp from '@/components/global/titlebar'
@@ -27,7 +27,7 @@ import titlebarApp from '@/components/global/titlebar'
 export default {
   name: 'App',
   components: {
-    btnWithTooltip,
+    BtnWithTooltip,
     calendar: () => import('@/components/calendar/Calendar'),
     catalog: () => import('@/components/catalog/catalog'),
     category: () => import('@/views/catalog/category'),
@@ -38,7 +38,7 @@ export default {
     images: () => import('@/components/images/images'),
     patron: () => import('@/components/patron/patronList'),
     settings: () => import('@/views/settings'),
-    sideDrawer: () => import('@/components/filterDrawer/FilterDrawer'),
+    filterDrawer: () => import('@/components/filterDrawer/FilterDrawer'),
     Snackbar,
     titlebarApp
   },

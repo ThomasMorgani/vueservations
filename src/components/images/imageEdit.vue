@@ -17,7 +17,7 @@
     </v-card-text>
 
     <v-card-actions>
-      <btnWithTooltip
+      <BtnWithTooltip
         :btnClass="['mx-2']"
         :btnProps="{ color: 'error', text: true, disabled: isDefaultImage }"
         btnText="DELETE"
@@ -33,9 +33,9 @@
           isDefaultImage ? 'Default image cant\'t be deleted' : 'Delete Image'
         "
         @click="imageDeletePrompt"
-      ></btnWithTooltip>
+      ></BtnWithTooltip>
       <v-spacer></v-spacer>
-      <btnWithTooltip
+      <BtnWithTooltip
         :btnClass="['mx-2']"
         :btnProps="{ color: 'warning', text: true }"
         btnText="EDIT"
@@ -49,7 +49,7 @@
         :tooltipProps="{ color: 'primary', disabled: false, top: true }"
         :tooltipText="'Edit Image Properties'"
         @click="imageEdit(imageData)"
-      ></btnWithTooltip>
+      ></BtnWithTooltip>
       <v-btn text small color="primary" @click="close">CLOSE</v-btn>
     </v-card-actions>
     <!-- MERGE INTO DYNAMIC "SECONDARY MODAL -->
@@ -110,14 +110,13 @@
 <script>
 import Vue2Filters from 'vue2-filters'
 
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 import imageDetails from '@/components/images/imageDetails'
 import imageDelete from '@/components/images/imageDelete'
 
 export default {
   name: 'imageEdit',
   mixins: [Vue2Filters.mixin],
-  components: { btnWithTooltip, imageDetails, imageDelete },
+  components: { imageDetails, imageDelete },
   props: {
     imageData: {
       type: Object,

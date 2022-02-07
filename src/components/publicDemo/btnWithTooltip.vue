@@ -1,14 +1,8 @@
 <template>
-  <v-tooltip
-    v-bind="{ color: 'primary', 'allow-overflow': false, ...tooltipProps }"
-  >
+  <v-tooltip v-bind="tooltipProps">
     <template v-slot:activator="{ on }">
       <div v-on="on">
-        <v-btn
-          v-bind="{ color: 'primary', text: true, ...btnProps }"
-          :class="btnClass"
-          @click="$emit('click')"
-        >
+        <v-btn v-bind="btnProps" :class="btnClass" @click="$emit('click')">
           <span v-if="btnTextSide === 'left'">{{ btnText }}</span>
           <v-icon v-if="iconProps" v-bind="iconProps">
             {{ iconProps.icon }}</v-icon
@@ -17,12 +11,7 @@
         </v-btn>
       </div>
     </template>
-    <v-sheet
-      color="transparent"
-      width="100%"
-      v-html="tooltipText"
-      class="text-no-wrap secondary--text"
-    ></v-sheet>
+    <span v-html="tooltipText"></span>
   </v-tooltip>
 </template>
 

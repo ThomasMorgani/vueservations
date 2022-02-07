@@ -1,15 +1,16 @@
 <template>
   <v-app>
     <titlebarApp></titlebarApp>
-    <sideDrawer></sideDrawer>
+    <filterDrawer></filterDrawer>
     <v-main ref="content" v-resize="setDimmensions">
       <template v-if="isLoaded">
         <transition name="component-fade" appear mode="out-in">
-          <component
+          <router-view :key="$route.name"> </router-view>
+          <!-- <component
             :is="viewMain"
             :key="viewMain"
             class="mainView"
-          ></component>
+          ></component> -->
         </transition>
       </template>
     </v-main>
@@ -19,7 +20,6 @@
 </template>
 
 <script>
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 import Snackbar from '@/components/global/snackbar'
 import footerApp from '@/components/global/footer'
 import titlebarApp from '@/components/global/titlebar'
@@ -27,18 +27,8 @@ import titlebarApp from '@/components/global/titlebar'
 export default {
   name: 'App',
   components: {
-    btnWithTooltip,
-    calendar: () => import('@/components/calendar/Calendar'),
-    catalog: () => import('@/components/catalog/catalog'),
-    category: () => import('@/views/catalog/category'),
-    customFields: () =>
-      import('@/components/catalog/customFields/customFields'),
     footerApp,
-    help: () => import('@/components/help/help'),
-    images: () => import('@/components/images/images'),
-    patron: () => import('@/components/patron/patronList'),
-    settings: () => import('@/views/settings'),
-    sideDrawer: () => import('@/components/filterDrawer/FilterDrawer'),
+    filterDrawer: () => import('@/components/filterDrawer/FilterDrawer'),
     Snackbar,
     titlebarApp
   },

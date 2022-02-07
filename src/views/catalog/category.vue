@@ -16,14 +16,14 @@
         hide-details
         color="primary"
       ></v-text-field>
-      <btnWithTooltip
+      <BtnWithTooltip
         :btnClass="['mx-4']"
         :btnProps="{ icon: true, color: 'primary' }"
         :iconProps="{ icon: 'mdi-sticker-plus' }"
         :tooltipProps="{ disabled: false, color: 'primary', top: true }"
         :tooltipText="'Add Category'"
         @click="categoryEdit"
-      ></btnWithTooltip>
+      ></BtnWithTooltip>
     </v-card-title>
 
     <v-card-text class="pt-0">
@@ -64,12 +64,10 @@
 
 <script>
 import { mapState } from 'vuex'
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 import categoryEdit from '@/components/catalog/category/categoryEdit'
 import categoryList from '@/components/catalog/category/categoryList'
 export default {
   components: {
-    btnWithTooltip,
     categoryEdit,
     categoryList
   },

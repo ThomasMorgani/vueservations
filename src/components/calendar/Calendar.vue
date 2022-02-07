@@ -41,20 +41,23 @@
         <v-menu
           v-model="menuHeightSlider"
           :close-on-content-click="false"
-          :nudge-width="200"
           bottom
           offset-y
         >
           <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on">
-              <v-icon color="primary">mdi-arrow-split-horizontal</v-icon>
-            </v-btn>
+            <v-sheet v-on="on" color="transparent">
+              <btn-with-tooltip
+                :iconProps="{ icon: 'mdi-arrow-split-horizontal' }"
+                :tooltipProps="{ bottom: true }"
+                tooltipText="Calendar height"
+              ></btn-with-tooltip>
+            </v-sheet>
           </template>
 
           <v-card>
-            <v-card-title class="title primary--text"
+            <!-- <v-card-title class="title primary--text"
               >Calendar Height</v-card-title
-            >
+            > -->
             <v-card-text>
               <v-slider
                 v-model="calendarMonthHeight"
@@ -63,15 +66,20 @@
                 hide-details
                 :min="styleCal.height || 800"
                 max="3500"
+                vertical
               ></v-slider>
             </v-card-text>
           </v-card>
         </v-menu>
 
-        <v-btn icon @click="eventAdd">
-          <v-icon color="primary">mdi-calendar-plus</v-icon>
-        </v-btn>
-        <filterBtn></filterBtn>
+        <btn-with-tooltip
+          :iconProps="{ icon: 'mdi-calendar-plus' }"
+          :tooltipProps="{ bottom: true }"
+          tooltipText="Add new event"
+          @click="eventAdd"
+        ></btn-with-tooltip>
+
+        <filterBtn v-if="!filterDrawer"></filterBtn>
       </v-toolbar>
       <!-- </v-sheet> -->
     </v-col>
@@ -171,7 +179,7 @@ import filters from '@/modules/filters.js'
 import * as formats from '@/modules/formats.js'
 import { timeHuman, timestampHuman } from '@/modules/formats.js'
 import eventMenu from '@/components/calendar/eventOverview'
-import filterBtn from '@/components/global/buttons/filterDrawerToggle'
+import filterBtn from '@/components/global/buttons/btnFilterDrawerToggle'
 
 import Vue2Filters from 'vue2-filters'
 
@@ -229,6 +237,7 @@ export default {
       defaultModalProps: state => state.defaultModalProps,
       events: state => state.events,
       filterCategory: state => state.filterCategory,
+      filterDrawer: state => state.filterDrawer,
       filterRangeDate: state => state.filterRangeDate,
       filterSearch: state => state.filterSearch,
       imagePreviewData: state => state.imagePreviewData,
@@ -502,6 +511,15 @@ export default {
   },
   mounted() {
     this.isLoaded = true
+    const lastFilterDrawerState = localStorage.getItem('filterDrawer')
+    if (lastFilterDrawerState === null && this.$vuetify.breakpoint.lgAndUp)
+      this.$store.dispatch('setStateValue', {
+        key: 'filterDrawer',
+        value: true
+      })
+
+    if (lastFilterDrawerState === 'true' && !this.filterDrawer)
+      this.$store.dispatch('toggleStateValue', 'filterDrawer')
   }
 }
 </script>

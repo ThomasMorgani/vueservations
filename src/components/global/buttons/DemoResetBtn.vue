@@ -7,16 +7,16 @@
         color="transparent"
         @click="modalConfirmReset = !modalConfirmReset"
       >
-        <btnWithTooltip
+        <BtnWithTooltip
           v-bind="{
             btnClass: ['mx-2'],
             btnProps: { icon: true },
-            iconProps: { icon: 'mdi-database-sync' },
+            iconProps: { color: 'secondary', icon: 'mdi-database-sync' },
             tooltipProps: { color: 'primary', disabled: false, top: true },
             tooltipText: 'Reset demo data.',
             value: 'resetDemo'
           }"
-        ></btnWithTooltip>
+        ></BtnWithTooltip>
       </v-sheet>
       <!-- <v-btn v-bind="attrs" v-on="on" text :color="color">
         <v-icon left></v-icon>DEMO <br />RESET
@@ -274,7 +274,6 @@
 </template>
 
 <script>
-import btnWithTooltip from '@/components/global/buttons/btnWithTooltip'
 export default {
   name: 'DemoResetButton',
   props: {
@@ -282,9 +281,6 @@ export default {
       type: String,
       default: () => 'secondary'
     }
-  },
-  components: {
-    btnWithTooltip
   },
   data: () => ({
     dataDefaults: {

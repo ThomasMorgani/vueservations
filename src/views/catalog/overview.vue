@@ -4,7 +4,7 @@
       <catalogItemList></catalogItemList>
     </v-col>
     <v-col class="pt-0 pa-0 flex-grow-0 flex-shrink-1">
-      <categoryList v-show="!sideDrawer"></categoryList>
+      <categoryList v-show="!filterDrawer"></categoryList>
     </v-col>
   </v-row>
 </template>
@@ -20,7 +20,7 @@ export default {
   },
   computed: {
     ...mapState({
-      sideDrawer: 'sideDrawer'
+      filterDrawer: 'filterDrawer'
     })
   }
 }

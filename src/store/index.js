@@ -71,7 +71,7 @@ export default new Vuex.Store({
     modalCategoryEdit: false,
     patronEditing: null,
     patrons: [],
-    sideDrawer: false,
+    filterDrawer: false,
     snackbarData: {},
     snackbarSettings: {
       defaultColor: 'primary',
@@ -165,7 +165,8 @@ export default new Vuex.Store({
         'filterCategory',
         'filterRangeDate',
         'filterSearch',
-        'filterStatus'
+        'filterStatus',
+        'filterVisibility',
       ]
       names.forEach(n =>
         state[n] && state[n].length > 0
