@@ -2,18 +2,6 @@
   <v-card>
     <v-card-text>
       <imageDetails :imageData="imageData"></imageDetails>
-
-      <v-switch
-        :disabled="isDefaultImage"
-        :key="isDefaultImage"
-        :messages="
-          isDefaultImage ? 'Toggle default on another image to remove.' : ''
-        "
-        label="Default Image"
-        :input-value="isDefaultImage"
-        @change="setDefaultImage"
-        class="ml-4"
-      ></v-switch>
     </v-card-text>
 
     <v-card-actions>
@@ -70,9 +58,15 @@
           ></v-text-field>
           <v-select disabled label="Tags"></v-select>
           <v-switch
-            :input-value="isDefaultImage"
-            disabled
+            :disabled="isDefaultImage"
+            :key="isDefaultImage"
+            :messages="
+              isDefaultImage ? 'Toggle default on another image to remove.' : ''
+            "
             label="Default Image"
+            :input-value="isDefaultImage"
+            @change="setDefaultImage"
+            class="ml-4"
           ></v-switch>
         </v-card-text>
 
@@ -132,15 +126,17 @@ export default {
     imageEditSaveLoading: false
   }),
   computed: {
+    defaultImage() {
+      return this.$store.getters.defaultCiImage || null
+    },
     imageEditSaveDisabled() {
       return (
         !this.imageRename || this.imageData.display_name == this.imageRename
       )
     },
+
     isDefaultImage() {
-      const defaultImage =
-        this.$store.getters.appSettingsByName.Default_Image.setting || null
-      return defaultImage === this.imageData.id
+      return this.defaultImage?.id === this.imageData.id
     }
   },
   methods: {

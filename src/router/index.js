@@ -51,7 +51,12 @@ const routes = [
     component: () => import('@/views/settings')
   },
 
-  { path: '/', redirect: { name: 'Calendar' }},
+  { path: '/', 
+    beforeEnter(to, from, next) {
+      const loadView = localStorage.getItem('lastRoute') || 'Calendar'
+      next({name: loadView})
+    }
+  },
 
 ]
 
@@ -62,9 +67,10 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  if (!from.name) next()
   const routeName = to.name || ''
- localStorage.setItem('lastRoute', routeName)
- next()
+  localStorage.setItem('lastRoute', routeName)
+  next()
 })
 
 export default router

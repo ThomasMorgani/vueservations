@@ -57,9 +57,9 @@ export default {
     }
   },
   created() {
-    const lastRoute = localStorage.getItem('lastRoute') || 'calendar'
-    if (lastRoute && lastRoute !== this.$route.name)
-      this.$router.push({ name: lastRoute })
+    // const lastRoute = localStorage.getItem('lastRoute') || 'calendar'
+    // if (lastRoute && lastRoute !== this.$route.name)
+    //   this.$router.push({ name: lastRoute })
     this.$store.dispatch('initializeApp')
   },
   mounted() {

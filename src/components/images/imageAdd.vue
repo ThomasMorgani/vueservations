@@ -1,18 +1,26 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center title primary--text outlined">
-      <ModalTitleText text="ADD IMAGE"></ModalTitleText>
-      {{
-    }}</v-card-title>
+    <modal-title text="ADD IMAGE"></modal-title>
     <v-card-text class="d-flex flex-column justify-space-between align-center">
+      <p v-if="imageLoading && !imageError">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        ></v-progress-circular>
+      </p>
+      <p v-if="!imageLoading && imageError" class="error--text">
+        Error loading image
+      </p>
       <v-img
+        v-if="!imageLoading && !imageError"
         contain
         height="100%"
         max-height="250"
         ref="imgPreview"
         :src="imageDisplayed"
+        @error="imageError = $event"
+        @load="imageLoading = false"
       ></v-img>
-
       <v-text-field
         messages="(optional)"
         label="Image Name"
@@ -40,21 +48,22 @@
       <v-text-field
         v-if="imgSrcSelect === 'url'"
         v-model="imageUrl"
+        clearable
         prepend-inner-icon="mdi-link"
         outlined
         label="Image Url"
         ref="imageUrl"
+        @input="onUrlInput"
         class="inputWidth mt-4"
       ></v-text-field>
     </v-card-text>
 
     <v-card-actions>
+      <v-btn text color="warning" @click="cancelUpload">CANCEL</v-btn>
       <v-spacer></v-spacer>
-      <v-btn text small color="warning" @click="cancelUpload">CANCEL</v-btn>
       <v-btn
         text
-        small
-        color="primary"
+        color="success"
         :disabled="uploadDisabled"
         :loading="loading === 'loading'"
         @click="imgSrcSelect === 'url' ? saveImage() : uploadImage()"
@@ -66,6 +75,7 @@
 
 <script>
 import { timestampSql } from '@/modules/formats'
+let inputDebounce = null
 export default {
   name: 'ImageAdd',
   data: () => ({
@@ -83,6 +93,8 @@ export default {
     ],
     imgSrcSelect: 'url',
     fileUpload: null,
+    imageError: false,
+    imageLoading: false,
     imageName: '',
     imageUrl: '',
     loading: false
@@ -129,7 +141,14 @@ export default {
       }
       return newImage
     },
-
+    onUrlInput() {
+      this.imageError = false
+      this.imageLoading = true
+      if (inputDebounce) clearTimeout(inputDebounce)
+      inputDebounce = setTimeout(() => {
+        this.imageLoading = false
+      }, 900)
+    },
     saveImage() {
       const image = this.formatImage()
       this.$store.dispatch('setStateValue', {

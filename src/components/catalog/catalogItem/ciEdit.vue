@@ -709,7 +709,6 @@ export default {
         })
       }
 
-      console.log({ ...ciData })
       this.setItemEditingValues(ciData)
       this.$store.dispatch('setStateValue', {
         key: 'catalogItemEditing',

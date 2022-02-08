@@ -9,7 +9,6 @@
         slider-color="secondary"
         shrink
       >
-        <!-- TODO: MOVE TO DATA OBJECT, V-for over -->
         <v-tab v-for="item in items" :key="item.value" :to="item.to">
           <BtnWithTooltip v-bind="item"></BtnWithTooltip>
         </v-tab>
