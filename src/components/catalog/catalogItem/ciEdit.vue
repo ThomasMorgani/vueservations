@@ -303,12 +303,14 @@
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-btn
-              text
-              large
               color="success"
               :disabled="saveDisabled"
+              large
               :loading="loading === 'save'"
+              :ripple="false"
+              text
               @click="save"
+              class="d-flex align-center justify-center"
             >
               <transition name="bounce-top">
                 <v-icon
@@ -323,6 +325,25 @@
         </template>
         <span>{{ saveTooltipText }}</span>
       </v-tooltip>
+      <!-- Close on save optional? -->
+      <!-- <v-checkbox
+        v-if="!saveDisabled"
+        v-model="closeOnSave"
+        color="success"
+        dense
+        hide-details
+        :ripple="false"
+        @click.stop
+        class="ma-0  pa-0"
+      >
+        <template v-slot:label>
+          <span
+            :class="closeOnSave ? 'success--text' : 'primary--text'"
+            class="text-caption"
+            >and close</span
+          >
+        </template>
+      </v-checkbox> -->
     </v-card-actions>
 
     <!-- DIALOGS -->
@@ -426,6 +447,7 @@ export default {
       }
     ],
     category: null,
+    closeOnSave: true,
     color: 'primary',
     customFields: [],
     defaultItem: {
@@ -725,8 +747,10 @@ export default {
       })
 
       if (isNew) this.$emit('ciAdded', ciData)
-
       this.loading = null
+      //checkbox commented out above to make this optional
+      //if closeOnSave...
+      this.$store.dispatch('toggleModalCatalogItemEdit')
     },
     setItemEditingValues(values) {
       for (let item in values) {

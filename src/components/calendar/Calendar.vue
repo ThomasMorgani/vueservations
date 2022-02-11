@@ -27,12 +27,56 @@
             </v-list-item>
           </v-list>
         </v-menu> -->
-        <v-btn fab text small @click="prev">
-          <v-icon small>mdi-chevron-left</v-icon>
+        <v-btn color="primary" fab small text @click="prev">
+          <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
-        <v-toolbar-title>{{ title }}</v-toolbar-title>
-        <v-btn fab text small @click="next">
-          <v-icon small>mdi-chevron-right</v-icon>
+        <v-toolbar-title>
+          <v-menu
+            ref="datePickerMenu"
+            v-model="datePickerShow"
+            :close-on-content-click="false"
+            :return-value.sync="focus"
+            transition="scale-transition"
+            offset-y
+            max-width="290px"
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-sheet
+                v-bind="attrs"
+                v-on="on"
+                class="title primary--text font-weight-bold"
+              >
+                {{ title }}
+              </v-sheet>
+            </template>
+            <v-date-picker
+              :value="focus"
+              @input="focus = $event + '-01'"
+              type="month"
+              no-title
+              scrollable
+            >
+              <v-btn text color="warning" @click="datePickerShow = false">
+                CLOSE
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="focus = today">
+                TODAY
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn
+                text
+                color="success"
+                @click="$refs.datePickerMenu.save(focus)"
+              >
+                OK
+              </v-btn>
+            </v-date-picker>
+          </v-menu>
+        </v-toolbar-title>
+        <v-btn fab color="primary" small text @click="next">
+          <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
         <!-- <v-btn outlined color="primary" class="mr-4" @click="eventAdd">
@@ -62,11 +106,12 @@
               <v-slider
                 v-model="calendarMonthHeight"
                 :color="color"
-                track-color="grey"
                 hide-details
-                :min="styleCal.height || 800"
                 max="3500"
+                :min="styleCal.height || 800"
+                track-color="grey"
                 vertical
+                @input="onHeightChange"
               ></v-slider>
             </v-card-text>
           </v-card>
@@ -120,12 +165,13 @@
               </v-sheet>
             </template>
           </v-calendar>
-          <v-menu
+          <!-- :activator="selectedElement" -->
+          <v-dialog
             v-model="selectedOpen"
             :close-on-content-click="false"
             :close-on-click="!modalDetailsShow"
-            :activator="selectedElement"
             max-width="350"
+            hide-overlay
           >
             <eventMenu
               :event="selectedEvent"
@@ -133,7 +179,7 @@
               @editEvent="eventEdit"
               @showDetails="showDetails"
             ></eventMenu>
-          </v-menu>
+          </v-dialog>
           <v-tooltip
             color="primary"
             top
@@ -196,21 +242,17 @@ export default {
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({
-    today: new Date().toISOString().substring(0, 10),
+    calendarMonthHeight: 2000,
+    color: '#000066',
+    currentlyEditing: null,
+    datePickerShow: false,
+    dialog: false,
+    end: null,
     focus: new Date().toISOString().substring(0, 10),
-    type: 'month',
-    typeToLabel: {
-      month: 'Month',
-      week: 'Week',
-      day: 'Day',
-      '4day': '4 Days'
-    },
     name: null,
     isLoaded: false,
     navDrawer: false,
     start: null,
-    end: null,
-    calendarMonthHeight: 2000,
     menuHeightSlider: false,
     modalDetailsProps: {
       'max-width': '800',
@@ -221,12 +263,17 @@ export default {
     modalDetailsComp: null,
     modalDetailsCompData: null,
     modalDetailsShow: false,
-    color: '#000066',
-    currentlyEditing: null,
     selectedEvent: {},
     selectedElement: null,
     selectedOpen: false,
-    dialog: false,
+    today: new Date().toISOString().substring(0, 10),
+    type: 'month',
+    typeToLabel: {
+      month: 'Month',
+      week: 'Week',
+      day: 'Day',
+      '4day': '4 Days'
+    },
     tooltipEvent: false,
     toptipPosition: { 'position-x': 0, 'position-y': 0 }
   }),
@@ -436,6 +483,10 @@ export default {
         this.selectedOpen = false
       }
     },
+    onHeightChange(height) {
+      console.log(height)
+      localStorage.setItem('calendarMonthHeight', height)
+    },
     showDetails(e) {
       this.modalDetailsProps = this.defaultModalProps
       switch (e.type) {
@@ -518,6 +569,8 @@ export default {
         value: true
       })
 
+    const calMonthHeight = localStorage.getItem('calendarMonthHeight')
+    if (calMonthHeight) this.calendarMonthHeight = calMonthHeight
     if (lastFilterDrawerState === 'true' && !this.filterDrawer)
       this.$store.dispatch('toggleStateValue', 'filterDrawer')
   }

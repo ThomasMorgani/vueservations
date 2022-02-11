@@ -1,7 +1,7 @@
 <template>
   <v-app-bar color="primary" app dark clipped-right>
     <v-toolbar-title class="flex-grow-1">{{ appTitle() }}</v-toolbar-title>
-    <v-toolbar-items class="flex-shrink-1">
+    <v-sheet class="flex-shrink-1">
       <v-tabs
         optional
         right
@@ -9,11 +9,15 @@
         slider-color="secondary"
         shrink
       >
-        <v-tab v-for="item in items" :key="item.value" :to="item.to">
+        <v-tab
+          v-for="item in items"
+          :key="item.value + $route.name"
+          :to="item.to"
+        >
           <BtnWithTooltip v-bind="item"></BtnWithTooltip>
         </v-tab>
       </v-tabs>
-    </v-toolbar-items>
+    </v-sheet>
   </v-app-bar>
 </template>
 <script>

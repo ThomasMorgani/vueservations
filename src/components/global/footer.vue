@@ -3,7 +3,11 @@
     <demo-tabs></demo-tabs>
     <v-spacer></v-spacer>
     <v-tabs optional right background-color="primary" slider-color="secondary">
-      <v-tab v-for="item in items" :key="item.value" :to="item.to">
+      <v-tab
+        v-for="item in items"
+        :key="item.value + $route.name"
+        :to="item.to"
+      >
         <BtnWithTooltip v-bind="item"></BtnWithTooltip>
       </v-tab>
     </v-tabs>

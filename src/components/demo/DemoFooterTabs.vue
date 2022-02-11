@@ -6,7 +6,7 @@
     <v-tab
       v-for="item in items"
       :href="'#' + item.value"
-      :key="item.value"
+      :key="item.value + $route.name"
       :to="item.to"
       :value="item.value === $route.name"
     >

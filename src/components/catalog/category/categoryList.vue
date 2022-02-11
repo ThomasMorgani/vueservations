@@ -133,7 +133,7 @@ export default {
     styleCategoryList() {
       let height = this.$store.state.content.main.y || null
       if (height) {
-        height = height - 200
+        height = height - 180
       }
       return {
         height: `${height}px`,

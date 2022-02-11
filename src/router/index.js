@@ -21,6 +21,11 @@ const routes = [
     component: () => import('@/views/catalog/category')
   },
   {
+    path: '/demo',
+    name: 'Demo',
+    component: () => import('@/views/Demo')
+  },
+  {
     path: '/fields',
     name: 'CustomFields',
     component: () => import('@/components/catalog/customFields/customFields')
@@ -67,6 +72,8 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  const firstLoad = localStorage.getItem('firstLoad') !== 'false'
+  if (firstLoad && to.name !== 'Demo')  next({name: 'Demo'})
   if (!from.name) next()
   const routeName = to.name || ''
   localStorage.setItem('lastRoute', routeName)

@@ -90,8 +90,13 @@
       </v-tooltip>
 
       <v-spacer></v-spacer>
-      <v-btn text color="primary" @click="$emit('close')">CANCEL</v-btn>
-      <v-btn text color="primary" @click="savePatron" :disabled="saveDisabled"
+      <v-btn
+        text
+        :color="saveDisabled ? 'primary' : 'warning'"
+        @click="$emit('close')"
+        >{{ saveDisabled ? 'CLOSE' : 'CANCEL' }}</v-btn
+      >
+      <v-btn text color="success" @click="savePatron" :disabled="saveDisabled"
         >SAVE</v-btn
       >
     </v-card-actions>
@@ -174,7 +179,7 @@ export default {
       const patronData = patronFields.reduce((fields, curr) => {
         return { ...fields, [curr]: this?.[curr]?.trim() || '' }
       }, {})
-      const isNew = this.id == null
+      const isNew = this.id === null
       if (isNew) {
         patronData.id = new Date().getTime()
         this.$store.dispatch('setStateValue', {
@@ -183,7 +188,9 @@ export default {
           value: patronData
         })
         this.$emit('patronAdded', patronData)
+        this.$emit('close')
       } else {
+        patronData.id = this.id
         const pKey = this.patrons.findIndex(p => p.id == this.id)
         if (pKey > -1) {
           this.$store.dispatch('setStateValueByKey', {
@@ -193,6 +200,7 @@ export default {
           })
         }
         this.$emit('patronSaved', patronData)
+        this.$emit('close')
       }
       this.setValues(patronData)
       this.$store.dispatch('setStateValue', {
