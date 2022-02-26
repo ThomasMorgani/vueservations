@@ -500,7 +500,10 @@ export default {
           this.modalDetailsComp = 'eventEdit'
           break
         case 'event':
-          this.modalDetailsProps['max-width'] = 'unset'
+          this.modalDetailsCompData = {
+            'max-width': 'unset',
+            showDetailBtn: false
+          }
           this.modalDetailsComp = 'eventDetails'
           break
         case 'patron':

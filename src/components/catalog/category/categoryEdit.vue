@@ -29,17 +29,25 @@
             ></v-text-field>
           </v-col>
           <v-col cols="10" offset="2">
-            <v-switch
-              :disabled="isDefaultCategory"
-              :messages="
-                isDefaultCategory
-                  ? 'Toggle default on another category to remove.'
-                  : ''
-              "
-              label="Default Category"
-              :value="isDefaultCategory"
-              @change="setDefaultCategory"
-            ></v-switch>
+            <v-tooltip color="primary" top>
+              <template v-slot:activator="{ on }">
+                <v-sheet v-on="on" color="transparent" max-width="250">
+                  <v-switch
+                    :disabled="isDefaultCategory"
+                    :messages="isDefaultCategory ? 'Toggle default on another category to remove.' : `Set default category and remove from: ${defaultCategory.name} `"
+            
+                    label="Default Category"
+                    :value="isDefaultCategory"
+                    @change="setDefaultCategory"
+                  ></v-switch>
+                </v-sheet>
+              </template>
+              <v-sheet 
+              color="transparent" 
+              v-html=" isDefaultCategory  ? 'Toggle default on another category to remove.' : `Set as default category. <br /> (currently: ${defaultCategory.name})`"
+              class="secondary--text"
+              ></v-sheet>
+            </v-tooltip>
           </v-col>
         </v-row>
       </form>
@@ -86,7 +94,6 @@
           <v-sheet v-on="on" color="transparent">
             <v-btn
               text
-              small
               color="error"
               :disabled="!id || isDefaultCategory"
               :loading="loading === 'delete'"
@@ -103,12 +110,14 @@
       </v-tooltip>
 
       <v-spacer></v-spacer>
-      <v-btn text small color="primary" @click="cancel">{{
-        saveDisabled ? 'CLOSE' : 'CANCEL'
-      }}</v-btn>
       <v-btn
         text
-        small
+        :color="saveDisabled ? 'primary' : 'warning'"
+        @click="cancel"
+        >{{ saveDisabled ? 'CLOSE' : 'CANCEL' }}</v-btn
+      >
+      <v-btn
+        text
         color="primary"
         :disabled="saveDisabled"
         :loading="loading === 'save'"

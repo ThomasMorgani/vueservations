@@ -38,7 +38,7 @@ import catalogItem from '@/components/publicDemo/catalogItem'
 import ciAvailability from '@/components/publicDemo//ciAvailability'
 import imagePreviewModal from '@/components/publicDemo//imagePreviewModal'
 
-const imgBaseUrl = 'https://www.eipl.org/reservations/images/uploads/'
+const imgBaseUrl = '/images/uploads/'
 export default {
   name: 'catalogList',
   components: {

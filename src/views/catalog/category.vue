@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card flat>
     <v-card-title
       class="title primary--text font-weight-bold d-flex align-center pb-0"
     >

@@ -48,8 +48,10 @@
       <v-row dense justify="end">
         <v-col class="offset-2 text-left flex-grow-0 flex-shrink-1">
           <v-btn
+            v-show="showDetailsBtn"
             text
             color="primary"
+            
             @click="showDetails = !showDetails"
             class="font-weight-bold primary--text"
             ><v-icon
@@ -175,6 +177,10 @@ export default {
     patron: {
       type: Object,
       required: true
+    },
+    showDetailsBtn: {
+      Type: Boolean,
+      default: () =>true
     },
     withCardActions: {
       type: Boolean,

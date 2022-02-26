@@ -51,6 +51,7 @@
       <v-row dense justify="end">
         <v-col class="offset-2 text-left flex-grow-0 flex-shrink-1">
           <v-btn
+            v-show="showDetailBtn"
             text
             color="primary"
             @click="showDetails = !showDetails"
@@ -131,8 +132,8 @@
       </v-dialog>
     </v-card-text>
     <v-card-actions v-if="withCardActions">
-      <v-btn text color="primary" @click="reserve">
-        <v-icon color="primary" left>mdi-calendar-plus</v-icon> NEW
+      <v-btn text color="success" @click="reserve">
+        <v-icon color="success" left>mdi-calendar-plus</v-icon> NEW
         RESERVATION</v-btn
       >
       <v-spacer></v-spacer>
@@ -157,6 +158,10 @@ export default {
     event: {
       type: Object,
       required: true
+    },
+    showDetailBtn: {
+      type: Boolean,
+      default: () => true
     },
     withCardActions: {
       type: Boolean,

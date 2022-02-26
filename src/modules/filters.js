@@ -53,14 +53,15 @@ export default {
     //THIS IS FOR CUSTOM BUFFER PERIODS
     //TODO: make this a setting
     searchStartDate1.setDate(searchStartDate1.getDate() - buffer)
-
+    
     // DATES 2
     let searchStartDate2 =
-      typeof startDate2.getMonth === 'function'
-        ? startDate2
-        : new Date(startDate2)
+    typeof startDate2.getMonth === 'function'
+    ? startDate2
+    : new Date(startDate2)
     let searchEndDate2 =
-      typeof endDate2.getMonth === 'function' ? endDate2 : new Date(endDate2)
+    typeof endDate2.getMonth === 'function' ? endDate2 : new Date(endDate2)
+    searchEndDate1.setDate(searchEndDate1.getDate() + buffer)
 
     const searchRange1 = moment.range(searchStartDate1, searchEndDate1)
     const searchRange2 = moment.range(searchStartDate2, searchEndDate2)

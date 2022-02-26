@@ -10,7 +10,7 @@ const catalogItem = item => {
   [...item.customFields] : 
   [] 
   return {
-    abbreviation: item.abbreviation || 'EIPL',
+    abbreviation: item.abbreviation || 'V19',
     category: item.category || null,
     categoryName: item.categoryName || 'MISC',
     color: item.color || null,

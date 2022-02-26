@@ -263,7 +263,8 @@ export default {
     },
     patronDetails(patron) {
       this.modalCompData = {
-        patron: patron
+        patron: patron,
+        showDetailsBtn: false
       }
       this.modalComp = 'patronDetails'
       this.modalAction = true

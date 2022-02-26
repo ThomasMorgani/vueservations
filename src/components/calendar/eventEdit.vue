@@ -746,8 +746,8 @@ export default {
                 startDateTime,
                 startDateTime,
                 // this.allDay
-                // ci.reservation_buffer
-                1
+                ci.reservation_buffer
+                // 1
               ) || e.id == this.id
             )
           } else {
@@ -780,7 +780,8 @@ export default {
                 e.end_date,
                 endDateTime.toISOString(),
                 endDateTime.toISOString(),
-                this.allDay
+                ci.reservation_buffer
+                // this.allDay
               ) || e.id == this.id
             )
           } else {

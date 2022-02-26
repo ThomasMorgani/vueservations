@@ -19,7 +19,7 @@
       </v-toolbar>
     </v-col>
     <v-col cols="12" class="pa-0 flex-grow-1">
-      <catalogItemList :view="view" @newItem="catalogItemAdd"></catalogItemList>
+      <catalogItemList @newItem="catalogItemAdd"></catalogItemList>
     </v-col>
     <!-- Edit Catalog Item Modal  -->
     <v-dialog
@@ -94,15 +94,7 @@ export default {
       settings: state => state.appSettings,
       filterDrawer: state => state.filterDrawer
     }),
-    view: {
-      set(val) {
-        this.$store.commit('catalogView', val)
-        localStorage.setItem('lastViewCatalog', val)
-      },
-      get() {
-        return this.catalogView
-      }
-    }
+
   },
   methods: {
     catalogItemAdd() {

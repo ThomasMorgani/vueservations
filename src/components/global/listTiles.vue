@@ -6,7 +6,7 @@
           <template v-slot:default="{ active, toggle }">
             <v-list-item-avatar size="45">
               <img
-                src="https://www.eipl.org/reservations/images/uploads/458d8cab268259a7e676eadc42ec2c6d.gif"
+                src="/images/uploads/458d8cab268259a7e676eadc42ec2c6d.gif"
               />
             </v-list-item-avatar>
             <v-list-item-content>

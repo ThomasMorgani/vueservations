@@ -718,7 +718,6 @@ export default {
       ciData.customFields = [...this.catalogItemEditing?.customFields] || []
       const isNew = !ciData.id
       if (isNew) {
-        console.log('is new')
         ciData.id = new Date().getTime()
         this.$store.dispatch('catalogItemAdd', ciData)
       } else {

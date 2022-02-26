@@ -19,6 +19,10 @@
       class="pt-0"
       v-if="currentSettings && Object.keys(currentSettings).length > 0"
     >
+
+<v-row justify="center">
+<v-col cols="12" md="10" lg="9"> 
+  
       <!-- <newSetting></newSetting> -->
       <Setting
         :setting="currentSettings.Default_reservation_buffer"
@@ -57,6 +61,11 @@
           "
         ></v-text-field>
       </Setting>
+  
+</v-col>
+
+</v-row>
+
     </v-card-text>
   </v-card>
 </template>

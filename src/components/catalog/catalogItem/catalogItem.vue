@@ -194,14 +194,9 @@ export default {
     },
     thumbnailSrc() {
       return this.item.image_data.src
-      // return 'https://www.eipl.org/newsite/static/images/generic/music_cd_art_not_found.png'
     },
     thumbnailMaxHeight() {
       return 50
-      // return this.thumbnailSrc ===
-      //   'https://www.eipl.org/newsite/static/images/generic/music_cd_art_not_found.png'
-      //   ? 50
-      //   : 100
     }
   },
   methods: {

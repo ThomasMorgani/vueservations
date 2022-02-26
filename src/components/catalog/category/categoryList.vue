@@ -10,11 +10,11 @@
           @click="$emit('itemClicked', category.id)"
         >
           <v-list-item-avatar
-            size="20"
+            size="45"
             :color="category.color"
           ></v-list-item-avatar>
           <v-list-item-content class="py-2">
-            <v-list-item-title class="headline text-capitalize primary--text">
+            <v-list-item-title class="text-h5 text-capitalize primary--text">
               {{ category.name }}
               <v-tooltip
                 v-if="category.id == defaultCategory.id"
@@ -38,11 +38,13 @@
             >
               <v-icon v-text="modeIcons[mode].icon"></v-icon>
             </v-btn>
-            <div v-else>
+            <template v-else>
               <v-tooltip color="primary" top>
                 <template v-slot:activator="{ on }">
-                  <span v-on="on" class="mb-0 subheading-1"
-                    >({{ categoryCounts[category.id] || 0 }})</span
+                  <span
+                    v-on="on"
+                    class="mb-0 primary--text font-weight-bold text-h6"
+                    >{{ categoryCounts[category.id] || 0 }}</span
                   >
                 </template>
                 <span
@@ -51,7 +53,7 @@
                   "
                 ></span>
               </v-tooltip>
-            </div>
+            </template>
           </v-list-item-action>
         </v-list-item>
       </v-list>
@@ -136,7 +138,8 @@ export default {
         height = height - 180
       }
       return {
-        height: `${height}px`,
+        height: '100%',
+        'max-height': `${height}px`,
         'overflow-y': 'auto'
       }
     }
