@@ -2,31 +2,49 @@
   <v-row fill-height align-start justify-start dense no-gutters>
     <v-col cols="12">
       <v-toolbar height="40" flat color="background" class="primary--text">
-        <!-- <v-btn outlined class="mr-4" @click="setToday">Today</v-btn> -->
-        <!-- <v-menu bottom right>
-          <template v-slot:activator="{ on }">
-            <v-btn text v-on="on" color="primary">
-              <span class="title font-weight-bold">
-                {{ typeToLabel[type] }}
-              </span>
-              <v-icon right>mdi-menu-down</v-icon>
-            </v-btn>
+        <!-- <btn-with-tooltip
+          :btnProps="{ small: true }"
+          :iconProps="{ icon: 'mdi-calendar-star' }"
+          :tooltipProps="{ bottom: true }"
+          tooltipText="Focus today"
+          @click="setToday"
+        ></btn-with-tooltip> -->
+
+        <v-menu bottom>
+          <template v-slot:activator="{ on: menu }">
+            <v-tooltip color="primary" bottom>
+              <template v-slot:activator="{ on: tooltip }">
+                <v-btn icon v-on="{ ...tooltip, ...menu }">
+                  <v-icon color="primary">
+                    {{ calendarViewTypes[calendarView].icon }}
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>Period view</span>
+            </v-tooltip>
           </template>
           <v-list>
-            <v-list-item @click="type = 'day'">
-              <v-list-item-title>Day</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="type = 'week'">
-              <v-list-item-title>Week</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="type = 'month'">
-              <v-list-item-title>Month</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="type = '4day'">
-              <v-list-item-title>4 days</v-list-item-title>
+            <v-list-item
+              v-for="viewItem in Object.values(calendarViewTypes)"
+              :key="viewItem.value"
+              @click="setCalendarView(viewItem.value)"
+            >
+              <v-tooltip :color="viewItem.disabled ? '' : 'primary'" right>
+                <template v-slot:activator="{ on }">
+                  <v-icon
+                    :color="
+                      viewItem.value === calendarView ? 'primary' : 'disabled'
+                    "
+                    v-on="on"
+                    >{{ viewItem.icon }}</v-icon
+                  >
+                </template>
+                <span>{{ viewItem.text }}</span>
+              </v-tooltip>
             </v-list-item>
           </v-list>
-        </v-menu> -->
+        </v-menu>
+
         <v-btn color="primary" fab small text @click="prev">
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
@@ -34,8 +52,7 @@
           <v-menu
             ref="datePickerMenu"
             v-model="datePickerShow"
-            :close-on-content-click="false"
-            :return-value.sync="focus"
+            :close-on-content-click="true"
             transition="scale-transition"
             offset-y
             max-width="290px"
@@ -51,26 +68,26 @@
               </v-sheet>
             </template>
             <v-date-picker
-              :value="focus"
-              @input="focus = $event + '-01'"
+              :value="calendarFocus"
+              @input="calendarFocus = $event + '-01'"
               type="month"
               no-title
               scrollable
             >
-              <v-btn text color="warning" @click="datePickerShow = false">
+              <!-- <v-btn text color="warning" @click="datePickerShow = false">
                 CLOSE
               </v-btn>
-              <v-spacer></v-spacer>
-              <v-btn text color="primary" @click="focus = today">
+              <v-spacer></v-spacer> -->
+              <v-btn text color="primary" @click.stop="focusToday">
                 TODAY
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn
                 text
                 color="success"
-                @click="$refs.datePickerMenu.save(focus)"
+                @click="$refs.datePickerMenu.save(calendarFocus)"
               >
-                OK
+                CLOSE
               </v-btn>
             </v-date-picker>
           </v-menu>
@@ -79,9 +96,17 @@
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
-        <!-- <v-btn outlined color="primary" class="mr-4" @click="eventAdd">
-          <v-icon left>mdi-bookmark-plus-outline</v-icon>NEW
-        </v-btn>-->
+
+        <btn-with-tooltip
+          :btnProps="{ color: layoutView === 'list' ? 'primary' : 'grey' }"
+          :iconProps="{
+            icon: 'mdi-format-list-text'
+          }"
+          :tooltipProps="{ bottom: true }"
+          tooltipText="List view"
+          @click="setLayoutView"
+        ></btn-with-tooltip>
+
         <v-menu
           v-model="menuHeightSlider"
           :close-on-content-click="false"
@@ -131,28 +156,38 @@
     <v-col cols="12">
       <!-- <v-sheet height="calc(100vh - 64px)" style="overflow-y: scroll;"> -->
       <v-sheet class="px-2" :style="styleCal">
-        <v-sheet :height="type === 'month' ? calendarMonthHeight : '100%'">
+        <v-sheet
+          :height="calendarView === 'month' ? calendarMonthHeight : '100%'"
+        >
           <!-- TOOL TIP ON MOUSE ENTER/LEAVE.. PROBABLY WILL REMOVE -->
           <!-- @mouseenter:event="showTooltip($event, true)" -->
           <!-- @mouseleave:event="showTooltip($event, false)"<v-calendar -->
+          <!-- v-show="isLoaded && calendarView === 'month'" -->
           <v-calendar
-            v-if="isLoaded"
+            v-show="isLoaded"
             ref="calendar"
-            v-model="focus"
+            v-model="calendarFocus"
             :key="modalDetailsShow"
             color="primary"
             :events="orderBy(eventsList, 'name')"
             :event-margin-bottom="2"
-            event-start="start_date"
             event-end="end_date"
+            event-overlap-mode="column"
+            event-start="start_date"
             :now="today"
-            :type="type"
-            @click:event="showEvent"
+            :type="calendarView"
+            @click:date="viewDay"
+            @click:event="showEventMenu"
+            @click:more="showEventsModal"
             @change="updateRange"
             @contextmenu:day="contextDay"
           >
             <!-- @click:more="viewDay"
             @click:date="viewDay" -->
+            <!-- <template v-slot:day-body="{ time }">
+              {{ time }}
+              THIS IS DAY VIEW
+            </template> -->
             <template #event="{event}">
               <v-sheet
                 :color="eventColor(event)"
@@ -180,14 +215,6 @@
               @showDetails="showDetails"
             ></eventMenu>
           </v-dialog>
-          <v-tooltip
-            color="primary"
-            top
-            v-model="tooltipEvent"
-            v-bind="toptipPosition"
-          >
-            <span>HELLO</span>
-          </v-tooltip>
           <v-dialog v-model="modalDetailsShow" v-bind="modalDetailsProps">
             <component
               :key="modalDetailsShow + modalDetailsComp"
@@ -196,7 +223,7 @@
               v-bind="modalDetailsCompData"
               @close="onDetailsClose($event)"
               @eventModalAction="onDetailsAction"
-              @eventUpdated="calendarcheckChanges"
+              @eventUpdated="calendarCheckChanges"
             ></component>
           </v-dialog>
           <v-dialog
@@ -242,17 +269,51 @@ export default {
   },
   mixins: [Vue2Filters.mixin],
   data: () => ({
-    calendarMonthHeight: 2000,
+    calendarMonthHeight: 700,
+    calendarFocus: null,
+    calendarView: 'month',
+    calendarViewTypes: {
+      day: {
+        icon: 'mdi-calendar-today',
+        text: 'Day',
+        value: 'day'
+      },
+      month: {
+        icon: 'mdi-calendar-month',
+        text: 'Month',
+        value: 'month'
+      },
+      week: {
+        icon: 'mdi-calendar-week',
+        text: 'Week',
+        value: 'week'
+      }
+      // 4day: {
+      //   icon: '',
+      //   text: '4 Day',
+      //   value: '4day'
+      // },
+    },
     color: '#000066',
     currentlyEditing: null,
     datePickerShow: false,
     dialog: false,
     end: null,
-    focus: new Date().toISOString().substring(0, 10),
-    name: null,
     isLoaded: false,
-    navDrawer: false,
-    start: null,
+    layoutView: 'calendar',
+    // layoutViewTypes: {
+    //   calendar: {
+    //     icon: 'mdi-calendar-today',
+    //     text: 'Calendar',
+    //     value: 'calendar'
+    //   },
+    //   month: {
+    //     icon: 'mdi-calendar-month',
+    //     text: 'List',
+    //     value: 'list'
+    //   },
+    // },
+
     menuHeightSlider: false,
     modalDetailsProps: {
       'max-width': '800',
@@ -263,19 +324,13 @@ export default {
     modalDetailsComp: null,
     modalDetailsCompData: null,
     modalDetailsShow: false,
+    name: null,
+    navDrawer: false,
     selectedEvent: {},
     selectedElement: null,
     selectedOpen: false,
-    today: new Date().toISOString().substring(0, 10),
-    type: 'month',
-    typeToLabel: {
-      month: 'Month',
-      week: 'Week',
-      day: 'Day',
-      '4day': '4 Days'
-    },
-    tooltipEvent: false,
-    toptipPosition: { 'position-x': 0, 'position-y': 0 }
+    start: null,
+    today: new Date().toISOString().substring(0, 10)
   }),
   computed: {
     ...mapState({
@@ -372,7 +427,7 @@ export default {
       const startDay = start.day + this.nth(start.day)
       const endDay = end.day + this.nth(end.day)
 
-      switch (this.type) {
+      switch (this.calendarView) {
         case 'month':
           return `${startMonth} ${startYear}`
         case 'week':
@@ -401,13 +456,14 @@ export default {
     }
   },
   methods: {
-    calendarcheckChanges() {
+    test(e) {
+      console.log('test')
+      console.log(e)
+    },
+    calendarCheckChanges() {
       //args =event
       this.$refs.calendar.checkChange()
       if (this.selectedOpen) {
-        //TODO MOVE OVERVIEW MENU TO NEW EVENT START
-        // if (event) this.updatedSelectedEvent(event)
-        //TODO: fix this it updates, doesnt close
         this.selectedOpen = false
       }
     },
@@ -428,7 +484,7 @@ export default {
         <span id="${v.ciData.abbreviation}" class="mx-2 subtitle-2">
           <strong>${v.ciData.abbreviation}</strong>
           ${v?.patronData?.last_name || '-'} ${start} - ${end}
-        
+
         </span>
       `
 
@@ -451,6 +507,15 @@ export default {
       //right click day
       return e
     },
+    focusToday() {
+      this.calendarFocus = this.today
+      this.datePickerShow = false
+      this.$store.dispatch('localStorageWrite', {
+        key: 'calendarFocus',
+        data: this.calendarFocus,
+        isReference: false
+      })
+    },
     formatEventPreview(e) {
       return formats.eventPreview(e, this.categories)
     },
@@ -461,14 +526,52 @@ export default {
     getEventKeyById(eid) {
       return this.events.findIndex(event => event.id === eid)
     },
+    setCalendarView(view) {
+      this.calendarView = view
+      this.$store.dispatch('localStorageWrite', {
+        key: 'calendarView',
+        data: this.calendarView,
+        isReference: false
+      })
+    },
+    setLayoutView() {
+      this.layoutView =
+        this.layoutView === 'calendar'
+          ? 'list'
+          : this.layoutView === 'list'
+          ? 'calendar'
+          : 'list'
+      this.$store.dispatch('localStorageWrite', {
+        key: 'layoutView',
+        data: this.layoutView,
+        isReference: false
+      })
+    },
     setToday() {
-      this.focus = this.today
+      this.calendarFocus = this.today
+    },
+    showEventsModal() {
+      console.log('showEventsModal')
     },
     prev() {
+      // v-show calendar to retain refs
+      // if (this.calendarView === 'month') this.$refs.calendar.prev()
       this.$refs.calendar.prev()
+      this.$store.dispatch('localStorageWrite', {
+        key: 'calendarFocus',
+        data: this.calendarFocus,
+        isReference: false
+      })
     },
     next() {
+      // v-show calendar to retain refs
+      // if (this.calendarView === 'month') this.$refs.calendar.next()
       this.$refs.calendar.next()
+      this.$store.dispatch('localStorageWrite', {
+        key: 'calendarFocus',
+        data: this.calendarFocus,
+        isReference: false
+      })
     },
     onDetailsAction(a) {
       return a
@@ -484,7 +587,6 @@ export default {
       }
     },
     onHeightChange(height) {
-      console.log(height)
       localStorage.setItem('calendarMonthHeight', height)
     },
     showDetails(e) {
@@ -492,7 +594,8 @@ export default {
       switch (e.type) {
         case 'ci':
           this.modalDetailsCompData = {
-            item: this.selectedEvent?.eventData?.ciData || null
+            item: this.selectedEvent?.eventData?.ciData || null,
+            showDetailBtn: false
           }
           this.modalDetailsComp = 'ciDetails'
           break
@@ -508,7 +611,8 @@ export default {
           break
         case 'patron':
           this.modalDetailsCompData = {
-            patron: this.selectedEvent?.eventData?.patronData || null
+            patron: this.selectedEvent?.eventData?.patronData || null,
+            showDetailsBtn: false
           }
           this.modalDetailsComp = 'patronDetails'
           break
@@ -521,7 +625,7 @@ export default {
         setTimeout(() => (this.modalDetailsShow = true), 19)
       }
     },
-    showEvent({ nativeEvent, event }) {
+    showEventMenu({ nativeEvent, event }) {
       const open = () => {
         this.selectedEvent = this.formatEventPreview(event)
         this.selectedElement = nativeEvent.target
@@ -559,8 +663,8 @@ export default {
         : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
     },
     viewDay({ date }) {
-      this.focus = date
-      this.type = 'day'
+      this.calendarFocus = date
+      this.setCalendarView('day')
     }
   },
   mounted() {
@@ -576,6 +680,12 @@ export default {
     if (calMonthHeight) this.calendarMonthHeight = calMonthHeight
     if (lastFilterDrawerState === 'true' && !this.filterDrawer)
       this.$store.dispatch('toggleStateValue', 'filterDrawer')
+  },
+  created() {
+    this.calendarFocus = localStorage.getItem('calendarFocus') || this.today
+    this.calendarView =
+      localStorage.getItem('calendarView') || this.calendarView
+    this.layoutView = localStorage.getItem('layoutView') || this.layoutView
   }
 }
 </script>

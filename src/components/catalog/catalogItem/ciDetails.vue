@@ -80,6 +80,7 @@
       <v-row dense justify="end">
         <v-col class="offset-2 text-left flex-grow-0 flex-shrink-1">
           <v-btn
+            v-show="showDetailBtn"
             text
             color="primary"
             @click="showDetails = !showDetails"
@@ -96,18 +97,33 @@
         <v-col class="text-right flex-grow-0 flex-shrink-1">
           <v-tooltip color="primary" top>
             <template v-slot:activator="{ on }">
-              <v-btn text icon color="primary" @click="showNotes" v-on="on">
+              <v-btn v-on="on" text icon color="primary" @click="showNotes">
                 <v-icon color="primary">mdi-note-text-outline</v-icon>
               </v-btn>
             </template>
-            <span>Notes</span>
+            <span
+              v-html="
+                hasNotes
+                  ? `<strong>Last Note:</strong> <br />${notes[0].note}`
+                  : 'Notes'
+              "
+            ></span>
           </v-tooltip>
         </v-col>
         <v-col class="text-right flex-grow-0 flex-shrink-1">
           <v-tooltip color="primary" top>
             <template v-slot:activator="{ on }">
               <v-btn text icon @click="showReservations" v-on="on">
-                <v-icon color="primary">mdi-calendar-clock</v-icon>
+                <v-badge
+                  color="primary"
+                  :content="reservations.length"
+                  overlap
+                  :value="hasReservations"
+                >
+                  <v-icon :color="hasReservations ? 'primary' : 'disabled'"
+                    >mdi-calendar-clock</v-icon
+                  >
+                </v-badge>
               </v-btn>
             </template>
             <span>View Reservations</span>
@@ -168,6 +184,11 @@ export default {
       required: false,
       default: () => true
     },
+    showDetailBtn: {
+      type: Boolean,
+      required: false,
+      default: () => true
+    },
     item: {
       type: Object,
       required: true
@@ -192,6 +213,12 @@ export default {
       patrons: state => state.patrons,
       statusData: state => state.statusData
     }),
+    hasNotes() {
+      return this.notes?.length > 0
+    },
+    hasReservations() {
+      return this.reservations?.length > 0
+    },
     isReserved() {
       let reserved = false
       if (this.item.lastReservation) {
@@ -202,6 +229,25 @@ export default {
         }
       }
       return reserved
+    },
+    notes() {
+      return this.orderBy(
+        formats.noteListSimple(this.item.notes),
+        'date_created',
+        -1
+      )
+    },
+    reservations() {
+      return (
+        this.orderBy(
+          formats.eventListSimple(
+            this.events.filter(e => e.item_id == this.item.id),
+            this.patrons
+          ),
+          'startDate',
+          -1
+        ) || []
+      )
     },
     status() {
       let data
@@ -262,10 +308,7 @@ export default {
               text: 'UPDATED'
             }
           ],
-          items: this.orderBy(
-            formats.noteListSimple(this.item.notes),
-            'date_created'
-          ),
+          items: this.notes,
           height: 400
         }
       }
@@ -290,13 +333,7 @@ export default {
               text: 'END'
             }
           ],
-          items: this.orderBy(
-            formats.eventListSimple(
-              this.events.filter(e => e.item_id == this.item.id),
-              this.patrons
-            ),
-            'startDate'
-          ),
+          items: this.reservations,
           height: 400
         }
       }

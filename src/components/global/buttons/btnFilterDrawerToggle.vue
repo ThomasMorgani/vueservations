@@ -3,10 +3,14 @@
     <template v-slot:activator="{ on }">
       <div v-on="on">
         <v-btn
-          v-bind="{ color: 'primary', icon: true, ...btnProps }"
+          v-bind="{
+            color: isFiltered ? 'success' : isActive ? 'primary' : 'grey',
+            icon: true,
+            ...btnProps
+          }"
           @click="toggle"
         >
-          <v-icon :color="isFiltered ? 'success' : 'primary'">
+          <v-icon>
             {{ isActive ? 'mdi-filter-minus' : 'mdi-filter' }}
           </v-icon>
         </v-btn>

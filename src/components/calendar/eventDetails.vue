@@ -102,7 +102,7 @@
             v-for="(detail, i) in details"
             :key="i"
             align="center"
-            justify-center
+            no-gutters
           >
             <v-col
               cols="3"

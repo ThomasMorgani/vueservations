@@ -51,7 +51,6 @@
             v-show="showDetailsBtn"
             text
             color="primary"
-            
             @click="showDetails = !showDetails"
             class="font-weight-bold primary--text"
             ><v-icon
@@ -121,7 +120,7 @@
             v-for="(detail, i) in details"
             :key="i"
             align="center"
-            justify-center
+            no-gutters
           >
             <v-col
               cols="3"
@@ -180,7 +179,7 @@ export default {
     },
     showDetailsBtn: {
       Type: Boolean,
-      default: () =>true
+      default: () => true
     },
     withCardActions: {
       type: Boolean,
@@ -285,7 +284,8 @@ export default {
           ],
           items: this.orderBy(
             formats.patronHistorySimple(this.patronEvents, this.catalogItems),
-            'start_date'
+            'start_date',
+            -1
           ),
           height: 400
         }

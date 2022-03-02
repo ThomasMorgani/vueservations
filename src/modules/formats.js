@@ -125,8 +125,8 @@ const eventPreview = event => {
     },
     eventData: event,
     fields: {
-      First: event.patronData.first_name || '',
-      Last: event.patronData.last_name || '-',
+      First: event?.patronData?.first_name || '',
+      Last: event?.patronData?.last_name || '-',
       Start: timestampHuman(event.start_date, true, false) || '-',
       End: timestampHuman(event.end_date, true, false) || '-',
       Length: dateDifference(event.start_date, event.end_date) + ' Days',

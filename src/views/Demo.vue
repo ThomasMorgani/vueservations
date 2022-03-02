@@ -18,7 +18,7 @@
         </p>
         <p>
           Some features may be unavailable and any changes made to content
-          persists only on this local machine.
+          persists only on this local device.
         </p>
         <p>
           To get or contribute checkout:

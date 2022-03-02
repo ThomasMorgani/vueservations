@@ -16,6 +16,7 @@
         v-for="(field, key) in orderBy(items, 'name')"
         :key="key + 'cfrow'"
         align="center"
+        no-gutters
       >
         <v-col
           class="subheading primary--text font-weight-bold d-flex flex-grow-1"
