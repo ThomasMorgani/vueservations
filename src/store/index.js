@@ -83,6 +83,27 @@ export default new Vuex.Store({
       vertical: true
     },
     snackbarState: false,
+    sort: {
+      direction: 1, //1 asc, =1 desc
+      value: 'event',   //value to be sorted
+    },
+    sortOptions: {
+      ci: {
+        icon: 'mdi-layers',
+        text: 'Catalog Item',
+        value: 'ci'
+      },
+      event: {
+        icon: 'mdi-calendar-clock',
+        text: 'Event',
+        value: 'event'
+      },
+      patron: {
+        icon: 'mdi-account',
+        text: 'Patron',
+        value: 'patron'
+      }
+    },
     statusData: {
       available: {
         color: 'success',

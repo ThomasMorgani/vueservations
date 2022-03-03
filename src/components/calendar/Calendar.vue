@@ -1,7 +1,13 @@
 <template>
   <v-row fill-height align-start justify-start dense no-gutters>
     <v-col cols="12">
-      <v-toolbar height="40" flat color="background" class="primary--text">
+      <v-toolbar
+        height="40"
+        flat
+        color="background"
+        class="d-flex align-center justify-space-between primary--text"
+      >
+        <!-- FOCUS TODAY BTN -->
         <!-- <btn-with-tooltip
           :btnProps="{ small: true }"
           :iconProps="{ icon: 'mdi-calendar-star' }"
@@ -9,168 +15,186 @@
           tooltipText="Focus today"
           @click="setToday"
         ></btn-with-tooltip> -->
-
-        <v-menu bottom>
-          <template v-slot:activator="{ on: menu }">
-            <v-tooltip color="primary" bottom>
-              <template v-slot:activator="{ on: tooltip }">
-                <v-btn icon v-on="{ ...tooltip, ...menu }">
-                  <v-icon color="primary">
-                    {{ calendarViewTypes[calendarView].icon }}
-                  </v-icon>
-                </v-btn>
-              </template>
-              <span>Period view</span>
-            </v-tooltip>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for="viewItem in Object.values(calendarViewTypes)"
-              :key="viewItem.value"
-              @click="setCalendarView(viewItem.value)"
-            >
-              <v-tooltip :color="viewItem.disabled ? '' : 'primary'" right>
-                <template v-slot:activator="{ on }">
-                  <v-icon
-                    :color="
-                      viewItem.value === calendarView ? 'primary' : 'disabled'
-                    "
-                    v-on="on"
-                    >{{ viewItem.icon }}</v-icon
-                  >
-                </template>
-                <span>{{ viewItem.text }}</span>
-              </v-tooltip>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-
-        <v-btn color="primary" fab small text @click="prev">
-          <v-icon>mdi-chevron-left</v-icon>
-        </v-btn>
-        <v-toolbar-title>
+        <v-sheet
+          color="transparent"
+          class="d-flex align-center justify-start flex-shrink-1 flex-grow-0"
+        >
+          <!-- LIST VIEW TOGGLE -->
+          <btn-with-tooltip
+            :btnProps="{
+              color: layoutView === 'list' ? 'primary' : 'grey',
+              icon: true
+            }"
+            :iconProps="{
+              icon: 'mdi-format-list-text'
+            }"
+            :tooltipProps="{ bottom: true }"
+            tooltipText="List view"
+            @click="setLayoutView"
+          ></btn-with-tooltip>
+          <!-- CALENDAR HEIGHT / LIST SORT-->
+          <btn-sort-menu v-if="layoutView === 'list'"></btn-sort-menu>
           <v-menu
-            ref="datePickerMenu"
-            v-model="datePickerShow"
-            :close-on-content-click="true"
-            transition="scale-transition"
+            v-if="layoutView === 'calendar'"
+            :close-on-content-click="false"
+            bottom
             offset-y
-            max-width="290px"
-            min-width="auto"
           >
-            <template v-slot:activator="{ on, attrs }">
-              <v-sheet
-                v-bind="attrs"
-                v-on="on"
-                class="title primary--text font-weight-bold"
-              >
-                {{ title }}
+            <template v-slot:activator="{ on }">
+              <v-sheet v-on="on" color="transparent">
+                <btn-with-tooltip
+                  :btnProps="{
+                    icon: true
+                  }"
+                  :iconProps="{ icon: 'mdi-arrow-split-horizontal' }"
+                  :tooltipProps="{ bottom: true }"
+                  tooltipText="Calendar height"
+                ></btn-with-tooltip>
               </v-sheet>
             </template>
-            <v-date-picker
-              :value="calendarFocus"
-              @input="calendarFocus = $event + '-01'"
-              type="month"
-              no-title
-              scrollable
-            >
-              <!-- <v-btn text color="warning" @click="datePickerShow = false">
-                CLOSE
-              </v-btn>
-              <v-spacer></v-spacer> -->
-              <v-btn text color="primary" @click.stop="focusToday">
-                TODAY
-              </v-btn>
-              <v-spacer></v-spacer>
-              <v-btn
-                text
-                color="success"
-                @click="$refs.datePickerMenu.save(calendarFocus)"
-              >
-                CLOSE
-              </v-btn>
-            </v-date-picker>
+            <v-card>
+              <v-card-text>
+                <v-slider
+                  v-model="calendarMonthHeight"
+                  :color="color"
+                  hide-details
+                  max="3500"
+                  :min="styleCal.height || 800"
+                  track-color="grey"
+                  vertical
+                  @input="onHeightChange"
+                ></v-slider>
+              </v-card-text>
+            </v-card>
           </v-menu>
-        </v-toolbar-title>
-        <v-btn fab color="primary" small text @click="next">
-          <v-icon>mdi-chevron-right</v-icon>
-        </v-btn>
-        <v-spacer></v-spacer>
 
-        <btn-with-tooltip
-          :btnProps="{ color: layoutView === 'list' ? 'primary' : 'grey' }"
-          :iconProps="{
-            icon: 'mdi-format-list-text'
-          }"
-          :tooltipProps="{ bottom: true }"
-          tooltipText="List view"
-          @click="setLayoutView"
-        ></btn-with-tooltip>
-
-        <v-menu
-          v-model="menuHeightSlider"
-          :close-on-content-click="false"
-          bottom
-          offset-y
+          <!-- PERIOD VIEW MENU -->
+          <v-menu bottom>
+            <template v-slot:activator="{ on: menu }">
+              <v-tooltip color="primary" bottom>
+                <template v-slot:activator="{ on: tooltip }">
+                  <v-btn icon v-on="{ ...tooltip, ...menu }">
+                    <v-icon color="primary">
+                      {{ calendarViewTypes[calendarView].icon }}
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>Period view</span>
+              </v-tooltip>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="viewItem in Object.values(calendarViewTypes)"
+                :key="viewItem.value"
+                @click="setCalendarView(viewItem.value)"
+              >
+                <v-tooltip :color="viewItem.disabled ? '' : 'primary'" right>
+                  <template v-slot:activator="{ on }">
+                    <v-icon
+                      :color="
+                        viewItem.value === calendarView ? 'primary' : 'disabled'
+                      "
+                      v-on="on"
+                      >{{ viewItem.icon }}</v-icon
+                    >
+                  </template>
+                  <span>{{ viewItem.text }}</span>
+                </v-tooltip>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-sheet>
+        <v-sheet
+          color="transparent"
+          class="d-flex align-center justify-center flex-shrink-0 flex-grow-1"
         >
-          <template v-slot:activator="{ on }">
-            <v-sheet v-on="on" color="transparent">
-              <btn-with-tooltip
-                :iconProps="{ icon: 'mdi-arrow-split-horizontal' }"
-                :tooltipProps="{ bottom: true }"
-                tooltipText="Calendar height"
-              ></btn-with-tooltip>
-            </v-sheet>
-          </template>
+          <!-- CURRENT PERIOD  -->
+          <v-btn color="primary" icon small text @click="prev">
+            <v-icon>mdi-chevron-left</v-icon>
+          </v-btn>
+          <v-toolbar-title>
+            <v-menu
+              ref="datePickerMenu"
+              v-model="datePickerShow"
+              :close-on-content-click="true"
+              transition="scale-transition"
+              offset-y
+              max-width="290px"
+              min-width="auto"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-sheet
+                  v-bind="attrs"
+                  v-on="on"
+                  class="title primary--text font-weight-bold"
+                >
+                  {{ title }}
+                </v-sheet>
+              </template>
+              <v-date-picker
+                :value="calendarFocus"
+                @input="calendarFocus = $event + '-01'"
+                type="month"
+                no-title
+                scrollable
+              >
+                <v-btn text color="primary" @click.stop="focusToday">
+                  TODAY
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn
+                  text
+                  color="success"
+                  @click="$refs.datePickerMenu.save(calendarFocus)"
+                >
+                  CLOSE
+                </v-btn>
+              </v-date-picker>
+            </v-menu>
+          </v-toolbar-title>
+          <v-btn color="primary" icon small text @click="next">
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-btn>
+        </v-sheet>
+        <v-sheet
+          color="transparent"
+          class="d-flex align-center justify-end flex-shrink-1 flex-grow-0"
+        >
+          <!-- ADD EVENT BTN -->
+          <btn-with-tooltip
+            :btnProps="{
+              icon: true
+            }"
+            :iconProps="{ icon: 'mdi-calendar-plus' }"
+            :tooltipProps="{ bottom: true }"
+            tooltipText="Add new event"
+            @click="eventAdd"
+          ></btn-with-tooltip>
 
-          <v-card>
-            <!-- <v-card-title class="title primary--text"
-              >Calendar Height</v-card-title
-            > -->
-            <v-card-text>
-              <v-slider
-                v-model="calendarMonthHeight"
-                :color="color"
-                hide-details
-                max="3500"
-                :min="styleCal.height || 800"
-                track-color="grey"
-                vertical
-                @input="onHeightChange"
-              ></v-slider>
-            </v-card-text>
-          </v-card>
-        </v-menu>
-
-        <btn-with-tooltip
-          :iconProps="{ icon: 'mdi-calendar-plus' }"
-          :tooltipProps="{ bottom: true }"
-          tooltipText="Add new event"
-          @click="eventAdd"
-        ></btn-with-tooltip>
-
-        <filterBtn v-if="!filterDrawer"></filterBtn>
+          <!-- FILTER TOGGLE -->
+          <filterBtn v-if="!filterDrawer"></filterBtn>
+        </v-sheet>
       </v-toolbar>
-      <!-- </v-sheet> -->
     </v-col>
     <v-col cols="12">
-      <!-- <v-sheet height="calc(100vh - 64px)" style="overflow-y: scroll;"> -->
       <v-sheet class="px-2" :style="styleCal">
         <v-sheet
           :height="calendarView === 'month' ? calendarMonthHeight : '100%'"
         >
-          <!-- TOOL TIP ON MOUSE ENTER/LEAVE.. PROBABLY WILL REMOVE -->
-          <!-- @mouseenter:event="showTooltip($event, true)" -->
-          <!-- @mouseleave:event="showTooltip($event, false)"<v-calendar -->
-          <!-- v-show="isLoaded && calendarView === 'month'" -->
+          <eventList
+            v-if="layoutView === 'list'"
+            :events="eventsList"
+            :dateRange="{ end, start }"
+          ></eventList>
           <v-calendar
-            v-show="isLoaded"
+            v-show="isLoaded && layoutView === 'calendar'"
             ref="calendar"
             v-model="calendarFocus"
             :key="modalDetailsShow"
             color="primary"
             :events="orderBy(eventsList, 'name')"
             :event-margin-bottom="2"
+            :event-color="eventColor"
             event-end="end_date"
             event-overlap-mode="column"
             event-start="start_date"
@@ -182,12 +206,6 @@
             @change="updateRange"
             @contextmenu:day="contextDay"
           >
-            <!-- @click:more="viewDay"
-            @click:date="viewDay" -->
-            <!-- <template v-slot:day-body="{ time }">
-              {{ time }}
-              THIS IS DAY VIEW
-            </template> -->
             <template #event="{event}">
               <v-sheet
                 :color="eventColor(event)"
@@ -200,7 +218,6 @@
               </v-sheet>
             </template>
           </v-calendar>
-          <!-- :activator="selectedElement" -->
           <v-dialog
             v-model="selectedOpen"
             :close-on-content-click="false"
@@ -253,15 +270,18 @@ import * as formats from '@/modules/formats.js'
 import { timeHuman, timestampHuman } from '@/modules/formats.js'
 import eventMenu from '@/components/calendar/eventOverview'
 import filterBtn from '@/components/global/buttons/btnFilterDrawerToggle'
+import btnSortMenu from '@/components/global/buttons/btnSortMenu'
 
 import Vue2Filters from 'vue2-filters'
 
 export default {
   name: 'Calendar',
   components: {
+    btnSortMenu,
     ciDetails: () => import('@/components/catalog/catalogItem/ciDetails'),
     eventEdit: () => import('@/components/calendar/eventEdit'),
     eventDetails: () => import('@/components/calendar/eventDetails'),
+    eventList: () => import('@/components/calendar/eventList'),
     eventMenu,
     filterBtn,
     imagePreviewModal: () => import('@/components/images/imagePreviewModal'),
@@ -314,7 +334,6 @@ export default {
     //   },
     // },
 
-    menuHeightSlider: false,
     modalDetailsProps: {
       'max-width': '800',
       persistent: true,
@@ -690,4 +709,12 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+>>> .v-toolbar__content {
+  width: 100%;
+}
+
+>>> .v-calendar-daily__pane {
+  overflow-x: hidden;
+}
+</style>

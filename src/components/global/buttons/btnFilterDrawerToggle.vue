@@ -2,9 +2,11 @@
   <v-tooltip color="primary" bottom>
     <template v-slot:activator="{ on }">
       <div v-on="on">
+        <!-- grey out if disabled -->
+        <!-- color: isFiltered ? 'success' : isActive ? 'primary' : 'grey', -->
         <v-btn
           v-bind="{
-            color: isFiltered ? 'success' : isActive ? 'primary' : 'grey',
+            color: isFiltered ? 'success' : 'primary',
             icon: true,
             ...btnProps
           }"
