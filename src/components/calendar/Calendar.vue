@@ -17,6 +17,7 @@
         ></btn-with-tooltip> -->
         <v-sheet
           color="transparent"
+          width="150"
           class="d-flex align-center justify-start flex-shrink-1 flex-grow-0"
         >
           <!-- LIST VIEW TOGGLE -->
@@ -158,6 +159,7 @@
         </v-sheet>
         <v-sheet
           color="transparent"
+          width="150"
           class="d-flex align-center justify-end flex-shrink-1 flex-grow-0"
         >
           <!-- ADD EVENT BTN -->
@@ -182,9 +184,10 @@
           :height="calendarView === 'month' ? calendarMonthHeight : '100%'"
         >
           <eventList
-            v-if="layoutView === 'list'"
+            v-if="isLoaded && layoutView === 'list'"
             :events="eventsList"
             :dateRange="{ end, start }"
+            @showDetails="showDetails"
           ></eventList>
           <v-calendar
             v-show="isLoaded && layoutView === 'calendar'"
@@ -193,9 +196,10 @@
             :key="modalDetailsShow"
             color="primary"
             :events="orderBy(eventsList, 'name')"
-            :event-margin-bottom="2"
             :event-color="eventColor"
             event-end="end_date"
+            :event-margin-bottom="2"
+            :event-height="20"
             event-overlap-mode="column"
             event-start="start_date"
             :now="today"
@@ -209,9 +213,13 @@
             <template #event="{event}">
               <v-sheet
                 :color="eventColor(event)"
-                class="d-flex align-center white--text"
+                height="20"
+                class="d-flex align-center justify-start white--text  text-truncate px-1"
               >
-                <span v-html="eventLabel(event)"></span>
+                <v-chip color="secondary" outlined x-small
+                  ><strong>{{ event.ciData.abbreviation }}</strong></v-chip
+                >
+                <span v-html="eventLabel(event)" class="text-truncate"></span>
                 <v-icon v-if="event.notes" small color="white"
                   >mdi-note-outline</v-icon
                 >
@@ -466,7 +474,7 @@ export default {
     styleCal() {
       let height = this.$store.state.content.main.y || null
       if (height) {
-        height = height - 180
+        height = height - 170
       }
       return {
         height: `${height}px`,
@@ -501,7 +509,7 @@ export default {
       }
       let label = `
         <span id="${v.ciData.abbreviation}" class="mx-2 subtitle-2">
-          <strong>${v.ciData.abbreviation}</strong>
+         
           ${v?.patronData?.last_name || '-'} ${start} - ${end}
 
         </span>

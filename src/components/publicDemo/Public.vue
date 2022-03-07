@@ -1,6 +1,6 @@
 <template>
   <v-row align="center" justify="center">
-    <v-col cols="12" sm="10" md="8" lg="5">
+    <v-col cols="12" sm="10" md="8" lg="7">
       <v-card flat>
         <v-card-text class="text-center primary--text font-weight-bold">
           <p class="mb-0">
@@ -11,7 +11,7 @@
         </v-card-text>
       </v-card>
     </v-col>
-    <v-col cols="12" sm="10" md="8" lg="5">
+    <v-col cols="12" sm="10" md="8" lg="7">
       <v-card class="d-flex flex-column justify-start">
         <v-card-text class="pt-6">
           <v-text-field

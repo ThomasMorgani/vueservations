@@ -32,6 +32,11 @@
           >
         </p>
       </v-card-text>
+      <v-card-actions>
+        <v-btn block color="primary" :to="{ name: 'Calendar' }">
+          <v-icon left> mdi-calendar-cursor</v-icon>GET STARTED
+        </v-btn></v-card-actions
+      >
     </v-card>
   </v-sheet>
 </template>

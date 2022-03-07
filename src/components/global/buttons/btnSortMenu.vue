@@ -86,8 +86,20 @@ export default {
             value: v
           }
         })
+        this.$store.dispatch('localStorageWrite', {
+          key: 'calendarSort',
+          data: this.sort
+        })
       }
     }
+  },
+  created() {
+    const lastSort = JSON.parse(localStorage.getItem('calendarSort')) || null
+    if (lastSort?.value)
+      this.$store.dispatch('setStateValue', {
+        key: 'sort',
+        value: lastSort
+      })
   }
 }
 </script>

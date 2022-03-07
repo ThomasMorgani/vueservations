@@ -33,7 +33,11 @@
       </v-tooltip>
     </v-row>
 
-    <v-row dense class="display-flex align-center justify-start">
+    <v-row
+      v-if="showCategory"
+      dense
+      class="display-flex align-center justify-start"
+    >
       <v-tooltip color="primary" top>
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -73,6 +77,10 @@ export default {
     item: {
       type: Object,
       required: true
+    },
+    showCategory: {
+      type: Boolean,
+      default: () => true
     }
   },
   computed: {
