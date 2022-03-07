@@ -40,6 +40,13 @@ export default {
       return returnVal ? result[returnVal] : result
     }
   },
+  isAllDay(timestamp1, timestamp2) {
+    if (!timestamp1 || !timestamp2) return false
+    const timeOne = timestamp1.split(' ')[1] || timestamp1
+    const timeTwo= timestamp2.split(' ')[1] || timestamp2
+    return (timeOne.substring(0, 5) === '00:00' && timeTwo.substring(0, 5) === '00:00') 
+
+  },
   testRangeOverlap(startDate1, endDate1, startDate2, endDate2, buffer) {
     buffer = parseInt(buffer)
     if (isNaN(buffer)) buffer = 0

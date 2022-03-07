@@ -60,7 +60,7 @@
                   :color="color"
                   hide-details
                   max="3500"
-                  :min="styleCal.height || 800"
+                  :min="calHeight || 800"
                   track-color="grey"
                   vertical
                   @input="onHeightChange"
@@ -179,93 +179,89 @@
       </v-toolbar>
     </v-col>
     <v-col cols="12">
-      <v-sheet class="px-2" :style="styleCal">
-        <v-sheet
-          :height="calendarView === 'month' ? calendarMonthHeight : '100%'"
+      <v-sheet class="px-2" :height="calHeight" style="overflow-y: scroll;">
+        <eventList
+          v-if="isLoaded && layoutView === 'list'"
+          :events="eventsList"
+          :dateRange="{ end, start }"
+          @showDetails="showDetails"
+        ></eventList>
+        <v-calendar
+          v-show="isLoaded && layoutView === 'calendar'"
+          ref="calendar"
+          v-model="calendarFocus"
+          :key="modalDetailsShow"
+          color="primary"
+          :events="orderBy(eventsList, 'name')"
+          :event-color="eventColor"
+          event-end="end_date"
+          :event-margin-bottom="2"
+          :event-height="20"
+          event-overlap-mode="column"
+          event-start="start_date"
+          :now="today"
+          :type="calendarView"
+          @click:date="viewDay"
+          @click:event="showEventMenu"
+          @click:more="showEventsModal"
+          @change="updateRange"
+          @contextmenu:day="contextDay"
         >
-          <eventList
-            v-if="isLoaded && layoutView === 'list'"
-            :events="eventsList"
-            :dateRange="{ end, start }"
-            @showDetails="showDetails"
-          ></eventList>
-          <v-calendar
-            v-show="isLoaded && layoutView === 'calendar'"
-            ref="calendar"
-            v-model="calendarFocus"
-            :key="modalDetailsShow"
-            color="primary"
-            :events="orderBy(eventsList, 'name')"
-            :event-color="eventColor"
-            event-end="end_date"
-            :event-margin-bottom="2"
-            :event-height="20"
-            event-overlap-mode="column"
-            event-start="start_date"
-            :now="today"
-            :type="calendarView"
-            @click:date="viewDay"
-            @click:event="showEventMenu"
-            @click:more="showEventsModal"
-            @change="updateRange"
-            @contextmenu:day="contextDay"
-          >
-            <template #event="{event}">
-              <v-sheet
-                :color="eventColor(event)"
-                height="20"
-                class="d-flex align-center justify-start white--text  text-truncate px-1"
+          <template #event="{event}">
+            <v-sheet
+              :color="eventColor(event)"
+              height="20"
+              class="d-flex align-center justify-start white--text  text-truncate px-1"
+            >
+              <v-chip color="secondary" outlined x-small
+                ><strong>{{ event.ciData.abbreviation }}</strong></v-chip
               >
-                <v-chip color="secondary" outlined x-small
-                  ><strong>{{ event.ciData.abbreviation }}</strong></v-chip
-                >
-                <span v-html="eventLabel(event)" class="text-truncate"></span>
-                <v-icon v-if="event.notes" small color="white"
-                  >mdi-note-outline</v-icon
-                >
-              </v-sheet>
-            </template>
-          </v-calendar>
-          <v-dialog
-            v-model="selectedOpen"
-            :close-on-content-click="false"
-            :close-on-click="!modalDetailsShow"
-            max-width="350"
-            hide-overlay
-          >
-            <eventMenu
-              :event="selectedEvent"
-              @closeDetails="selectedOpen = false"
-              @editEvent="eventEdit"
-              @showDetails="showDetails"
-            ></eventMenu>
-          </v-dialog>
-          <v-dialog v-model="modalDetailsShow" v-bind="modalDetailsProps">
-            <component
-              :key="modalDetailsShow + modalDetailsComp"
-              :is="modalDetailsComp"
-              :event="selectedEvent"
-              v-bind="modalDetailsCompData"
-              @close="onDetailsClose($event)"
-              @eventModalAction="onDetailsAction"
-              @eventUpdated="calendarCheckChanges"
-            ></component>
-          </v-dialog>
-          <v-dialog
-            :value="modalImageFullPreview"
-            transition="dialog-transition"
-            :key="
-              `imgPrev${String(
-                imagePreviewData && imagePreviewData.id
-                  ? imagePreviewData.id
-                  : 'none'
-              )}`
-            "
-            @input="$store.dispatch('toggleModalImageFullPreview')"
-          >
-            <imagePreviewModal></imagePreviewModal>
-          </v-dialog>
-        </v-sheet>
+              <span v-html="eventLabel(event)" class="text-truncate"></span>
+              <v-icon v-if="event.notes" small color="white"
+                >mdi-note-outline</v-icon
+              >
+            </v-sheet>
+          </template>
+        </v-calendar>
+        <v-dialog
+          v-model="selectedOpen"
+          :close-on-content-click="false"
+          :close-on-click="!modalDetailsShow"
+          max-width="350"
+          hide-overlay
+        >
+          <eventMenu
+            :event="selectedEvent"
+            @closeDetails="selectedOpen = false"
+            @editEvent="eventEdit"
+            @showDetails="showDetails"
+          ></eventMenu>
+        </v-dialog>
+        <v-dialog v-model="modalDetailsShow" v-bind="modalDetailsProps">
+          <component
+            :key="modalDetailsShow + modalDetailsComp"
+            :is="modalDetailsComp"
+            :event="selectedEvent"
+            v-bind="modalDetailsCompData"
+            @close="onDetailsClose($event)"
+            @eventModalAction="onDetailsAction"
+            @eventUpdated="calendarCheckChanges"
+          ></component>
+        </v-dialog>
+        <v-dialog
+          :value="modalImageFullPreview"
+          transition="dialog-transition"
+          :key="
+            `imgPrev${String(
+              imagePreviewData && imagePreviewData.id
+                ? imagePreviewData.id
+                : 'none'
+            )}`
+          "
+          @input="$store.dispatch('toggleModalImageFullPreview')"
+        >
+          <imagePreviewModal></imagePreviewModal>
+        </v-dialog>
       </v-sheet>
     </v-col>
   </v-row>
@@ -471,15 +467,12 @@ export default {
         month: 'long'
       })
     },
-    styleCal() {
-      let height = this.$store.state.content.main.y || null
-      if (height) {
-        height = height - 170
-      }
-      return {
-        height: `${height}px`,
-        'overflow-y': 'auto'
-      }
+    calHeight() {
+      const { application, breakpoint } = this.$vuetify
+      const { footer, top } = application
+      const appHeight = breakpoint.height
+      const height = appHeight - footer - top - 40 //40 for cal toolbar
+      return height
     }
   },
   methods: {
@@ -509,7 +502,7 @@ export default {
       }
       let label = `
         <span id="${v.ciData.abbreviation}" class="mx-2 subtitle-2">
-         
+
           ${v?.patronData?.last_name || '-'} ${start} - ${end}
 
         </span>
@@ -617,6 +610,8 @@ export default {
       localStorage.setItem('calendarMonthHeight', height)
     },
     showDetails(e) {
+      if (e?.event)
+        this.selectedEvent = this.formatEventPreview({ ...e.event.eventData })
       this.modalDetailsProps = this.defaultModalProps
       switch (e.type) {
         case 'ci':
@@ -631,6 +626,7 @@ export default {
           break
         case 'event':
           this.modalDetailsCompData = {
+            eventData: this.selectedEvent.eventData || null,
             'max-width': 'unset',
             showDetailBtn: false
           }
@@ -707,6 +703,7 @@ export default {
     if (calMonthHeight) this.calendarMonthHeight = calMonthHeight
     if (lastFilterDrawerState === 'true' && !this.filterDrawer)
       this.$store.dispatch('toggleStateValue', 'filterDrawer')
+    this.calendarMonthHeight = this.calHeight
   },
   created() {
     this.calendarFocus = localStorage.getItem('calendarFocus') || this.today
@@ -724,5 +721,11 @@ export default {
 
 >>> .v-calendar-daily__pane {
   overflow-x: hidden;
+}
+
+>>> .v-chip {
+  justify-content: center;
+  min-width: 40px;
+  padding: 0px 2px;
 }
 </style>

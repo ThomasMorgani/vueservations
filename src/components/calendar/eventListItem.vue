@@ -22,7 +22,12 @@
                 <v-btn
                   icon
                   color="primary"
-                  @click="$emit('showDetails', { type: 'ci', event: event })"
+                  @click="
+                    $emit('showDetails', {
+                      type: 'ci',
+                      event: { eventData: event }
+                    })
+                  "
                   v-on="on"
                   class="mr-2"
                 >
@@ -84,9 +89,7 @@
               </template>
               <span>Event Details</span>
             </v-tooltip>
-
-            {{ formatTimeStamp(event.start_date) || '' }} -
-            {{ formatTimeStamp(event.end_date) || '' }}
+            {{ eventTimeText() }}
           </v-sheet>
         </v-col>
       </v-row>
@@ -111,6 +114,14 @@ export default {
     formatEvent(e) {
       console.log(eventPreview(e))
       // formats.eventPreview(e, this.categories)
+    },
+    eventTimeText() {
+      const end = this.formatTimeStamp(this.event.end_date)
+      const start = this.formatTimeStamp(this.event.start_date)
+      const isAllDay = this.event.isAllDay
+      return `${isAllDay ? start.split(' ')[0] : start} - ${
+        isAllDay ? end.split(' ')[0] : end
+      } `
     },
     formatTimeStamp(timestamp) {
       return timestampHuman(timestamp)

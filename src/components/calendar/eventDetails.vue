@@ -20,7 +20,15 @@
             <!-- <a v-html="item.name" class="font-weight-medium title"></a> -->
             <span class="font-weight-medium title primary--text ml-5">
               {{
-                `${event.eventData.ciData.name}: ${event.eventData.patronData.last_name}`
+                `${
+                  event.eventData && event.eventData.ciData
+                    ? event.eventData.ciData.name
+                    : ''
+                }: ${
+                  event.eventData && event.eventData.ciData
+                    ? event.eventData.patronData.last_name
+                    : ''
+                }`
               }}
             </span>
           </v-row>
@@ -30,18 +38,18 @@
                 <div v-on="on">
                   <v-avatar
                     size="10"
-                    :color="statusMap[status].color"
+                    :color="event.eventData.eventStatus.color || ''"
                     class="mr-1 ml-5"
                   ></v-avatar>
                   <p
-                    v-html="statusMap[status].label"
+                    v-html="event.eventData.eventStatus.label || ''"
                     class="font-italic subheading text-capitalize"
                     style="display: inline;"
                   ></p>
                 </div>
               </template>
               <span>
-                {{ statusMap[status].text }}
+                {{ event.eventData.eventStatus.text || '' }}
               </span>
             </v-tooltip>
           </v-row>
@@ -173,24 +181,7 @@ export default {
     modal: false,
     modalComp: null,
     modalCompData: null,
-    showDetails: true,
-    statusMap: {
-      active: {
-        color: 'success',
-        label: 'Active',
-        text: 'Reservation is currently active'
-      },
-      expired: {
-        color: 'error',
-        label: 'Expired',
-        text: 'Reservation has ended'
-      },
-      pending: {
-        color: 'warning',
-        label: 'Pending',
-        text: 'Reservation is pending'
-      }
-    }
+    showDetails: true
   }),
   computed: {
     ...mapState({
@@ -199,26 +190,29 @@ export default {
       patrons: state => state.patrons
     }),
     details() {
+      const now = new Date()
       const currYear = new Date().getFullYear()
-      const endYear = new Date(this.event.eventData.end_date).getFullYear()
-      const startYear = new Date(this.event.eventData.start_date).getFullYear()
+      const endYear =
+        new Date(this.event?.eventData?.end_date).getFullYear() || currYear
+      const startYear =
+        new Date(this.event?.eventData?.start_date).getFullYear() || currYear
       return [
         {
           name: 'Item',
-          value: this.event.eventData.ciData.name || '-'
+          value: this.event?.eventData?.ciData.name || '-'
         },
         {
           name: 'Patron',
           value:
-            this.event.eventData.patronData.first_name +
+            this.event?.eventData?.patronData.first_name +
               ' ' +
-              this.event.eventData.patronData.last_name || '-'
+              this.event?.eventData?.patronData.last_name || '-'
         },
         {
           name: 'Start',
           value:
             formats.timestampHuman(
-              this.event.eventData.start_date,
+              this.event?.eventData?.start_date || now,
               currYear === startYear,
               false
             ) || '-'
@@ -227,7 +221,7 @@ export default {
           name: 'End',
           value:
             formats.timestampHuman(
-              this.event.eventData.end_date,
+              this.event?.eventData?.end_date || now,
               currYear === endYear,
               false
             ) || '-'
@@ -236,27 +230,15 @@ export default {
           name: 'Duration',
           value:
             `${formats.dateDifference(
-              this.event.eventData.end_date,
-              this.event.eventData.start_date
+              this.event?.eventData?.end_date || now,
+              this.event?.eventData?.start_date || now
             )} Days` || '-'
         },
         {
           name: 'Notes',
-          value: this.event.eventData.notes || '-'
+          value: this.event?.eventData?.notes || '-'
         }
       ]
-    },
-    status() {
-      const now = new Date().getTime()
-      const start = new Date(this.event.eventData.start_date).getTime()
-      const end = new Date(this.event.eventData.end_date).getTime()
-      if (start > now) {
-        return 'pending'
-      }
-      if (end < now) {
-        return 'expired'
-      }
-      return 'active'
     }
   },
   methods: {
@@ -267,13 +249,13 @@ export default {
       this.modalComp = 'eventEdit'
       this.$store.dispatch('setStateValue', {
         key: 'eventEditing',
-        value: { ciData: { ...this.event.eventData.ciData } }
+        value: { ciData: { ...this.event?.eventData?.ciData } }
       })
       this.modal = true
     },
     showcatalogItem() {
       this.modalComp = 'ciDetails'
-      this.modalCompData = { item: this.event.eventData.ciData }
+      this.modalCompData = { item: this.event?.eventData?.ciData }
       this.modal = true
     },
     showImage() {
@@ -285,7 +267,7 @@ export default {
     },
     showPatron() {
       this.modalComp = 'patronDetails'
-      this.modalCompData = { patron: this.event.eventData.patronData }
+      this.modalCompData = { patron: this.event?.eventData?.patronData }
       this.modal = true
     }
   }

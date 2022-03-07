@@ -1,9 +1,9 @@
 import Moment from 'moment'
 import filters from '@/modules/filters.js'
 
-//TODO: WHEN SETTINGS ARE SETUP, IMPORT DEFAULTS, DONT HARDCODE
+
 const catalogItem = item => {
-  //customFields may come from backend as camel or sname
+  //customFields may come from backend as camel or snake
   const customFields = item.custom_fields ? 
   [...item.custom_fields] : 
   item.customFields ? 
@@ -85,9 +85,16 @@ const dateDifference = (date1, date2) => {
 }
 
 const eventDetailed = (event, catalogItems, patrons) => {
+  const start = event.start_date
+  const end = event.end_date
   return {
-    ...event,
     ciData: filters.getObjectFromArray(catalogItems, 'id', event.item_id), //
+    ...event,
+    eventStatus: eventStatus({
+      endDate: end,
+      startDate: start
+    }),
+    isAllDay: filters.isAllDay(start, end),
     patronData: filters.getObjectFromArray(
       patrons,
       'id',
@@ -135,6 +142,40 @@ const eventPreview = event => {
     }
   }
   return data
+}
+
+const eventStatus = ({startDate, endDate}) => {
+  const end = new Date(endDate).getTime() || now
+  const now = new Date().getTime()
+  const start = new Date(startDate).getTime() || now
+  const     statusMap= {
+    active: {
+      color: 'success',
+      label: 'Active',
+      text: 'Reservation is currently active',
+      value: 'active'
+    },
+    expired: {
+      color: 'error',
+      label: 'Expired',
+      text: 'Reservation has ended',
+      value: 'expired'
+    },
+    pending: {
+      color: 'warning',
+      label: 'Pending',
+      text: 'Reservation is pending',
+      value: 'pending'
+    }
+  }
+
+  if (start > now) {
+    return statusMap.pending
+  }
+  if (end < now) {
+    return statusMap.expired
+  }
+  return statusMap.active
 }
 
 const noteListSimple = notes => {
@@ -231,6 +272,7 @@ export {
   eventDetailed,
   eventListSimple,
   eventPreview,
+  eventStatus,
   noteListSimple,
   patronHistorySimple,
   timeHuman,

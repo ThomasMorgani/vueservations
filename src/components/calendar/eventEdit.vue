@@ -723,10 +723,50 @@ export default {
     }
   },
   methods: {
-    autocompleteBlur(ref) {
-      // workaround for bug https://github.com/vuetifyjs/vuetify/issues/11066
-      this.$refs?.[ref]?.blur()
+    addEvent(event) {
+      this.$store.dispatch('eventAdd', event)
+      this.$store.dispatch('toggleSnackbar', {
+        status: 'success',
+        message: 'Event added.',
+        value: true
+      })
+      this.$emit('close')
     },
+    allowedEnd(val) {
+      let events = []
+      const startDate = this.startDate || '1980-01-01'
+      const startTime = this.startTime || '00:00'
+      const startDateTime = new Date(startDate + 'T' + startTime)
+      const endDate = val || '3000-01-01'
+      const endTime = this.endTime || '00:00'
+      const endDateTime = new Date(endDate + 'T' + endTime)
+      if (this.ciSelected) {
+        const ci = { ...this.ciSelected }
+        events = this.events.filter(e => {
+          if (e.item_id === ci.id) {
+            return (
+              !filters.testRangeOverlap(
+                e.start_date,
+                e.end_date,
+                endDateTime.toISOString(),
+                endDateTime.toISOString(),
+                ci.reservation_buffer
+                // this.allDay
+              ) || e.id == this.id
+            )
+          } else {
+            return true
+          }
+        })
+        return (
+          events.length >= this.events.length &&
+          endDateTime.getTime() > startDateTime.getTime()
+        )
+      } else {
+        return true
+      }
+    },
+
     allowedStart(val) {
       let events = []
       const startDate = val || '1980-01-01'
@@ -762,39 +802,10 @@ export default {
         return true
       }
     },
-    allowedEnd(val) {
-      let events = []
-      const startDate = this.startDate || '1980-01-01'
-      const startTime = this.startTime || '00:00'
-      const startDateTime = new Date(startDate + 'T' + startTime)
-      const endDate = val || '3000-01-01'
-      const endTime = this.endTime || '00:00'
-      const endDateTime = new Date(endDate + 'T' + endTime)
-      if (this.ciSelected) {
-        const ci = { ...this.ciSelected }
-        events = this.events.filter(e => {
-          if (e.item_id === ci.id) {
-            return (
-              !filters.testRangeOverlap(
-                e.start_date,
-                e.end_date,
-                endDateTime.toISOString(),
-                endDateTime.toISOString(),
-                ci.reservation_buffer
-                // this.allDay
-              ) || e.id == this.id
-            )
-          } else {
-            return true
-          }
-        })
-        return (
-          events.length >= this.events.length &&
-          endDateTime.getTime() > startDateTime.getTime()
-        )
-      } else {
-        return true
-      }
+
+    autocompleteBlur(ref) {
+      // workaround for bug https://github.com/vuetifyjs/vuetify/issues/11066
+      this.$refs?.[ref]?.blur()
     },
     clearValue(val) {
       this[val] = null
@@ -946,15 +957,6 @@ export default {
         this[field] = this.originalValues[field]
       })
     },
-    addEvent(event) {
-      this.$store.dispatch('eventAdd', event)
-      this.$store.dispatch('toggleSnackbar', {
-        status: 'success',
-        message: 'Event added.',
-        value: true
-      })
-      this.$emit('close')
-    },
     updateEvent(event) {
       const events = [...this.events]
       const key = this.events.findIndex(e => e.id == this.id)
@@ -1009,7 +1011,8 @@ export default {
         }
       })
       const isAllDay =
-        (this.startTime === '00:00' && this.endTime === '00:00') || !event.id
+        filters.isAllDay(this.startTime, this.endTime) || !event.id
+
       this.originalValues = { ...this.originalValues, allDay: isAllDay }
       this.allDay = isAllDay
     }
