@@ -20,23 +20,46 @@
           width="150"
           class="d-flex align-center justify-start flex-shrink-1 flex-grow-0"
         >
-          <!-- LIST VIEW TOGGLE -->
-          <btn-with-tooltip
-            :btnProps="{
-              color: layoutView === 'list' ? 'primary' : 'grey',
-              icon: true
-            }"
-            :iconProps="{
-              icon: 'mdi-format-list-text'
-            }"
-            :tooltipProps="{ bottom: true }"
-            tooltipText="List view"
-            @click="setLayoutView"
-          ></btn-with-tooltip>
+          <!-- EVENT VIEW MENU -->
+          <v-menu bottom>
+            <template v-slot:activator="{ on: menu }">
+              <v-tooltip color="primary" bottom>
+                <template v-slot:activator="{ on: tooltip }">
+                  <v-btn icon v-on="{ ...tooltip, ...menu }">
+                    <v-icon color="primary">
+                      {{ eventViewTypes[eventView].icon }}
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>Event view</span>
+              </v-tooltip>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="viewItem in Object.values(eventViewTypes)"
+                :key="viewItem.value"
+                @click="setEventView(viewItem.value)"
+              >
+                <v-tooltip :color="viewItem.disabled ? '' : 'primary'" right>
+                  <template v-slot:activator="{ on }">
+                    <v-icon
+                      :color="
+                        viewItem.value === eventView ? 'primary' : 'disabled'
+                      "
+                      v-on="on"
+                      >{{ viewItem.icon }}</v-icon
+                    >
+                  </template>
+                  <span>{{ viewItem.text }}</span>
+                </v-tooltip>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
           <!-- CALENDAR HEIGHT / LIST SORT-->
-          <btn-sort-menu v-if="layoutView === 'list'"></btn-sort-menu>
+          <btn-sort-menu v-if="eventView === 'list'"></btn-sort-menu>
           <v-menu
-            v-if="layoutView === 'calendar'"
+            v-if="eventView === 'calendar'"
             :close-on-content-click="false"
             bottom
             offset-y
@@ -135,7 +158,7 @@
               <v-date-picker
                 :value="calendarFocus"
                 @input="calendarFocus = $event + '-01'"
-                type="month"
+                :type="calendarView === 'month' ? 'month' : 'date'"
                 no-title
                 scrollable
               >
@@ -181,13 +204,13 @@
     <v-col cols="12">
       <v-sheet class="px-2" :height="calHeight" style="overflow-y: scroll;">
         <eventList
-          v-if="isLoaded && layoutView === 'list'"
+          v-if="isLoaded && eventView === 'list'"
           :events="eventsList"
           :dateRange="{ end, start }"
           @showDetails="showDetails"
         ></eventList>
         <v-calendar
-          v-show="isLoaded && layoutView === 'calendar'"
+          v-show="isLoaded && eventView === 'calendar'"
           ref="calendar"
           v-model="calendarFocus"
           :key="modalDetailsShow"
@@ -244,6 +267,7 @@
             :event="selectedEvent"
             v-bind="modalDetailsCompData"
             @close="onDetailsClose($event)"
+            @editEvent="eventEdit"
             @eventModalAction="onDetailsAction"
             @eventUpdated="calendarCheckChanges"
           ></component>
@@ -323,21 +347,25 @@ export default {
     datePickerShow: false,
     dialog: false,
     end: null,
+    eventViewTypes: {
+      calendar: {
+        icon: 'mdi-calendar',
+        text: 'Calendar',
+        value: 'calendar'
+      },
+      list: {
+        icon: 'mdi-format-list-text',
+        text: 'List',
+        value: 'list'
+      },
+      table: {
+        icon: 'mdi-table',
+        text: 'Table',
+        value: 'table'
+      }
+    },
     isLoaded: false,
-    layoutView: 'calendar',
-    // layoutViewTypes: {
-    //   calendar: {
-    //     icon: 'mdi-calendar-today',
-    //     text: 'Calendar',
-    //     value: 'calendar'
-    //   },
-    //   month: {
-    //     icon: 'mdi-calendar-month',
-    //     text: 'List',
-    //     value: 'list'
-    //   },
-    // },
-
+    eventView: 'calendar',
     modalDetailsProps: {
       'max-width': '800',
       persistent: true,
@@ -554,16 +582,11 @@ export default {
         isReference: false
       })
     },
-    setLayoutView() {
-      this.layoutView =
-        this.layoutView === 'calendar'
-          ? 'list'
-          : this.layoutView === 'list'
-          ? 'calendar'
-          : 'list'
+    setEventView(view) {
+      this.eventView = view
       this.$store.dispatch('localStorageWrite', {
-        key: 'layoutView',
-        data: this.layoutView,
+        key: 'eventView',
+        data: this.eventView,
         isReference: false
       })
     },
@@ -709,7 +732,7 @@ export default {
     this.calendarFocus = localStorage.getItem('calendarFocus') || this.today
     this.calendarView =
       localStorage.getItem('calendarView') || this.calendarView
-    this.layoutView = localStorage.getItem('layoutView') || this.layoutView
+    this.eventView = localStorage.getItem('eventView') || this.eventView
   }
 }
 </script>

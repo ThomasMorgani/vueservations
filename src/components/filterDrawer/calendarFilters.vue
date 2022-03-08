@@ -1,5 +1,7 @@
 <template>
   <v-card class="d-flex flex-column py-1 px-4 justify-start" height="100%">
+    <!-- span tag to work around v-card class first child inherit border-radius -->
+    <span></span>
     <v-text-field
       v-model="searchField"
       clearable

@@ -1,5 +1,5 @@
 <template>
-  <v-card tile class="mt-2">
+  <v-card max-width="900" tile width="100%" class="mt-2">
     <v-card-text>
       <v-row dense align="center" justify="center">
         <v-col cols="2" align-self="center" class="d-flex justify-center pa-2">
@@ -12,84 +12,101 @@
           ></v-img>
           <!-- @click.stop="$emit('showImage', item.image_data)" -->
         </v-col>
-        <v-col cols="10" class="d-flex flex-column align-start justify-start">
+        <v-col cols="8">
           <v-sheet
-            color="transparent"
-            class="d-flex flex-row align-center justify-space-between primary--text font-weight-bold text-subtitle-1"
+            height="110"
+            class="d-flex flex-column align-start justify-space-between"
           >
-            <v-tooltip color="primary" top>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  icon
-                  color="primary"
-                  @click="
-                    $emit('showDetails', {
-                      type: 'ci',
-                      event: { eventData: event }
-                    })
-                  "
-                  v-on="on"
-                  class="mr-2"
-                >
-                  <v-icon>mdi-layers-search</v-icon>
-                </v-btn>
-              </template>
-              <span>Catalog item details</span>
-            </v-tooltip>
+            <v-sheet
+              color="transparent"
+              class="d-flex flex-row align-center justify-space-between primary--text font-weight-bold text-subtitle-1"
+            >
+              <v-tooltip color="primary" top>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    color="primary"
+                    @click="
+                      $emit('showDetails', {
+                        type: 'ci',
+                        event: { eventData: event }
+                      })
+                    "
+                    v-on="on"
+                    class="mr-2"
+                  >
+                    <v-icon>mdi-layers-search</v-icon>
+                  </v-btn>
+                </template>
+                <span>Catalog item details</span>
+              </v-tooltip>
 
-            <ciHeading :item="event.ciData" :showCategory="false"></ciHeading>
-          </v-sheet>
-          <v-sheet
-            color="transparent"
-            class="d-flex flex-row align-center primary--text font-weight-bold text-subtitle-1"
-          >
-            <v-tooltip color="primary" top>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  icon
-                  color="primary"
-                  @click="
-                    $emit('showDetails', {
-                      type: 'patron',
-                      event: { eventData: event }
-                    })
-                  "
-                  v-on="on"
-                  class="mr-2"
-                >
-                  <v-icon>mdi-account-search</v-icon>
-                </v-btn>
-              </template>
-              <span>Patron Details</span>
-            </v-tooltip>
+              <ciHeading :item="event.ciData" :showCategory="false"></ciHeading>
+            </v-sheet>
+            <v-sheet
+              color="transparent"
+              class="d-flex flex-row align-center primary--text font-weight-bold text-subtitle-1"
+            >
+              <v-tooltip color="primary" top>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    color="primary"
+                    @click="
+                      $emit('showDetails', {
+                        type: 'patron',
+                        event: { eventData: event }
+                      })
+                    "
+                    v-on="on"
+                    class="mr-2"
+                  >
+                    <v-icon>mdi-account-search</v-icon>
+                  </v-btn>
+                </template>
+                <span>Patron Details</span>
+              </v-tooltip>
 
-            {{ event.patronData.last_name || '' }},
-            {{ event.patronData.first_name || '' }}
+              {{ event.patronData.last_name || '' }},
+              {{ event.patronData.first_name || '' }}
+            </v-sheet>
+            <v-sheet
+              color="transparent"
+              class="d-flex flex-row align-center primary--text  text-subtitle-2"
+            >
+              <v-tooltip color="primary" top>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    color="primary"
+                    @click="
+                      $emit('showDetails', {
+                        type: 'event',
+                        event: { eventData: event }
+                      })
+                    "
+                    v-on="on"
+                    class="mr-2"
+                  >
+                    <v-icon>mdi-calendar-search</v-icon>
+                  </v-btn>
+                </template>
+                <span>Event Details</span>
+              </v-tooltip>
+              {{ eventTimeText() }}
+            </v-sheet>
           </v-sheet>
+        </v-col>
+        <v-col cols="2">
           <v-sheet
-            color="transparent"
-            class="d-flex flex-row align-center primary--text  text-subtitle-2"
+            height="110"
+            class="d-flex flex-column align-end justify-space-between"
           >
-            <v-tooltip color="primary" top>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  icon
-                  color="primary"
-                  @click="
-                    $emit('showDetails', {
-                      type: 'event',
-                      event: { eventData: event }
-                    })
-                  "
-                  v-on="on"
-                  class="mr-2"
-                >
-                  <v-icon>mdi-calendar-search</v-icon>
-                </v-btn>
-              </template>
-              <span>Event Details</span>
-            </v-tooltip>
-            {{ eventTimeText() }}
+            <event-status
+              :avatarSize="15"
+              :eventData="event"
+              :withLabel="false"
+            ></event-status>
           </v-sheet>
         </v-col>
       </v-row>
@@ -100,6 +117,7 @@
 <script>
 import { eventPreview, timestampHuman } from '@/modules/formats'
 import ciHeading from '@/components/catalog/catalogItem/ciHeading.vue'
+import eventStatus from '@/components/calendar/eventStatus.vue'
 export default {
   props: {
     event: {
@@ -108,7 +126,8 @@ export default {
     }
   },
   components: {
-    ciHeading
+    ciHeading,
+    eventStatus
   },
   methods: {
     formatEvent(e) {

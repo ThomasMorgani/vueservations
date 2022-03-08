@@ -33,25 +33,7 @@
             </span>
           </v-row>
           <v-row dense class="display-flex align-center justify-start">
-            <v-tooltip color="primary" top>
-              <template v-slot:activator="{ on }">
-                <div v-on="on">
-                  <v-avatar
-                    size="10"
-                    :color="event.eventData.eventStatus.color || ''"
-                    class="mr-1 ml-5"
-                  ></v-avatar>
-                  <p
-                    v-html="event.eventData.eventStatus.label || ''"
-                    class="font-italic subheading text-capitalize"
-                    style="display: inline;"
-                  ></p>
-                </div>
-              </template>
-              <span>
-                {{ event.eventData.eventStatus.text || '' }}
-              </span>
-            </v-tooltip>
+            <event-status :eventData="event.eventData"></event-status>
           </v-row>
           <v-row dense align="center" justify="start" class="my-2"> </v-row>
         </v-col>
@@ -140,11 +122,30 @@
       </v-dialog>
     </v-card-text>
     <v-card-actions v-if="withCardActions">
-      <v-btn text color="success" @click="reserve">
-        <v-icon color="success" left>mdi-calendar-plus</v-icon> NEW
-        RESERVATION</v-btn
-      >
+      <v-tooltip color="primary" top>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" text color="success" @click="reserve">
+            <v-icon color="success" left>mdi-calendar-plus</v-icon> NEW
+          </v-btn>
+        </template>
+        <span>Add Event</span>
+      </v-tooltip>
+
       <v-spacer></v-spacer>
+      <v-tooltip color="primary" top>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            v-on="on"
+            color="warning"
+            text
+            @click="$emit('editEvent', event.eventData)"
+            class="mr-6"
+          >
+            <v-icon left>mdi-square-edit-outline</v-icon>EDIT
+          </v-btn>
+        </template>
+        <span>Edit Event</span>
+      </v-tooltip>
       <v-btn text color="primary" @click="$emit('close')">CLOSE</v-btn>
     </v-card-actions>
   </v-card>
@@ -154,11 +155,13 @@
 import { mapState } from 'vuex'
 import * as formats from '@/modules/formats.js'
 import Vue2Filters from 'vue2-filters'
+import eventStatus from '@/components/calendar/eventStatus.vue'
 export default {
   name: 'eventDetails',
   components: {
     ciDetails: () => import('@/components/catalog/catalogItem/ciDetails'),
     eventEdit: () => import('@/components/calendar/eventEdit'),
+    eventStatus,
     patronDetails: () => import('@/components/patron/patronDetails')
   },
   mixins: [Vue2Filters.mixin],
