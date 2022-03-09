@@ -56,8 +56,10 @@
             </v-list>
           </v-menu>
 
-          <!-- CALENDAR HEIGHT / LIST SORT-->
+          <!-- CALENDAR HEIGHT / LIST SORT / TABLE COLUMNS-->
+          <!-- SORT BUTTON -->
           <btn-sort-menu v-if="eventView === 'list'"></btn-sort-menu>
+          <!-- CAL HEIGHT SLIDER -->
           <v-menu
             v-if="eventView === 'calendar'"
             :close-on-content-click="false"
@@ -88,6 +90,33 @@
                   vertical
                   @input="onHeightChange"
                 ></v-slider>
+              </v-card-text>
+            </v-card>
+          </v-menu>
+          <!-- TABLE COLUMNS MENU -->
+          <v-menu
+            v-if="eventView === 'table'"
+            disabled
+            :close-on-content-click="false"
+            bottom
+            offset-y
+          >
+            <template v-slot:activator="{ on }">
+              <v-sheet v-on="on" color="transparent">
+                <btn-with-tooltip
+                  :btnProps="{
+                    disabled: true,
+                    icon: true
+                  }"
+                  :iconProps="{ icon: 'mdi-table-column' }"
+                  :tooltipProps="{ bottom: true }"
+                  tooltipText="Table Columns"
+                ></btn-with-tooltip>
+              </v-sheet>
+            </template>
+            <v-card>
+              <v-card-text>
+                change to select, group select
               </v-card-text>
             </v-card>
           </v-menu>
@@ -203,12 +232,6 @@
     </v-col>
     <v-col cols="12">
       <v-sheet class="px-2" :height="calHeight" style="overflow-y: scroll;">
-        <eventList
-          v-if="isLoaded && eventView === 'list'"
-          :events="eventsList"
-          :dateRange="{ end, start }"
-          @showDetails="showDetails"
-        ></eventList>
         <v-calendar
           v-show="isLoaded && eventView === 'calendar'"
           ref="calendar"
@@ -246,6 +269,21 @@
             </v-sheet>
           </template>
         </v-calendar>
+        <!-- LIST VIEW -->
+        <eventList
+          v-if="isLoaded && eventView === 'list'"
+          :events="eventsList"
+          :dateRange="{ end, start }"
+          @showDetails="showDetails"
+        ></eventList>
+        <!-- TABLE VIEW -->
+        <eventTableAdvanced
+          v-if="isLoaded && eventView === 'table'"
+          :events="eventsList"
+          :height="calHeight"
+          @showDetails="showDetails"
+        ></eventTableAdvanced>
+
         <v-dialog
           v-model="selectedOpen"
           :close-on-content-click="false"
@@ -299,6 +337,7 @@ import { timeHuman, timestampHuman } from '@/modules/formats.js'
 import eventMenu from '@/components/calendar/eventOverview'
 import filterBtn from '@/components/global/buttons/btnFilterDrawerToggle'
 import btnSortMenu from '@/components/global/buttons/btnSortMenu'
+import eventTableAdvanced from '@/components/calendar/eventTableAdvanced'
 
 import Vue2Filters from 'vue2-filters'
 
@@ -311,6 +350,7 @@ export default {
     eventDetails: () => import('@/components/calendar/eventDetails'),
     eventList: () => import('@/components/calendar/eventList'),
     eventMenu,
+    eventTableAdvanced,
     filterBtn,
     imagePreviewModal: () => import('@/components/images/imagePreviewModal'),
     patronDetails: () => import('@/components/patron/patronDetails')
@@ -405,60 +445,68 @@ export default {
       filterNames.forEach(f =>
         this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
       )
-      if (Array.isArray(this.events)) {
-        this.events.forEach(e => {
-          eventsFiltered.push(
-            formats.eventDetailed(e, this.catalogItems, this.patrons)
+
+      const eventsFocued = this.events.filter(e => {
+        return filters.testRangeOverlap(
+          this.start?.date || '',
+          this.end?.date || '',
+          e.start_date,
+          e.end_date
+        )
+      })
+
+      eventsFocued.forEach(e => {
+        eventsFiltered.push(
+          formats.eventDetailed(e, this.catalogItems, this.patrons)
+        )
+      })
+
+      if (Object.keys(filtersSet).length > 0) {
+        if (filtersSet.filterCategory) {
+          eventsFiltered = eventsFiltered.filter(
+            e => filtersSet.filterCategory.indexOf(e.ciData?.category) > -1
           )
-        })
+        }
 
-        if (Object.keys(filtersSet).length > 0) {
-          if (filtersSet.filterCategory) {
-            eventsFiltered = eventsFiltered.filter(
-              e => filtersSet.filterCategory.indexOf(e.ciData?.category) > -1
-            )
-          }
-
-          if (filtersSet.filterSearch) {
-            const possibleKeysCi = ['abbreviation', 'name']
-            const possibleKeysPatron = [
-              'barcode',
-              'email',
-              'first_name',
-              'last_name',
-              'phone'
-            ]
-            eventsFiltered = eventsFiltered.filter(e => {
-              return (
-                e?.ciData &&
-                (filters.findStringMatchesInObj(
-                  e.ciData,
-                  possibleKeysCi,
+        if (filtersSet.filterSearch) {
+          const possibleKeysCi = ['abbreviation', 'name']
+          const possibleKeysPatron = [
+            'barcode',
+            'email',
+            'first_name',
+            'last_name',
+            'phone'
+          ]
+          eventsFiltered = eventsFiltered.filter(e => {
+            return (
+              e?.ciData &&
+              (filters.findStringMatchesInObj(
+                e.ciData,
+                possibleKeysCi,
+                filtersSet.filterSearch
+              ) ||
+                filters.findStringMatchesInObj(
+                  e.patronData,
+                  possibleKeysPatron,
                   filtersSet.filterSearch
-                ) ||
-                  filters.findStringMatchesInObj(
-                    e.patronData,
-                    possibleKeysPatron,
-                    filtersSet.filterSearch
-                  ))
-              )
-            })
-          }
-
-          if (
-            filtersSet.filterRangeDate &&
-            filtersSet.filterRangeDate['0'] &&
-            filtersSet.filterRangeDate['1']
-          ) {
-            eventsFiltered = eventsFiltered.filter(e =>
-              filters.testRangeOverlap(
-                filtersSet.filterRangeDate['0'],
-                filtersSet.filterRangeDate['1'],
-                e.start_date,
-                e.end_date
-              )
+                ))
             )
-          }
+          })
+        }
+
+        if (
+          filtersSet.filterRangeDate &&
+          filtersSet.filterRangeDate['0'] &&
+          filtersSet.filterRangeDate['1']
+        ) {
+          eventsFiltered = eventsFiltered.filter(e =>
+            filters.testRangeOverlap(
+              filtersSet.filterRangeDate['0'],
+              filtersSet.filterRangeDate['1'],
+              e.start_date,
+              e.end_date
+            )
+          )
         }
       }
       return eventsFiltered

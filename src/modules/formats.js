@@ -87,14 +87,24 @@ const dateDifference = (date1, date2) => {
 const eventDetailed = (event, catalogItems, patrons) => {
   const start = event.start_date
   const end = event.end_date
+  const isAllDay = filters.isAllDay(start, end)
+
+  const currYear = new Date().getFullYear().toString()
+  const showYear = currYear !== start.substr(0, 4)
+  
+
+  const endDate = timestampHuman(end, showYear, !isAllDay)
+  const startDate = timestampHuman(start, showYear, !isAllDay)
   return {
     ciData: filters.getObjectFromArray(catalogItems, 'id', event.item_id), //
+    endDate ,
     ...event,
+    startDate,
     eventStatus: eventStatus({
       endDate: end,
       startDate: start
     }),
-    isAllDay: filters.isAllDay(start, end),
+    isAllDay,
     patronData: filters.getObjectFromArray(
       patrons,
       'id',
@@ -102,6 +112,7 @@ const eventDetailed = (event, catalogItems, patrons) => {
     )
   }
 }
+
 
 const eventListSimple = (events, patrons) => {
   const currYear = new Date().getFullYear().toString()
@@ -120,6 +131,7 @@ const eventListSimple = (events, patrons) => {
     return newEvent
   })
 }
+
 
 const eventPreview = event => {
   if (typeof event !== 'object') return

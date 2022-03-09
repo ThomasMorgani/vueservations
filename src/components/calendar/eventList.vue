@@ -33,7 +33,7 @@
 
 <script>
 import Vue2Filters from 'vue2-filters'
-import filters from '@/modules/filters.js'
+// import filters from '@/modules/filters.js'
 import { mapState } from 'vuex'
 
 import eventListItem from '@/components/calendar/eventListItem'
@@ -55,12 +55,7 @@ export default {
   computed: {
     ...mapState(['sort']),
     eventsDisplayed() {
-      const startTime = this.dateRange?.start.date
-      const endTime = this.dateRange?.end.date
-      const events = this.events.filter(e =>
-        filters.testRangeOverlap(startTime, endTime, e.start_date, e.end_date)
-      )
-      return this.sortItems(events)
+      return this.sortItems(this.events)
     }
   },
   methods: {
