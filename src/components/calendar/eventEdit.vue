@@ -910,15 +910,15 @@ export default {
     },
     modalAction() {
       if (Object.keys(this.formErrors).length > 0) return
-
       const event = this.formattedEvent()
       const isNew = !this.id
+      const now = new Date()
       if (isNew) {
-        const now = new Date()
         event.id = now.getTime()
-        event.updated = formats.timestampSql(now)
+        event.created = formats.timestampSql(now)
         this.addEvent(event)
       } else {
+        event.updated = formats.timestampSql(now)
         this.updateEvent(event)
         this.$emit('eventUpdated')
       }

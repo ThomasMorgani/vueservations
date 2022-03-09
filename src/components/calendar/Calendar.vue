@@ -58,7 +58,10 @@
 
           <!-- CALENDAR HEIGHT / LIST SORT / TABLE COLUMNS-->
           <!-- SORT BUTTON -->
-          <btn-sort-menu v-if="eventView === 'list'"></btn-sort-menu>
+          <btn-sort-menu
+            v-if="eventView === 'list'"
+            @change="onEventColumnChange"
+          ></btn-sort-menu>
           <!-- CAL HEIGHT SLIDER -->
           <v-menu
             v-if="eventView === 'calendar'"
@@ -94,32 +97,10 @@
             </v-card>
           </v-menu>
           <!-- TABLE COLUMNS MENU -->
-          <v-menu
+          <btn-event-table-column-menu
             v-if="eventView === 'table'"
-            disabled
-            :close-on-content-click="false"
-            bottom
-            offset-y
-          >
-            <template v-slot:activator="{ on }">
-              <v-sheet v-on="on" color="transparent">
-                <btn-with-tooltip
-                  :btnProps="{
-                    disabled: true,
-                    icon: true
-                  }"
-                  :iconProps="{ icon: 'mdi-table-column' }"
-                  :tooltipProps="{ bottom: true }"
-                  tooltipText="Table Columns"
-                ></btn-with-tooltip>
-              </v-sheet>
-            </template>
-            <v-card>
-              <v-card-text>
-                change to select, group select
-              </v-card-text>
-            </v-card>
-          </v-menu>
+            :selectedColumns="calendarTableColumns"
+          ></btn-event-table-column-menu>
 
           <!-- PERIOD VIEW MENU -->
           <v-menu bottom>
@@ -231,44 +212,51 @@
       </v-toolbar>
     </v-col>
     <v-col cols="12">
+      <!-- <v-sheet class="px-2" :height="calHeight" style="overflow-y: scroll;"> -->
       <v-sheet class="px-2" :height="calHeight" style="overflow-y: scroll;">
-        <v-calendar
+        <v-sheet
           v-show="isLoaded && eventView === 'calendar'"
-          ref="calendar"
-          v-model="calendarFocus"
-          :key="modalDetailsShow"
-          color="primary"
-          :events="orderBy(eventsList, 'name')"
-          :event-color="eventColor"
-          event-end="end_date"
-          :event-margin-bottom="2"
-          :event-height="20"
-          event-overlap-mode="column"
-          event-start="start_date"
-          :now="today"
-          :type="calendarView"
-          @click:date="viewDay"
-          @click:event="showEventMenu"
-          @click:more="showEventsModal"
-          @change="updateRange"
-          @contextmenu:day="contextDay"
+          :height="calendarMonthHeight"
         >
-          <template #event="{event}">
-            <v-sheet
-              :color="eventColor(event)"
-              height="20"
-              class="d-flex align-center justify-start white--text  text-truncate px-1"
-            >
-              <v-chip color="secondary" outlined x-small
-                ><strong>{{ event.ciData.abbreviation }}</strong></v-chip
+          <!-- CALENDAR VIEW -->
+          <v-calendar
+            v-model="calendarFocus"
+            :key="modalDetailsShow"
+            color="primary"
+            :events="orderBy(eventsList, 'name')"
+            :event-color="eventColor"
+            event-end="end_date"
+            :event-margin-bottom="2"
+            :event-height="20"
+            event-overlap-mode="column"
+            event-start="start_date"
+            :now="today"
+            ref="calendar"
+            :type="calendarView"
+            @click:date="viewDay"
+            @click:event="showEventMenu"
+            @click:more="showEventsModal"
+            @change="updateRange"
+            @contextmenu:day="contextDay"
+          >
+            <template #event="{event}">
+              <v-sheet
+                :color="eventColor(event)"
+                height="20"
+                class="d-flex align-center justify-start white--text  text-truncate px-1"
               >
-              <span v-html="eventLabel(event)" class="text-truncate"></span>
-              <v-icon v-if="event.notes" small color="white"
-                >mdi-note-outline</v-icon
-              >
-            </v-sheet>
-          </template>
-        </v-calendar>
+                <v-chip color="secondary" outlined x-small
+                  ><strong>{{ event.ciData.abbreviation }}</strong></v-chip
+                >
+                <span v-html="eventLabel(event)" class="text-truncate"></span>
+                <v-icon v-if="event.notes" small color="white"
+                  >mdi-note-outline</v-icon
+                >
+              </v-sheet>
+            </template>
+          </v-calendar>
+        </v-sheet>
+
         <!-- LIST VIEW -->
         <eventList
           v-if="isLoaded && eventView === 'list'"
@@ -281,6 +269,7 @@
           v-if="isLoaded && eventView === 'table'"
           :events="eventsList"
           :height="calHeight"
+          :columnsDisplayed="calendarTableColumns"
           @showDetails="showDetails"
         ></eventTableAdvanced>
 
@@ -335,6 +324,7 @@ import filters from '@/modules/filters.js'
 import * as formats from '@/modules/formats.js'
 import { timeHuman, timestampHuman } from '@/modules/formats.js'
 import eventMenu from '@/components/calendar/eventOverview'
+import btnEventTableColumnMenu from '@/components/global/buttons/btnEventTableColumnMenu'
 import filterBtn from '@/components/global/buttons/btnFilterDrawerToggle'
 import btnSortMenu from '@/components/global/buttons/btnSortMenu'
 import eventTableAdvanced from '@/components/calendar/eventTableAdvanced'
@@ -344,6 +334,7 @@ import Vue2Filters from 'vue2-filters'
 export default {
   name: 'Calendar',
   components: {
+    btnEventTableColumnMenu,
     btnSortMenu,
     ciDetails: () => import('@/components/catalog/catalogItem/ciDetails'),
     eventEdit: () => import('@/components/calendar/eventEdit'),
@@ -359,6 +350,11 @@ export default {
   data: () => ({
     calendarMonthHeight: 700,
     calendarFocus: null,
+    calendarTableColumns: {
+      item: ['abbreviation', 'name'],
+      patron: ['first_name', 'last_name'],
+      reservation: ['startDate', 'endDate']
+    },
     calendarView: 'month',
     calendarViewTypes: {
       day: {
@@ -622,6 +618,10 @@ export default {
     getEventKeyById(eid) {
       return this.events.findIndex(event => event.id === eid)
     },
+    onEventColumnChange(columns) {
+      console.log(columns)
+      this.calendarTableColumns = { ...columns }
+    },
     setCalendarView(view) {
       this.calendarView = view
       this.$store.dispatch('localStorageWrite', {
@@ -775,6 +775,11 @@ export default {
     if (lastFilterDrawerState === 'true' && !this.filterDrawer)
       this.$store.dispatch('toggleStateValue', 'filterDrawer')
     this.calendarMonthHeight = this.calHeight
+
+    const calTableColumns = JSON.parse(
+      localStorage.getItem('calendarEventColumns')
+    )
+    if (calTableColumns) this.calendarTableColumns = { ...calTableColumns }
   },
   created() {
     this.calendarFocus = localStorage.getItem('calendarFocus') || this.today

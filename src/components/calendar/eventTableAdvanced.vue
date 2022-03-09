@@ -14,6 +14,7 @@
         :row-style="tableRowStyle"
         size="mini"
         unique-field="id"
+        width="100%"
         class="statTable"
       >
         <TableColumn
@@ -48,9 +49,14 @@
 <script>
 // import tableAdvanced from '@/components/global/tableAdvanced'
 import { Table, TableColumn } from 'element-ui'
+import tableHeaders from '@/data/eventTableAdvancedHeaders.json'
 export default {
   name: 'eventTableAdvanced',
   props: {
+    columnsDisplayed: {
+      type: Object,
+      required: true
+    },
     events: {
       type: Array,
       required: true
@@ -87,111 +93,45 @@ export default {
         : this.$vuetify.theme.themes.light
     },
     tableData() {
+      const headers = this.formatHeaders()
+      const height = this.height ? `${this.height - 30}px` : '80vh'
+      const items = this.formatEvents(headers)
       return {
-        headers: [
-          {
-            text: 'ITEM',
-            align: 'center',
-            sortable: false,
-            value: '',
-            class: 'tableHeader',
-            // width: '50px',
-            // fixed: 'left'
-            subHeaders: [
-              {
-                text: 'Abbr.',
-                align: 'start',
-                sortable: true,
-                value: 'ciAbbreviation',
-                class: 'tableHeader',
-                width: '100px'
-              },
-              {
-                text: 'Name',
-                align: 'start',
-                sortable: true,
-                value: 'ciName',
-                class: 'tableHeader'
-                // width: '50px',
-              }
-            ]
-          },
-          {
-            text: 'PATRON',
-            align: 'center',
-            sortable: false,
-            value: '',
-            class: 'tableHeader',
-            // width: '50px',
-            // fixed: 'left'
-            subHeaders: [
-              {
-                text: 'Last',
-                align: 'start',
-                sortable: true,
-                value: 'patronLastName',
-                class: 'tableHeader'
-                // width: '50px',
-              },
-              {
-                text: 'First',
-                align: 'start',
-                sortable: true,
-                value: 'patronFirstName',
-                class: 'tableHeader'
-                // width: '50px',
-              }
-            ]
-          },
-          {
-            text: 'SCHEDULE',
-            align: 'center',
-            sortable: false,
-            value: '',
-            class: 'tableHeader',
-            // width: '50px',
-            // fixed: 'left'
-            subHeaders: [
-              {
-                text: 'Start',
-                align: 'start',
-                sortable: true,
-                value: 'startDate',
-                class: 'tableHeader'
-                // width: '50px',
-              },
-              {
-                text: 'End',
-                align: 'start',
-                sortable: true,
-                value: 'endDate',
-                class: 'tableHeader'
-                // width: '50px',
-              }
-            ]
-          }
-        ],
-        items: this.formatEvents(this.events),
-        height: this.height ? `${this.height - 30}px` : '80vh'
+        headers,
+        height,
+        items
       }
     }
   },
   methods: {
-    formatEvents(events) {
-      //todo: setup dropdown to select table columns,
-      //map seletions to eventData,
-      //iterate over selected
-      return events.map(e => {
-        return {
-          id: e.id ?? new Date().getTime(),
-          ciAbbreviation: e.ciData?.abbreviation ?? '',
-          ciName: e.ciData?.name ?? '',
-          endDate: e.endDate ?? '',
-          startDate: e.startDate ?? '',
-          patronFirstName: e.patronData?.first_name ?? '',
-          patronLastName: e.patronData?.last_name ?? ''
+    formatEvents(headers) {
+      return this.events.map(event => {
+        const tableEvent = {}
+        tableEvent.id = event.id
+        for (let header in headers) {
+          const eventKey = headers[header].eventKey
+          headers[header].subHeaders.forEach(subHeader => {
+            tableEvent[subHeader.value] = event[eventKey]
+              ? event[eventKey][subHeader.value]
+              : event[subHeader.value]
+          })
+        }
+        return tableEvent
+      })
+    },
+    formatHeaders() {
+      const headers = {}
+      tableHeaders.forEach(header => {
+        if (this.columnsDisplayed[header.value].length > 0) {
+          headers[header.value] = { ...header }
+          headers[
+            header.value
+          ].subHeaders = header.subHeaders.filter(subheader =>
+            this.columnsDisplayed[header.value].includes(subheader.value)
+          )
         }
       })
+      return headers
     },
     // tableRowClassName({ row, rowIndex }) {
     //   // console.log(row);
@@ -208,7 +148,7 @@ export default {
     tableHeaderRowStyle({ rowIndex }) {
       if (rowIndex === 0) {
         return {
-          padding: '0px',
+          padding: '4px',
           'background-color': this.theme.primary,
           color: this.theme.secondary
         }
