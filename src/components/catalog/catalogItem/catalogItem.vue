@@ -154,6 +154,7 @@ export default {
     }),
     isReserved() {
       let reserved = false
+      console.log(this.item)
       if (this.item.lastReservation) {
         const now = new Date()
         const startDate = new Date(this.item.lastReservation.start_date)
@@ -162,6 +163,7 @@ export default {
           reserved = this.isReservedText()
         }
       }
+      console.log(reserved)
       return reserved
     },
     status() {
@@ -211,7 +213,9 @@ export default {
     },
     isReservedText() {
       //merge this with last reservaiton method?
+      if (!this.item?.lastReservation?.patronData) return ''
       const resData = this.item.lastReservation
+
       let wYear =
         resData.start_date.substring(0, 4) !== resData.end_date.substring(0, 4)
       let dateStart = this.formatDate(resData.start_date, wYear, true)

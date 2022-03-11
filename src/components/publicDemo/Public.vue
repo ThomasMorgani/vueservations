@@ -86,7 +86,11 @@
       </v-card>
     </v-col>
     <v-col cols="12" sm="11" lg="8" class="text-center">
-      <v-progress-circular v-if="isLoading" indeterminate></v-progress-circular>
+      <v-progress-circular
+        v-if="isLoading"
+        color="primary"
+        indeterminate
+      ></v-progress-circular>
       <ciList
         v-else
         :items="itemList"

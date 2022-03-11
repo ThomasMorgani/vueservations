@@ -80,7 +80,7 @@
       <v-row dense justify="end">
         <v-col class="offset-2 text-left flex-grow-0 flex-shrink-1">
           <v-btn
-            v-show="showDetailBtn"
+            v-show="showDetailsBtn"
             text
             color="primary"
             @click="showDetails = !showDetails"
@@ -184,7 +184,7 @@ export default {
       required: false,
       default: () => true
     },
-    showDetailBtn: {
+    showDetailsBtn: {
       type: Boolean,
       required: false,
       default: () => true

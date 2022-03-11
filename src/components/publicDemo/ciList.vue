@@ -38,7 +38,6 @@ import catalogItem from '@/components/publicDemo/catalogItem'
 import ciAvailability from '@/components/publicDemo//ciAvailability'
 import imagePreviewModal from '@/components/publicDemo//imagePreviewModal'
 
-const imgBaseUrl = '/images/uploads/'
 export default {
   name: 'catalogList',
   components: {
@@ -78,7 +77,7 @@ export default {
       this.modal = false
     },
     onShowImage(ciImage) {
-      this.modalCompData = { image: { src: `${imgBaseUrl}${ciImage}` } }
+      this.modalCompData = { image: { src: ciImage.src } }
       this.modalComp = 'imagePreviewModal'
       this.modal = true
       console.log('show image')

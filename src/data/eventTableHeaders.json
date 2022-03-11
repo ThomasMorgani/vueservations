@@ -1,0 +1,132 @@
+[
+  {
+    "align": "center",
+    
+    "icon": "mdi-layers",
+    "eventKey": "ciData",
+    "sortable": false,
+    "text": "ITEM",
+    "value": "item",
+    "subHeaders": [
+      {
+        "text": "Abbr.",
+        "align": "start",
+        "sortable": true,
+        "value": "abbreviation",
+        
+        "width": "100px"
+      },
+      {
+        "text": "Name",
+        "align": "start",
+        "min-width": 140,
+        "sortable": true,
+        "value": "name",
+        
+        "show-overflow-tooltip": true
+      },
+      {
+        "text": "Category",
+        "align": "start",
+        "min-width": 140,
+        "sortable": true,
+        "value": "categoryName"
+      }
+    ]
+  },
+  {
+    "align": "center",
+    
+    "eventKey": "patronData",
+    "icon": "mdi-account",
+    "sortable": false,
+    "text": "PATRON",
+    "value": "patron",
+    "subHeaders": [
+      {
+        "text": "Last",
+        "align": "start",
+        "sortable": true,
+        "value": "last_name",
+        "min-width": 140,
+        "show-overflow-tooltip": true
+      },
+      {
+        "text": "First",
+        "align": "start",
+        "sortable": true,
+        "value": "first_name",
+        "min-width": 140,
+        "show-overflow-tooltip": true
+      },
+      {
+        "text": "Email",
+        "align": "start",
+        "sortable": true,
+        "min-width": 200,
+        "value": "email",
+        "show-overflow-tooltip": true
+      },
+      {
+        "text": "Barcode",
+        "align": "start",
+        "sortable": true,
+        "value": "barcode",
+        "min-width": 120,
+        "show-overflow-tooltip": true
+      },
+      {
+        "text": "Phone",
+        "align": "start",
+        "sortable": true,
+        "value": "phone",
+        "min-width": 120,
+        "show-overflow-tooltip": true
+      }
+    ]
+  },
+  {
+    "align": "center",
+    "eventKey": "",
+    "icon": "mdi-calendar",
+    "sortable": false,
+    "text": "RESERVATION",
+    "value": "reservation",
+    "subHeaders": [
+      {
+        "text": "Start",
+        "align": "start",
+        "sortable": true,
+        "min-width": 160,
+        "value": "startDate",
+        
+        "show-overflow-tooltip": true
+      },
+      {
+        "text": "End",
+        "align": "start",
+        "sortable": true,
+        "min-width": 160,
+        "value": "endDate",
+        
+        "show-overflow-tooltip": true
+      },
+      {
+        "text": "Created",
+        "align": "start",
+        "sortable": true,
+        "min-width": 160,
+        "value": "created",
+        
+        "show-overflow-tooltip": true
+      },
+      {
+        "text": "Updated",
+        "align": "start",
+        "min-width": 160,
+        "sortable": true,
+        "value": "updated"
+      }
+    ]
+  }
+]

@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import tableHeaders from '@/data/eventTableAdvancedHeaders.json'
+import tableHeaders from '@/data/eventTableHeaders.json'
 
 export default {
   name: 'BtnEvenTableColumnMenu',
@@ -84,8 +84,6 @@ export default {
     },
     calendarTableColumnTypes() {
       return tableHeaders.reduce((columns, header) => {
-        console.log(header)
-        console.log(columns)
         columns[header.value] = header
         return columns
       }, {})

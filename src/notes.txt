@@ -36,4 +36,4 @@ on add new, save ci it does not appear the image is not being updated on the ci 
 
 on edit event from cal dialog, event does not update (at least for note added)
 
-on patron edit, save disabled if barcode field empty?
+ 

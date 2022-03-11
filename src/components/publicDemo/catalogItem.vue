@@ -54,8 +54,14 @@
             </v-col>
           </v-row>
           <v-row dense align="center" justify="start" class="my-2">
-            <v-col cols="12">
-              <v-btn color="primary" text @click.stop="checkAvailability"
+            <v-col cols="12" class="text-end">
+              <v-btn
+                color="primary"
+                small
+                text
+                tile
+                @click.stop="checkAvailability"
+                class="align-self-end"
                 ><v-icon left> mdi-calendar-search </v-icon>Check
                 availability</v-btn
               >

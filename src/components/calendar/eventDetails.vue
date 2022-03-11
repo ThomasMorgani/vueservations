@@ -41,7 +41,7 @@
       <v-row dense justify="end">
         <v-col class="offset-2 text-left flex-grow-0 flex-shrink-1">
           <v-btn
-            v-show="showDetailBtn"
+            v-show="showDetailsBtn"
             text
             color="primary"
             @click="showDetails = !showDetails"
@@ -170,7 +170,7 @@ export default {
       type: Object,
       required: true
     },
-    showDetailBtn: {
+    showDetailsBtn: {
       type: Boolean,
       default: () => true
     },
@@ -258,7 +258,10 @@ export default {
     },
     showcatalogItem() {
       this.modalComp = 'ciDetails'
-      this.modalCompData = { item: this.event?.eventData?.ciData }
+      this.modalCompData = {
+        item: this.event?.eventData?.ciData,
+        showDetailsBtn: false
+      }
       this.modal = true
     },
     showImage() {
@@ -270,7 +273,10 @@ export default {
     },
     showPatron() {
       this.modalComp = 'patronDetails'
-      this.modalCompData = { patron: this.event?.eventData?.patronData }
+      this.modalCompData = {
+        patron: this.event?.eventData?.patronData,
+        showDetailsBtn: false
+      }
       this.modal = true
     }
   }

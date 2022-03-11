@@ -21,6 +21,7 @@
               color="transparent"
               class="d-flex flex-row align-center justify-space-between primary--text font-weight-bold text-subtitle-1"
             >
+              <!-- ITEM DETAILS BTN -->
               <v-tooltip color="primary" top>
                 <template v-slot:activator="{ on }">
                   <v-btn
@@ -47,6 +48,7 @@
               color="transparent"
               class="d-flex flex-row align-center primary--text font-weight-bold text-subtitle-1"
             >
+              <!-- PATRON DETAILS BTN -->
               <v-tooltip color="primary" top>
                 <template v-slot:activator="{ on }">
                   <v-btn
@@ -74,6 +76,7 @@
               color="transparent"
               class="d-flex flex-row align-center primary--text  text-subtitle-2"
             >
+              <!-- EVENTS DETAILS BTN -->
               <v-tooltip color="primary" top>
                 <template v-slot:activator="{ on }">
                   <v-btn

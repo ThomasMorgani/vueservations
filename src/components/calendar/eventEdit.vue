@@ -844,13 +844,13 @@ export default {
       this.$emit('close', { wasDeleted: true })
     },
     itemActionText(item) {
-      return item.status == 'unavailable' && item.lastReservation['0']
+      return item.status == 'unavailable' && item.lastReservation
         ? `${formats.timestampHuman(
-            item.lastReservation['0'].start_date,
+            item.lastReservation.start_date,
             false,
             false
           )} - ${formats.timestampHuman(
-            item.lastReservation['0'].end_date,
+            item.lastReservation.end_date,
             false,
             false
           )}`

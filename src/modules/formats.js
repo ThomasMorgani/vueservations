@@ -20,16 +20,32 @@ const catalogItem = item => {
     image_data: item.image_data || {},
     internal: item.internal || '0',
     isAvailable: item.isAvailable,
-    lastReservation:
-      item.lastReservation && item.lastReservation['0']
-        ? item.lastReservation['0']
-        : null,
+    lastReservation: item.lastReservation ||null,
     name: item.name || '',
     notes: item.notes || [],
     reservation_buffer: item.reservation_buffer || null,
     reservation_length: item.reservation_length || null,
     status: item.status || ''
   }
+}
+
+const ciLastReservation = (catalogItem, events, patrons) => {
+  const now = new Date().getTime()
+  const ciEvents = events.map(event => {
+    return {
+      ...event,
+      endEpoch: new Date(event.end_date).getTime(),
+      startEpoch: new Date(event.start_date).getTime(),
+    }
+  }).filter(event => {
+    return event.item_id == catalogItem.id &&
+    event.startEpoch < now
+  }).sort((a, b) => a.startEpoch - b.startEpoch)
+  const lastReservation = ciEvents[ciEvents.length - 1] || null
+  if (lastReservation) lastReservation.patronData = patrons.find(p => p.id == lastReservation.patron_id) || null
+  return lastReservation
+ 
+
 }
 
 const cfCiValuesSimple = (fieldId, catalogItems) => {
@@ -278,6 +294,7 @@ const timestampHuman = (timestamp, withYear = true, withTime = true) => {
 
 export {
   catalogItem,
+  ciLastReservation,
   cfCiValuesSimple,
   contrastingColor,
   dateDifference,

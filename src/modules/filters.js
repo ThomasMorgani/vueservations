@@ -48,6 +48,9 @@ export default {
 
   },
   testRangeOverlap(startDate1, endDate1, startDate2, endDate2, buffer) {
+     for (let arg of arguments) {
+       if (arg === undefined) return false
+     }
     buffer = parseInt(buffer)
     if (isNaN(buffer)) buffer = 0
     // DATES 1

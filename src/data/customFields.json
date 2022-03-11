@@ -1,0 +1,101 @@
+[
+  {
+    "id": "1",
+    "name": "Model",
+    "type": "text",
+    "internal": "1",
+    "default_value": null,
+    "date_created": "2020-03-12 20:49:09",
+    "date_updated": "2020-03-12 20:49:09"
+  },
+  {
+    "id": "2",
+    "name": "Serial",
+    "type": "text",
+    "internal": "1",
+    "default_value": null,
+    "date_created": "2020-03-12 20:49:09",
+    "date_updated": "2020-03-12 20:49:09"
+  },
+  {
+    "id": "3",
+    "name": "Barcode/UPC",
+    "type": "text",
+    "internal": "1",
+    "default_value": null,
+    "date_created": "2020-03-12 20:49:09",
+    "date_updated": "2020-03-12 20:49:09"
+  },
+  {
+    "id": "5",
+    "name": "Color",
+    "type": "text",
+    "internal": "0",
+    "default_value": "Black",
+    "date_created": "2020-03-12 20:49:09",
+    "date_updated": "2020-03-12 20:49:09"
+  },
+  {
+    "id": "11",
+    "name": "Checkout Period (days)",
+    "type": "text",
+    "internal": "0",
+    "default_value": "7",
+    "date_created": "2020-03-12 20:49:09",
+    "date_updated": "2021-06-09 12:36:00"
+  },
+  {
+    "id": "12",
+    "name": "Lawn Game Checkout Period",
+    "type": "text",
+    "internal": "0",
+    "default_value": "3 days",
+    "date_created": "2020-03-12 20:49:09",
+    "date_updated": "2020-03-12 20:49:09"
+  },
+  {
+    "id": "13",
+    "name": "Library Equipment Checkout Period",
+    "type": "text",
+    "internal": "0",
+    "default_value": "7 days",
+    "date_created": "2020-03-12 20:49:09",
+    "date_updated": "2020-03-12 20:49:09"
+  },
+  {
+    "id": "14",
+    "name": "Internal Barcode",
+    "type": "text",
+    "internal": "1",
+    "default_value": null,
+    "date_created": "2020-03-12 20:49:09",
+    "date_updated": "2020-03-12 20:49:09"
+  },
+  {
+    "id": "15",
+    "name": "Wireless Key",
+    "type": "text",
+    "internal": "1",
+    "default_value": null,
+    "date_created": "2020-03-12 20:49:09",
+    "date_updated": "2020-03-12 20:49:09"
+  },
+  {
+    "id": "16",
+    "name": "MEID",
+    "type": "text",
+    "internal": "1",
+    "default_value": null,
+    "date_created": "2020-03-12 20:49:09",
+    "date_updated": "2020-03-12 20:49:09"
+  },
+  {
+    "id": "21",
+    "name": "Reservation buffer period (days)",
+    "type": "text",
+    "internal": "1",
+    "default_value": "1",
+    "date_created": "2021-06-07 15:00:36",
+    "date_updated": "2021-06-07 15:00:36"
+  }
+]

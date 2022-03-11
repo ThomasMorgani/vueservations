@@ -161,22 +161,26 @@ export default {
           catalogItem.category,
           this.categories
         )
-        catalogItem.categoryName = category.name || 'MISC'
-        if (catalogItem.lastReservation && catalogItem.lastReservation['0']) {
+        catalogItem.categoryName = category.name || 'MISC' //TODO: handle this? default cat?
+        catalogItem.lastReservation = formats.ciLastReservation(
+          catalogItem,
+          this.events,
+          this.patrons
+        )
+
+        if (catalogItem?.lastReservation?.start_date) {
           let now = new Date()
           catalogItem.isAvailable = !filters.testRangeOverlap(
-            catalogItem.lastReservation['0'].start_date,
-            catalogItem.lastReservation['0'].end_date,
+            catalogItem.lastReservation.start_date,
+            catalogItem.lastReservation.end_date,
             now,
             now
           )
         } else {
           catalogItem.isAvailable = true
         }
-        return formats.catalogItem(catalogItem)
-      } else {
-        return formats.catalogItem(catalogItem)
       }
+      return formats.catalogItem(catalogItem)
     },
     onModalClose() {
       this.modal = false
@@ -213,14 +217,17 @@ export default {
         })
       } else {
         this.modalComp = 'eventDetails'
-        const temp = {
+        const event = {
           event: formats.eventDetailed(
             ci.lastReservation,
             this.catalogItems,
             this.patrons
           )
         }
-        this.modalCompData = { event: formats.eventPreview(temp) }
+        this.modalCompData = {
+          event: formats.eventPreview(event),
+          showDetailsBtn: false
+        }
       }
       setTimeout(() => (this.modal = true), 19)
     },

@@ -31,7 +31,14 @@
                     </v-icon>
                   </v-btn>
                 </template>
-                <span>Event view</span>
+                <span
+                  v-html="
+                    formatTooltipHtml(
+                      'Event view',
+                      eventViewTypes[eventView].text
+                    )
+                  "
+                ></span>
               </v-tooltip>
             </template>
             <v-list>
@@ -113,7 +120,14 @@
                     </v-icon>
                   </v-btn>
                 </template>
-                <span>Period view</span>
+                <span
+                  v-html="
+                    formatTooltipHtml(
+                      'Period view',
+                      calendarViewTypes[calendarView].text
+                    )
+                  "
+                ></span>
               </v-tooltip>
             </template>
             <v-list>
@@ -150,7 +164,7 @@
             <v-menu
               ref="datePickerMenu"
               v-model="datePickerShow"
-              :close-on-content-click="true"
+              :close-on-content-click="false"
               transition="scale-transition"
               offset-y
               max-width="290px"
@@ -165,12 +179,20 @@
                   {{ title }}
                 </v-sheet>
               </template>
+              <!-- @input="
+                  setFocus(`${$event}${calendarView === 'month' ? '-01' : ''}`)
+                " -->
+              <!-- :value="calendarFocus" -->
+              <!-- :type="'date'" -->
               <v-date-picker
-                :value="calendarFocus"
-                @input="calendarFocus = $event + '-01'"
-                :type="calendarView === 'month' ? 'month' : 'date'"
+                :key="calendarView"
                 no-title
                 scrollable
+                show-current
+                :type="calendarView === 'month' ? 'month' : 'date'"
+                :value="calendarFocus"
+                @input="setFocus"
+                @update:picker-date="setFocus"
               >
                 <v-btn text color="primary" @click.stop="focusToday">
                   TODAY
@@ -221,7 +243,6 @@
           <!-- CALENDAR VIEW -->
           <v-calendar
             v-model="calendarFocus"
-            :key="modalDetailsShow"
             color="primary"
             :events="orderBy(eventsList, 'name')"
             :event-color="eventColor"
@@ -265,13 +286,13 @@
           @showDetails="showDetails"
         ></eventList>
         <!-- TABLE VIEW -->
-        <eventTableAdvanced
+        <eventTable
           v-if="isLoaded && eventView === 'table'"
           :events="eventsList"
           :height="calHeight"
           :columnsDisplayed="calendarTableColumns"
           @showDetails="showDetails"
-        ></eventTableAdvanced>
+        ></eventTable>
 
         <v-dialog
           v-model="selectedOpen"
@@ -327,7 +348,7 @@ import eventMenu from '@/components/calendar/eventOverview'
 import btnEventTableColumnMenu from '@/components/global/buttons/btnEventTableColumnMenu'
 import filterBtn from '@/components/global/buttons/btnFilterDrawerToggle'
 import btnSortMenu from '@/components/global/buttons/btnSortMenu'
-import eventTableAdvanced from '@/components/calendar/eventTableAdvanced'
+import eventTable from '@/components/calendar/eventTable'
 
 import Vue2Filters from 'vue2-filters'
 
@@ -341,7 +362,7 @@ export default {
     eventDetails: () => import('@/components/calendar/eventDetails'),
     eventList: () => import('@/components/calendar/eventList'),
     eventMenu,
-    eventTableAdvanced,
+    eventTable,
     filterBtn,
     imagePreviewModal: () => import('@/components/images/imagePreviewModal'),
     patronDetails: () => import('@/components/patron/patronDetails')
@@ -434,6 +455,23 @@ export default {
       patrons: state => state.patrons
     }),
     ...mapGetters(['categoriesById']),
+    // calendarFocus: {
+    //   get() {
+    //     console.log(this.calendarFocus)
+    //     return this.calendarFocus
+    //   },
+    //   set(focus) {
+    //     this.calendarFocus = `${focus}${
+    //       focus.split('-').length < 3 ? '-01' : ''
+    //     }`
+    //     console.log(this.calendarFocus)
+    //     this.$store.dispatch('localStorageWrite', {
+    //       key: 'calendarFocus',
+    //       data: this.calendarFocus,
+    //       isReference: false
+    //     })
+    //   }
+    // },
     eventsList() {
       let eventsFiltered = []
       const filterNames = ['filterCategory', 'filterRangeDate', 'filterSearch']
@@ -554,10 +592,16 @@ export default {
     },
     calendarCheckChanges() {
       //args =event
+      console.log('xxx')
       this.$refs.calendar.checkChange()
+      this.$refs.calendar.updateTimes()
       if (this.selectedOpen) {
         this.selectedOpen = false
       }
+    },
+    contextDay(e) {
+      //right click day
+      return e
     },
     eventColor(e) {
       let item = filters.getObjectFromArray(this.catalogItems, 'id', e.item_id)
@@ -583,6 +627,11 @@ export default {
       return label
     },
     eventAdd() {
+      //prefill event edit modal with current focus date
+      this.$store.dispatch('setStateValue', {
+        key: 'eventEditing',
+        value: { start_date: this.calendarFocus }
+      })
       this.showDetails({ type: 'edit' })
     },
     eventEdit(e) {
@@ -594,10 +643,6 @@ export default {
         this.modalDetailsComp = 'eventEdit'
         setTimeout(() => (this.modalDetailsShow = true), 19)
       }
-    },
-    contextDay(e) {
-      //right click day
-      return e
     },
     focusToday() {
       this.calendarFocus = this.today
@@ -611,6 +656,9 @@ export default {
     formatEventPreview(e) {
       return formats.eventPreview(e, this.categories)
     },
+    formatTooltipHtml(line1, line2) {
+      return `<strong>${line1}</strong> <br /> (${line2})`
+    },
     getEventById(eid) {
       const eventKey = this.events.findIndex(event => event.id === eid)
       return eventKey > -1 ? this.events[eventKey] : null
@@ -622,6 +670,7 @@ export default {
       console.log(columns)
       this.calendarTableColumns = { ...columns }
     },
+
     setCalendarView(view) {
       this.calendarView = view
       this.$store.dispatch('localStorageWrite', {
@@ -638,8 +687,18 @@ export default {
         isReference: false
       })
     },
-    setToday() {
-      this.calendarFocus = this.today
+    setFocus(focus) {
+      //ensure both picker date and month can parse focused Date
+      const focusSplit = focus.split('-')
+      //if only year is passed, ignore
+      if (focusSplit.length < 2) return
+      //if only year/month passed, append first dom
+      this.calendarFocus = `${focus}${focusSplit.length < 3 ? '-01' : ''}`
+      this.$store.dispatch('localStorageWrite', {
+        key: 'calendarFocus',
+        data: this.calendarFocus,
+        isReference: false
+      })
     },
     showEventsModal() {
       console.log('showEventsModal')
@@ -688,7 +747,7 @@ export default {
         case 'ci':
           this.modalDetailsCompData = {
             item: this.selectedEvent?.eventData?.ciData || null,
-            showDetailBtn: false
+            showDetailsBtn: false
           }
           this.modalDetailsComp = 'ciDetails'
           break
@@ -699,7 +758,7 @@ export default {
           this.modalDetailsCompData = {
             eventData: this.selectedEvent.eventData || null,
             'max-width': 'unset',
-            showDetailBtn: false
+            showDetailsBtn: false
           }
           this.modalDetailsComp = 'eventDetails'
           break
@@ -743,9 +802,8 @@ export default {
 
     // },
     updateRange({ start, end }) {
-      // You could load events from an outside source (like database) now that we have the start and end dates on the calendar
-      this.start = start
-      this.end = end
+      this.start = { ...start }
+      this.end = { ...end }
     },
     updatedSelectedEvent() {
       const event = this.events.find(e => e.id === this.selectedEvent.id)
@@ -757,10 +815,18 @@ export default {
         : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
     },
     viewDay({ date }) {
-      this.calendarFocus = date
       this.setCalendarView('day')
+      //wait until view loads, then pass focus date
+      //because picker updates on input and overrides month update with
+      //first dom
+      this.$nextTick(() => this.setFocus(date))
     }
   },
+  // watch: {
+  //   calendarFocus(focus) {
+  //     console.log(focus)
+  //   }
+  // },
   mounted() {
     this.isLoaded = true
     const lastFilterDrawerState = localStorage.getItem('filterDrawer')
@@ -770,11 +836,10 @@ export default {
         value: true
       })
 
-    const calMonthHeight = localStorage.getItem('calendarMonthHeight')
-    if (calMonthHeight) this.calendarMonthHeight = calMonthHeight
+    this.calendarMonthHeight =
+      localStorage.getItem('calendarMonthHeight') || this.calHeight
     if (lastFilterDrawerState === 'true' && !this.filterDrawer)
       this.$store.dispatch('toggleStateValue', 'filterDrawer')
-    this.calendarMonthHeight = this.calHeight
 
     const calTableColumns = JSON.parse(
       localStorage.getItem('calendarEventColumns')

@@ -1,0 +1,120 @@
+[
+  {
+    "align": "center",
+    "class": "tableHeader",
+    "icon": "mdi-layers",
+    "eventKey": "ciData",
+    "sortable": false,
+    "text": "ITEM",
+    "value": "item",
+    "subHeaders": [
+      {
+        "text": "Abbr.",
+        "align": "start",
+        "sortable": true,
+        "value": "abbreviation",
+        "class": "tableHeader",
+        "width": "100px"
+      },
+      {
+        "text": "Name",
+        "align": "start",
+        "sortable": true,
+        "value": "name",
+        "class": "tableHeader"
+      },
+      {
+        "text": "Category",
+        "align": "start",
+        "sortable": true,
+        "value": "categoryName",
+        "class": "tableHeader"
+      }
+    ]
+  },
+  {
+    "align": "center",
+    "class": "tableHeader",
+    "eventKey": "patronData",
+    "icon": "mdi-account",
+    "sortable": false,
+    "text": "PATRON",
+    "value": "patron",
+    "subHeaders": [
+      {
+        "text": "Last",
+        "align": "start",
+        "sortable": true,
+        "value": "last_name",
+        "class": "tableHeader"
+      },
+      {
+        "text": "First",
+        "align": "start",
+        "sortable": true,
+        "value": "first_name",
+        "class": "tableHeader"
+      },
+      {
+        "text": "Email",
+        "align": "start",
+        "sortable": true,
+        "value": "email",
+        "class": "tableHeader"
+      },
+      {
+        "text": "Barcode",
+        "align": "start",
+        "sortable": true,
+        "value": "barcode",
+        "class": "tableHeader"
+      },
+      {
+        "text": "Phone",
+        "align": "start",
+        "sortable": true,
+        "value": "phone",
+        "class": "tableHeader"
+      }
+    ]
+  },
+  {
+    "align": "center",
+    "class": "tableHeader",
+    "eventKey": "",
+    "icon": "mdi-calendar",
+    "sortable": false,
+    "text": "RESERVATION",
+    "value": "reservation",
+    "subHeaders": [
+      {
+        "text": "Start",
+        "align": "start",
+        "sortable": true,
+        "value": "startDate",
+        "class": "tableHeader"
+      },
+      {
+        "text": "End",
+        "align": "start",
+        "sortable": true,
+        "value": "endDate",
+        "class": "tableHeader"
+      },
+      {
+        "text": "Created",
+        "align": "start",
+        "sortable": true,
+        "value": "created",
+        "class": "tableHeader"
+      },
+      {
+        "text": "Updated",
+        "align": "start",
+        "sortable": true,
+        "value": "updated",
+        "class": "tableHeader"
+      }
+    ]
+  }
+]
