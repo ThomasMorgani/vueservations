@@ -36,7 +36,7 @@
         "field_id": "2"
       },
       {
-        "name": "EIPL BARCODE",
+        "name": "BARCODE",
         "type": "text",
         "value": "3 0626 00329  5777",
         "internal": "1",
@@ -123,7 +123,7 @@
         "field_id": "2"
       },
       {
-        "name": "EIPL BARCODE",
+        "name": "BARCODE",
         "type": "text",
         "value": "3 0626 00329  5777",
         "internal": "1",
@@ -175,7 +175,7 @@
         "field_id": "2"
       },
       {
-        "name": "EIPL BARCODE",
+        "name": "BARCODE",
         "type": "text",
         "value": "3 0626 00329 5736",
         "internal": "1",
@@ -254,7 +254,7 @@
         "field_id": "2"
       },
       {
-        "name": "EIPL BARCODE",
+        "name": "BARCODE",
         "type": "text",
         "value": "3 0626 00329 5736",
         "internal": "1",
@@ -299,7 +299,7 @@
         "field_id": "2"
       },
       {
-        "name": "EIPL BARCODE",
+        "name": "BARCODE",
         "type": "text",
         "value": "3 0626 00364 2218",
         "internal": "1",
@@ -378,7 +378,7 @@
         "field_id": "2"
       },
       {
-        "name": "EIPL BARCODE",
+        "name": "BARCODE",
         "type": "text",
         "value": "3 0626 00364 2218",
         "internal": "1",
@@ -431,7 +431,7 @@
         "field_id": "2"
       },
       {
-        "name": "EIPL BARCODE",
+        "name": "BARCODE",
         "type": "text",
         "value": "3 0626 00329 5819",
         "internal": "1",
@@ -548,7 +548,7 @@
     "date_modified": "2020-03-06 23:03:13",
     "custom_fields": [
       {
-        "name": "EIPL BARCODE",
+        "name": "BARCODE",
         "type": "text",
         "value": "30626003542640",
         "internal": "1",
