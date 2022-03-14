@@ -1,14 +1,13 @@
 import Moment from 'moment'
 import filters from '@/modules/filters.js'
 
-
 const catalogItem = item => {
   //customFields may come from backend as camel or snake
-  const customFields = item.custom_fields ? 
-  [...item.custom_fields] : 
-  item.customFields ? 
-  [...item.customFields] : 
-  [] 
+  const customFields = item.custom_fields
+    ? [...item.custom_fields]
+    : item.customFields
+    ? [...item.customFields]
+    : []
   return {
     abbreviation: item.abbreviation || 'V19',
     category: item.category || null,
@@ -20,7 +19,7 @@ const catalogItem = item => {
     image_data: item.image_data || {},
     internal: item.internal || '0',
     isAvailable: item.isAvailable,
-    lastReservation: item.lastReservation ||null,
+    lastReservation: item.lastReservation || null,
     name: item.name || '',
     notes: item.notes || [],
     reservation_buffer: item.reservation_buffer || null,
@@ -31,21 +30,23 @@ const catalogItem = item => {
 
 const ciLastReservation = (catalogItem, events, patrons) => {
   const now = new Date().getTime()
-  const ciEvents = events.map(event => {
-    return {
-      ...event,
-      endEpoch: new Date(event.end_date).getTime(),
-      startEpoch: new Date(event.start_date).getTime(),
-    }
-  }).filter(event => {
-    return event.item_id == catalogItem.id &&
-    event.startEpoch < now
-  }).sort((a, b) => a.startEpoch - b.startEpoch)
+  const ciEvents = events
+    .map(event => {
+      return {
+        ...event,
+        endEpoch: new Date(event.end_date).getTime(),
+        startEpoch: new Date(event.start_date).getTime()
+      }
+    })
+    .filter(event => {
+      return event.item_id == catalogItem.id && event.startEpoch < now
+    })
+    .sort((a, b) => a.startEpoch - b.startEpoch)
   const lastReservation = ciEvents[ciEvents.length - 1] || null
-  if (lastReservation) lastReservation.patronData = patrons.find(p => p.id == lastReservation.patron_id) || null
+  if (lastReservation)
+    lastReservation.patronData =
+      patrons.find(p => p.id == lastReservation.patron_id) || null
   return lastReservation
- 
-
 }
 
 const cfCiValuesSimple = (fieldId, catalogItems) => {
@@ -65,21 +66,23 @@ const cfCiValuesSimple = (fieldId, catalogItems) => {
   return items
 }
 
-const  contrastingColor = (backgroundColor) => {
-    // attribution
-    // https://convertingcolors.com/blog/article/convert_hex_to_rgb_with_javascript.html
-    
+const contrastingColor = backgroundColor => {
+  // attribution
+  // https://convertingcolors.com/blog/article/convert_hex_to_rgb_with_javascript.html
 
-    if (typeof backgroundColor !== 'string' || backgroundColor?.substring(0, 1) !== '#') {
-      return 'secondary'
-    }
-    const R = parseInt(backgroundColor.substr(1, 2), 16)
-    const G = parseInt(backgroundColor.substr(3, 2), 16)
-    const B = parseInt(backgroundColor.substr(5, 2), 16)
-    const hsp = Math.sqrt(R * R * 0.241 + G * G * 0.691 + B * B * 0.068)
-    return hsp > 220 ? 'primary' : 'secondary'
-    // return hsp > 127.5 ? 'black' : 'white'
+  if (
+    typeof backgroundColor !== 'string' ||
+    backgroundColor?.substring(0, 1) !== '#'
+  ) {
+    return 'secondary'
   }
+  const R = parseInt(backgroundColor.substr(1, 2), 16)
+  const G = parseInt(backgroundColor.substr(3, 2), 16)
+  const B = parseInt(backgroundColor.substr(5, 2), 16)
+  const hsp = Math.sqrt(R * R * 0.241 + G * G * 0.691 + B * B * 0.068)
+  return hsp > 220 ? 'primary' : 'secondary'
+  // return hsp > 127.5 ? 'black' : 'white'
+}
 
 const dateDifference = (date1, date2) => {
   //TODO: need to extend? pass units needed, days, hours, etc
@@ -107,13 +110,12 @@ const eventDetailed = (event, catalogItems, patrons) => {
 
   const currYear = new Date().getFullYear().toString()
   const showYear = currYear !== start.substr(0, 4)
-  
 
   const endDate = timestampHuman(end, showYear, !isAllDay)
   const startDate = timestampHuman(start, showYear, !isAllDay)
   return {
     ciData: filters.getObjectFromArray(catalogItems, 'id', event.item_id), //
-    endDate ,
+    endDate,
     ...event,
     startDate,
     eventStatus: eventStatus({
@@ -128,7 +130,6 @@ const eventDetailed = (event, catalogItems, patrons) => {
     )
   }
 }
-
 
 const eventListSimple = (events, patrons) => {
   const currYear = new Date().getFullYear().toString()
@@ -147,7 +148,6 @@ const eventListSimple = (events, patrons) => {
     return newEvent
   })
 }
-
 
 const eventPreview = event => {
   if (typeof event !== 'object') return
@@ -172,11 +172,11 @@ const eventPreview = event => {
   return data
 }
 
-const eventStatus = ({startDate, endDate}) => {
+const eventStatus = ({ startDate, endDate }) => {
   const end = new Date(endDate).getTime() || now
   const now = new Date().getTime()
   const start = new Date(startDate).getTime() || now
-  const     statusMap= {
+  const statusMap = {
     active: {
       color: 'success',
       label: 'Active',
@@ -207,6 +207,7 @@ const eventStatus = ({startDate, endDate}) => {
 }
 
 const noteListSimple = notes => {
+  if (!notes) return []
   return notes.map(e => {
     const newNote = {
       id: e.id || null,

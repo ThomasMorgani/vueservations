@@ -1,9 +1,9 @@
 <template>
   <v-card flat>
-    <v-card-title class="title justify-center primary--text">
+    <!-- <v-card-title class="title justify-center primary--text">
       RESERVATION HISTORY
-    </v-card-title>
-    <v-card-title class="title primary--text pt-0">
+    </v-card-title> -->
+    <!-- <v-card-title class="title primary--text pt-0">
       {{ catalogItem.name }}
       <v-chip
         label
@@ -12,7 +12,7 @@
         v-text="catalogItem.abbreviation"
         class="font-weight-bold white--text mx-2"
       ></v-chip>
-    </v-card-title>
+    </v-card-title> -->
     <v-card-text>
       <v-sheet
         v-if="tableData.items && tableData.items.length < 1"

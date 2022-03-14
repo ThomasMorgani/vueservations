@@ -1,6 +1,8 @@
 <template>
   <v-card>
+    <modal-title text="RESERVATION HISTORY"></modal-title>
     <v-card-text>
+      <ci-heading :item="catalogItem" class="pl-8 py-4"></ci-heading>
       <eventTableSimple
         :catalogItem="catalogItem"
         :tableData="tableData"
@@ -14,10 +16,12 @@
 </template>
 
 <script>
+import ciHeading from '@/components/catalog/catalogItem/ciHeading.vue'
 import eventTableSimple from '@/components/calendar/eventTableSimple'
 export default {
   name: 'ciReservations',
   components: {
+    ciHeading,
     eventTableSimple
   },
   props: {

@@ -334,6 +334,22 @@
         >
           <imagePreviewModal></imagePreviewModal>
         </v-dialog>
+        <!-- Edit Catalog Item Modal  -->
+        <!-- <v-dialog
+          v-model="modalCatalogItemEdit"
+          persistent
+          max-width="800px"
+          transition="dialog-transition"
+          :key="
+            `ciEdit${String(
+              catalogItemEditing && catalogItemEditing.id
+                ? catalogItemEditing.id
+                : 'none'
+            )}`
+          "
+        >
+          <catalogItemEdit :isNew="true"></catalogItemEdit>
+        </v-dialog> -->
       </v-sheet>
     </v-col>
   </v-row>
@@ -357,6 +373,7 @@ export default {
   components: {
     btnEventTableColumnMenu,
     btnSortMenu,
+    catalogItemEdit: () => import('@/components/catalog/catalogItem/ciEdit'),
     ciDetails: () => import('@/components/catalog/catalogItem/ciDetails'),
     eventEdit: () => import('@/components/calendar/eventEdit'),
     eventDetails: () => import('@/components/calendar/eventDetails'),
@@ -443,6 +460,7 @@ export default {
   computed: {
     ...mapState({
       catalogItems: state => state.catalogItems,
+      catalogItemEditing: state => state.catalogItemEditing,
       categories: state => state.categories,
       defaultModalProps: state => state.defaultModalProps,
       events: state => state.events,
@@ -451,6 +469,7 @@ export default {
       filterRangeDate: state => state.filterRangeDate,
       filterSearch: state => state.filterSearch,
       imagePreviewData: state => state.imagePreviewData,
+      modalCatalogItemEdit: state => state.modalCatalogItemEdit,
       modalImageFullPreview: state => state.modalImageFullPreview,
       patrons: state => state.patrons
     }),

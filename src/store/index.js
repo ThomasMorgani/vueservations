@@ -85,7 +85,7 @@ export default new Vuex.Store({
     snackbarState: false,
     sort: {
       direction: 1, //1 asc, =1 desc
-      value: 'event',   //value to be sorted
+      value: 'event' //value to be sorted
     },
     sortOptions: {
       ci: {
@@ -147,7 +147,7 @@ export default new Vuex.Store({
         text: 'STATUS UNKNOWN',
         value: 'unkown'
       }
-    },
+    }
   },
   getters: {
     appSettingsByName(state) {
@@ -185,7 +185,7 @@ export default new Vuex.Store({
         'filterRangeDate',
         'filterSearch',
         'filterStatus',
-        'filterVisibility',
+        'filterVisibility'
       ]
       names.forEach(n =>
         state[n] && state[n].length > 0
@@ -450,6 +450,9 @@ export default new Vuex.Store({
         getters?.appSettingsByName?.Default_reservation_length.setting || null
       newItem.status = 'enabled'
 
+      //RETAIN NAME IF SET, MAY COME FROM USER ADDING FROM UNFOUND AUTOCOMPLETE SEARCH
+      newItem.name = state.catalogItemEditing.name || ''
+
       this.dispatch('setStateValue', {
         key: 'catalogItemEditing',
         value: { ...newItem }
@@ -472,7 +475,7 @@ export default new Vuex.Store({
     ciEditingcfEditingSet({ commit }, data) {
       return new Promise(resolve => {
         commit('COMMIT_CUSTOM_FIELDS_Editing', data)
-         resolve()
+        resolve()
       })
     },
     categoryDelete({ commit, dispatch, state }, data) {

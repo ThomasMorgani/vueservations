@@ -1,8 +1,6 @@
 <template>
   <v-card>
-    <v-card-title class="justify-center"
-      ><ModalTitleText text="NEW FIELD"></ModalTitleText
-    ></v-card-title>
+    <ModalTitle text="NEW FIELD"></ModalTitle>
     <v-card-text>
       <v-row dense>
         <v-col cols="12">

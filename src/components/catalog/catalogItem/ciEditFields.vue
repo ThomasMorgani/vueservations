@@ -12,12 +12,10 @@
         class="catalogCustomfield"
       ></catalogCustomfield>
     </v-dialog>
-    <v-card-title class="justify-center title primary--text outlined">
-      <ModalTitleText
-        :text="catalogItemEditing.id ? `EDIT DETAILS` : 'ADD FIELDS'"
-      ></ModalTitleText>
-      {{
-    }}</v-card-title>
+    <ModalTitle
+      :text="catalogItemEditing.id ? `EDIT DETAILS` : 'ADD FIELDS'"
+    ></ModalTitle>
+
     <v-card-text class="modalBody">
       <template
         v-if="

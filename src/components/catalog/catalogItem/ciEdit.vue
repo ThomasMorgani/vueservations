@@ -611,6 +611,11 @@ export default {
   methods: {
     cancel() {
       this.loading = null
+      //CLEAR ANY VALUES FROM ciEditing
+      this.$store.dispatch('setStateValue', {
+        key: 'catalogItemEditing',
+        value: {}
+      })
       this.$store.dispatch('toggleModalCatalogItemEdit')
     },
     colorPickCancel() {
@@ -768,6 +773,10 @@ export default {
 
   mounted() {
     if (!this.catalogItemEditing?.id) {
+      this.$store.dispatch('catalogItemNew', this.$vuetify)
+    }
+    //IF ADDING FROM AUTOCOMPLETE DROPDOWN, SET NAME TO QUERY
+    if (this.catalogItemEditing?.id) {
       this.$store.dispatch('catalogItemNew', this.$vuetify)
     }
     this.setItemEditingValues(this.catalogItemEditing)

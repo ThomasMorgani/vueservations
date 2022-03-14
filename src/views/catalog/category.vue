@@ -1,36 +1,44 @@
 <template>
   <v-card flat>
-    <v-card-title
-      class="title primary--text font-weight-bold d-flex align-center pb-0"
-    >
-      CATEGORIES
-      <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        name="Search"
-        label="Search"
-        outlined
-        dense
-        clearable
-        prepend-inner-icon="mdi-feature-search"
-        hide-details
-        color="primary"
-      ></v-text-field>
-      <BtnWithTooltip
-        :btnClass="['mx-4']"
-        :btnProps="{ icon: true, color: 'primary' }"
-        :iconProps="{ icon: 'mdi-sticker-plus' }"
-        :tooltipProps="{ disabled: false, color: 'primary', top: true }"
-        :tooltipText="'Add Category'"
-        @click="categoryEdit"
-      ></BtnWithTooltip>
+    <v-card-title class="d-flex align-center justify-space-between pb-0">
+      <v-sheet
+        color="transparent"
+        class="text-h6 primary--text font-weight-bold "
+      >
+        CATEGORIES
+      </v-sheet>
+      <v-sheet color="transparent" max-width="600" width="100%" class="d-flex">
+        <v-text-field
+          v-model="search"
+          clearable
+          color="primary"
+          dense
+          hide-details
+          label="Search"
+          name="Search"
+          outlined
+          prepend-inner-icon="mdi-feature-search"
+        ></v-text-field>
+        <BtnWithTooltip
+          :btnClass="['mx-4']"
+          :btnProps="{ icon: true, color: 'primary' }"
+          :iconProps="{ icon: 'mdi-sticker-plus' }"
+          :tooltipProps="{ disabled: false, color: 'primary', top: true }"
+          :tooltipText="'Add Category'"
+          @click="categoryEdit"
+        ></BtnWithTooltip>
+      </v-sheet>
     </v-card-title>
 
     <v-card-text class="pt-0">
-      <categoryList
-        :categories="categoriesDisplayed"
-        @itemClicked="categoryEdit"
-      ></categoryList>
+      <v-row fill-height align="start" justify="center" dense no-gutters>
+        <v-col cols="12" lg="8" class="pa-0 flex-shrink-1">
+          <categoryList
+            :categories="categoriesDisplayed"
+            @itemClicked="categoryEdit"
+          ></categoryList>
+        </v-col>
+      </v-row>
     </v-card-text>
 
     <!-- Edit Category Modal  -->

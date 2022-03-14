@@ -84,7 +84,7 @@
                   missingItemName="catalog items"
                   btnIcon="mdi-note-plus"
                   btnText="ADD ITEM"
-                  @btnClicked="$store.dispatch('toggleModalCatalogItemEdit')"
+                  @btnClicked="onCiCreate"
                 ></EmptyDataWBtn>
               </template>
             </v-autocomplete>
@@ -425,7 +425,11 @@
     </v-card-actions>
     <!-- PICK UP HERE -->
     <!-- HANDLE ADDING NEW CI ITEM FROM HERE -->
-    <v-dialog :value="ModalCatalogItemEdit" transition="dialog-transition">
+    <v-dialog
+      :value="modalCatalogItemEdit"
+      max-width="800px"
+      transition="dialog-transition"
+    >
       <ciEdit
         :key="modalCiEdit + ''"
         @close="modalCiEdit = false"
@@ -550,7 +554,7 @@ export default {
       events: state => state.events,
       eventEditing: state => state.eventEditing,
       filter: state => state.filter,
-      ModalCatalogItemEdit: state => state.ModalCatalogItemEdit,
+      modalCatalogItemEdit: state => state.modalCatalogItemEdit,
       patrons: state => state.patrons,
       statusData: state => state.statusData
     }),
@@ -944,6 +948,18 @@ export default {
     onCiAdd(newCi) {
       this.ciSelected = newCi
       this.$store.dispatch('toggleModalCatalogItemEdit')
+    },
+    onCiCreate() {
+      //PICK UP HERE
+      console.log(this.$refs?.autocompleteCi)
+      console.log(this.$refs?.autocompleteCi?.lazySearch)
+      this.$store.dispatch('setStateValue', {
+        key: 'catalogItemEditing',
+        value: { name: this.$refs?.autocompleteCi?.lazySearch || '' }
+      })
+      setTimeout(() => {
+        this.$store.dispatch('toggleModalCatalogItemEdit')
+      }, 500)
     },
     onPatronAdd(e) {
       this.patronSelected = e

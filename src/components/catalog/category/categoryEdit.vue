@@ -8,7 +8,12 @@
           <v-col cols="2">
             <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
               <template v-slot:activator="{ on }">
-                <v-avatar v-on="on" :color="color" class="hoverPointer">
+                <v-avatar
+                  v-on="on"
+                  :color="color"
+                  size="75"
+                  class="hoverPointer"
+                >
                   <v-icon color="secondary">mdi-palette</v-icon>
                 </v-avatar>
               </template>
@@ -33,19 +38,28 @@
               <template v-slot:activator="{ on }">
                 <v-sheet v-on="on" color="transparent" max-width="250">
                   <v-switch
-                    :disabled="isDefaultCategory"
-                    :messages="isDefaultCategory ? 'Toggle default on another category to remove.' : `Set default category and remove from: ${defaultCategory.name} `"
-            
+                    :disabled="isDefaultCategory || !id"
+                    :messages="
+                      isDefaultCategory
+                        ? 'Toggle default on another category to remove.'
+                        : id
+                        ? `Set default category and remove from: ${defaultCategory.name} `
+                        : 'Create new category to set as default'
+                    "
                     label="Default Category"
                     :value="isDefaultCategory"
                     @change="setDefaultCategory"
                   ></v-switch>
                 </v-sheet>
               </template>
-              <v-sheet 
-              color="transparent" 
-              v-html=" isDefaultCategory  ? 'Toggle default on another category to remove.' : `Set as default category. <br /> (currently: ${defaultCategory.name})`"
-              class="secondary--text"
+              <v-sheet
+                color="transparent"
+                v-html="
+                  isDefaultCategory
+                    ? 'Toggle default on another category to remove.'
+                    : `Set as default category. <br /> (currently: ${defaultCategory.name})`
+                "
+                class="secondary--text"
               ></v-sheet>
             </v-tooltip>
           </v-col>
@@ -114,11 +128,12 @@
         text
         :color="saveDisabled ? 'primary' : 'warning'"
         @click="cancel"
+        class="mr-4"
         >{{ saveDisabled ? 'CLOSE' : 'CANCEL' }}</v-btn
       >
       <v-btn
         text
-        color="primary"
+        color="success"
         :disabled="saveDisabled"
         :loading="loading === 'save'"
         @click="saveCategory"
