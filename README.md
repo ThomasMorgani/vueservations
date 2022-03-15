@@ -1,21 +1,48 @@
-# vueseravtions
+# VUESERVATION
 
-## Project setup
-```
-npm install
-```
+> A complete, feature rich reservation calendar, customer relation and inventory management system written in Vue.js.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+- Full calendar to create and manage events, tasks and inventory bookings
+- Inventory manager with customizeable data fields, categories and tags.
+- Image gallery
+- Patron management and tracking system.
+- Run locally, dependant free or on server.
+- Public website integration
+- Fully customizeable settings, branding, theming
+- Authentication and user roles (coming in future update)
 
-### Compiles and minifies for production
-```
+<p align="center">
+  <br>
+  <img src="GIF OF SHORT DEMO" width="600" />
+  <br>
+</p>
+
+## Quick start
+
+```bash
+# checkout branch (demo for local client data, master for server)
+git checkout ...
+
+# update any special configurations to src/.env.local.example.js and rename to .env.local.js
+
+
+# serve with hot reload at localhost:8080
+npm run dev
+
+# build for production with minification
 npm run build
+
+# build for production and view the bundle analyzer report
+npm run build --report
+
+# run unit tests
+npm run unit
+
+# run all tests
+npm test
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+## TODO
+
+- [ ] integrate auth and role modules
+- [ ] add theming module
