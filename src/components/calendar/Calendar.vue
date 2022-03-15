@@ -266,7 +266,9 @@
                 height="20"
                 class="d-flex align-center justify-start white--text  text-truncate px-1"
               >
-                <v-chip color="secondary" outlined x-small
+                <!-- TODO: add setting for no chip, outline chip, filled chip -->
+                <!-- :text-color="eventColor(event)" -->
+                <v-chip color="secondary" x-small outlined
                   ><strong>{{ event.ciData.abbreviation }}</strong></v-chip
                 >
                 <span v-html="eventLabel(event)" class="text-truncate"></span>

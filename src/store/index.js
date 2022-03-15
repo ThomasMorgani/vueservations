@@ -423,7 +423,7 @@ export default new Vuex.Store({
         return resolve(true)
       })
     },
-    catalogItemNew({ getters, state }, $vuetify) {
+    catalogItemNew({ getters, state }, {$vuetify, overrides = {}}) {
       const newItem = { ...state.defaultCatalogItem }
       const {
         Default_reservation_length,
@@ -450,12 +450,9 @@ export default new Vuex.Store({
         getters?.appSettingsByName?.Default_reservation_length.setting || null
       newItem.status = 'enabled'
 
-      //RETAIN NAME IF SET, MAY COME FROM USER ADDING FROM UNFOUND AUTOCOMPLETE SEARCH
-      newItem.name = state.catalogItemEditing.name || ''
-
       this.dispatch('setStateValue', {
         key: 'catalogItemEditing',
-        value: { ...newItem }
+        value: { ...newItem, ...overrides }
       })
     },
     //PICK UP HERE, NOT POPULATING NEW CI ITEM FROM EVENT DIALOG

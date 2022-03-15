@@ -427,6 +427,7 @@
     <!-- HANDLE ADDING NEW CI ITEM FROM HERE -->
     <v-dialog
       :value="modalCatalogItemEdit"
+      :key="modalCatalogItemEdit"
       max-width="800px"
       transition="dialog-transition"
     >
@@ -950,17 +951,15 @@ export default {
       this.$store.dispatch('toggleModalCatalogItemEdit')
     },
     onCiCreate() {
-      //PICK UP HERE
-      console.log(this.$refs?.autocompleteCi)
-      console.log(this.$refs?.autocompleteCi?.lazySearch)
-      this.$store.dispatch('setStateValue', {
-        key: 'catalogItemEditing',
-        value: { name: this.$refs?.autocompleteCi?.lazySearch || '' }
+      this.$store.dispatch('catalogItemNew', {
+        $vuetify: this.$vuetify,
+        overrides: { name: this.$refs?.autocompleteCi?.lazySearch || '' }
       })
       setTimeout(() => {
         this.$store.dispatch('toggleModalCatalogItemEdit')
       }, 500)
     },
+
     onPatronAdd(e) {
       this.patronSelected = e
       this.modalPatronEdit = false

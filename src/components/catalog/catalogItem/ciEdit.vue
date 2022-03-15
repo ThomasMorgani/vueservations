@@ -353,10 +353,10 @@
     <!-- EDIT IMAGE -->
     <v-dialog
       v-model="modalImage"
+      :key="modalImage + 'imgModal'"
       max-width="650px"
       persistent
       transition="dialog-transition"
-      :key="modalImage + 'imgModal'"
     >
       <editImageModal
         :originalImageData="image_data"
@@ -485,6 +485,7 @@ export default {
       catalogItems: state => state.catalogItems,
       catalogItemEditing: state => state.catalogItemEditing,
       categories: state => state.categories,
+      defaultCatalogItem: state => state.defaultCatalogItem,
       images: state => state.images,
       modalEditCatalogItemFields: state => state.modalEditCatalogItemFields,
       statusData: state => state.statusData,
@@ -510,6 +511,20 @@ export default {
     customFieldsDisplayed() {
       return this.catalogItemEditing?.customFields
     },
+    fieldsRequired() {
+      let fields = []
+      Object.keys(this.defaultItem).forEach(field => {
+        if (
+          field !== 'id' &&
+          field !== 'customFields' &&
+          field !== 'internal' &&
+          this[field] === this.defaultItem[field]
+        ) {
+          fields.push(field)
+        }
+      })
+      return fields
+    },
     imageDisplayed() {
       //TODO: CREATE GLOBAL (utils/formats) FORMAT IMAGE FUNCTION TO PROPERLY SET SRC
       return this.image_data?.srcType === 'url'
@@ -532,7 +547,7 @@ export default {
             // this.originalValues[field] &&
             // this[field] &&
             // this[field].id &&
-            if (this?.[field]?.id !== this.catalogItemEditing[field].id) {
+            if (this?.[field]?.id !== this.catalogItemEditing?.[field]?.id) {
               isChanged = true
             }
           } else {
@@ -543,20 +558,6 @@ export default {
         }
       })
       return isChanged
-    },
-    fieldsRequired() {
-      let fields = []
-      Object.keys(this.defaultItem).forEach(field => {
-        if (
-          field !== 'id' &&
-          field !== 'customFields' &&
-          field !== 'internal' &&
-          this[field] === this.defaultItem[field]
-        ) {
-          fields.push(field)
-        }
-      })
-      return fields
     },
     nameAvailable() {
       const nameMatches = this.catalogItems.find(
@@ -610,12 +611,13 @@ export default {
   },
   methods: {
     cancel() {
-      this.loading = null
-      //CLEAR ANY VALUES FROM ciEditing
       this.$store.dispatch('setStateValue', {
         key: 'catalogItemEditing',
-        value: {}
+        value: { ...this.defaultCatalogItem }
       })
+      this.loading = null
+      //CLEAR ANY VALUES FROM ciEditing
+
       this.$store.dispatch('toggleModalCatalogItemEdit')
     },
     colorPickCancel() {
@@ -772,13 +774,13 @@ export default {
   },
 
   mounted() {
-    if (!this.catalogItemEditing?.id) {
-      this.$store.dispatch('catalogItemNew', this.$vuetify)
-    }
+    // if (!this.catalogItemEditing?.id) {
+    //   this.$store.dispatch('catalogItemNew', this.$vuetify)
+    // }
     //IF ADDING FROM AUTOCOMPLETE DROPDOWN, SET NAME TO QUERY
-    if (this.catalogItemEditing?.id) {
-      this.$store.dispatch('catalogItemNew', this.$vuetify)
-    }
+    // if (this.catalogItemEditing?.id) {
+    //   this.$store.dispatch('catalogItemNew', this.$vuetify)
+    // }
     this.setItemEditingValues(this.catalogItemEditing)
   }
 }

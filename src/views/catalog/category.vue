@@ -53,6 +53,7 @@
 
     <v-dialog
       v-model="modalAction"
+      :key="modalAction"
       scrollable
       persistent=""
       max-width="700px"
@@ -75,6 +76,7 @@ import { mapState } from 'vuex'
 import categoryEdit from '@/components/catalog/category/categoryEdit'
 import categoryList from '@/components/catalog/category/categoryList'
 export default {
+  name: 'Categories',
   components: {
     categoryEdit,
     categoryList
