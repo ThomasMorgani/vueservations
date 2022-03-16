@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <modal-title text="RESERVATION HISTORY"></modal-title>
     <v-card-text>
       <ci-heading :item="catalogItem" class="pl-8 py-4"></ci-heading>

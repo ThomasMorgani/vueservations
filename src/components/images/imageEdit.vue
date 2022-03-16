@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <v-card-text>
       <imageDetails :imageData="imageData"></imageDetails>
     </v-card-text>
@@ -47,7 +47,7 @@
       max-width="500px"
       transition="dialog-transition"
     >
-      <v-card>
+      <v-card tile>
         <v-card-title primary-title> </v-card-title>
         <v-card-text>
           <v-text-field

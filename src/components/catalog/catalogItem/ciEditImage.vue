@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <imageDetails
       :imageData="imageFile ? imageFile : currentImageData"
     ></imageDetails>

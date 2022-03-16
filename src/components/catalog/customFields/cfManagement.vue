@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <ModalTitle text="NEW FIELD"></ModalTitle>
     <v-card-text>
       <v-row dense>

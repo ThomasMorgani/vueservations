@@ -88,7 +88,7 @@
                 ></btn-with-tooltip>
               </v-sheet>
             </template>
-            <v-card>
+            <v-card tile>
               <v-card-text>
                 <v-slider
                   v-model="calendarMonthHeight"

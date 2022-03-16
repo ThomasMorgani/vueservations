@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <modal-title text="ADD IMAGE"></modal-title>
     <v-card-text class="d-flex flex-column justify-space-between align-center">
       <p v-if="imageLoading && !imageError">

@@ -17,7 +17,7 @@
         <v-spacer></v-spacer>
         <v-menu bottom>
           <template v-slot:activator="{ on: menu }">
-            <v-tooltip color="primary" top>
+            <v-tooltip color="primary" bottom>
               <template v-slot:activator="{ on: tooltip }">
                 <v-btn icon v-on="{ ...tooltip, ...menu }">
                   <v-icon color="primary">
@@ -51,7 +51,7 @@
           :btnClass="['mx-4']"
           :btnProps="{ icon: true, color: 'primary' }"
           :iconProps="{ icon: 'mdi-image-plus' }"
-          :tooltipProps="{ disabled: false, top: true }"
+          :tooltipProps="{ disabled: false, bottom: true }"
           :tooltipText="'Add Image'"
           @click="newImage()"
         ></BtnWithTooltip>

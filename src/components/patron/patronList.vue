@@ -21,7 +21,7 @@
         :btnClass="['mx-4']"
         :btnProps="{ icon: true, color: 'primary' }"
         :iconProps="{ icon: 'mdi-account-plus' }"
-        :tooltipProps="{ disabled: false, top: true }"
+        :tooltipProps="{ disabled: false, bottom: true }"
         :tooltipText="'Add Patron'"
         @click="patronAdd()"
       ></BtnWithTooltip>

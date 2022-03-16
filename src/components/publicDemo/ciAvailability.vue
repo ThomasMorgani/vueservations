@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <modal-title text="CHECK AVAILABILITY"></modal-title>
     <v-card-text class="pt-4">
       <v-row dense align="center" justify="start">

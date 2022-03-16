@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <v-card-title class="justify-center error--text title">
       CONFIRM DELETE
     </v-card-title>

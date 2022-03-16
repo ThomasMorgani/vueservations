@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <modal-title :text="id ? 'EDIT CATEGORY' : 'ADD CATEGORY'"></modal-title>
 
     <v-card-text class="pt-4">
@@ -70,7 +70,7 @@
         max-width="500px"
         transition="dialog-transition"
       >
-        <v-card>
+        <v-card tile>
           <v-card-title class="justify-center title error--text">
             CONFIRM DELETE
           </v-card-title>

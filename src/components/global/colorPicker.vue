@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <modal-title text="COLOR SELECT"> </modal-title>
     <v-card-text>
       <v-select

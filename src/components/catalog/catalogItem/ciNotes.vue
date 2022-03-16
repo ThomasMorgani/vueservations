@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <modal-title text="NOTES LOG"></modal-title>
     <v-card-text>
       <v-data-table
@@ -28,7 +28,7 @@
                 mdi-delete
               </v-icon>
             </template>
-            <v-card>
+            <v-card tile>
               <v-card-title class="title primary--text">
                 CONFIRM DELETE
               </v-card-title>

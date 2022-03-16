@@ -374,7 +374,7 @@
       transition="dialog-transition"
     >
       <!--TODO: Move to Component -->
-      <v-card>
+      <v-card tile>
         <v-card-title class="justify-center title error--text"
           >CONFIRM DELETE</v-card-title
         >

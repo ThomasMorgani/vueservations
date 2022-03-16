@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <modal-title :text="`${id ? 'EDIT' : 'ADD NEW'} RESERVATION`"></modal-title>
     <v-card-text style="max-width: 1000px; max-height: 70vh; overflow-y: auto;">
       <v-form ref="form" v-model="valid">

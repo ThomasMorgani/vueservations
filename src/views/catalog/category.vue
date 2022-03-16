@@ -23,7 +23,7 @@
           :btnClass="['mx-4']"
           :btnProps="{ icon: true, color: 'primary' }"
           :iconProps="{ icon: 'mdi-sticker-plus' }"
-          :tooltipProps="{ disabled: false, color: 'primary', top: true }"
+          :tooltipProps="{ disabled: false, color: 'primary', bottom: true }"
           :tooltipText="'Add Category'"
           @click="categoryEdit"
         ></BtnWithTooltip>

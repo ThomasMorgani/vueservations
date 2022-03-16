@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <v-card-title class="title justify-center primary--text">
       PATRON HISTORY
     </v-card-title>

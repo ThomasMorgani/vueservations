@@ -23,7 +23,7 @@
       </v-btn> -->
     </template>
 
-    <v-card>
+    <v-card tile>
       <v-card-title class="justify-center text-h5 primary secondary--text">
         RESET DEMO
       </v-card-title>
@@ -85,7 +85,7 @@
                       RESET DEMO</v-btn
                     >
                   </template>
-                  <v-card>
+                  <v-card tile>
                     <v-card-title
                       class="justify-center text-h5 primary secondary--text"
                     >
@@ -203,7 +203,7 @@
                     }}
                   </v-btn>
                 </template>
-                <v-card>
+                <v-card tile>
                   <v-card-title
                     class="justify-center text-h5 primary secondary--text"
                   >

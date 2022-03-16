@@ -93,12 +93,11 @@ export default {
       modalImageFullPreview: state => state.modalImageFullPreview,
       settings: state => state.appSettings,
       filterDrawer: state => state.filterDrawer
-    }),
-
+    })
   },
   methods: {
     catalogItemAdd() {
-      this.$store.dispatch('catalogItemNew', this.$vuetify)
+      this.$store.dispatch('catalogItemNew', { $vuetify: this.$vuetify })
       setTimeout(() => {
         this.$store.dispatch('toggleModalCatalogItemEdit')
       }, 500)

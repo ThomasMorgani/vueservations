@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <v-card-title class="justify-center title primary--text"
       >EDIT NOTE</v-card-title
     >

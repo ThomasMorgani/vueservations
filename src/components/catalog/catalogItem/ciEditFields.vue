@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     <v-dialog
       v-model="modalCatalogCustomfield"
       persistent
@@ -126,7 +126,7 @@
                 @update:search-input="cfEditingSearchInput = $event"
               >
                 <template #no-data>
-                  <v-card>
+                  <v-card tile>
                     <v-card-text class="d-flex flex-column align-center">
                       <p class="">
                         No Fields found.

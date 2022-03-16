@@ -1,8 +1,8 @@
 <template>
-  <v-card>
-    <v-card-title class="headline primary--text justify-center"
-      >EDIT PATRON</v-card-title
-    >
+  <v-card tile>
+    <modal-title
+      :text="`${patronEditing && patronEditing.id ? 'EDIT' : 'ADD'} PATRON`"
+    ></modal-title>
     <v-card-text
       style="max-height: 600px;"
       :class="{ 'pa-8': $vuetify.breakpoint.smAndUp }"
@@ -105,7 +105,9 @@
 
 <script>
 import { mapState } from 'vuex'
+import modalTitle from '../global/modalTitle.vue'
 export default {
+  components: { modalTitle },
   name: 'patronEdit',
   data: () => ({
     barcode: null,

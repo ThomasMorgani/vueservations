@@ -9,7 +9,7 @@
         :btnClass="['mx-4']"
         :btnProps="{ disabled: true, icon: true, color: 'primary' }"
         :iconProps="{ icon: 'mdi-puzzle-plus' }"
-        :tooltipProps="{ disabled: false, top: true }"
+        :tooltipProps="{ disabled: false, bottom: true }"
         :tooltipText="'Add Setting'"
         @click="settingAdd"
       ></BtnWithTooltip>
@@ -19,53 +19,50 @@
       class="pt-0"
       v-if="currentSettings && Object.keys(currentSettings).length > 0"
     >
-
-<v-row justify="center">
-<v-col cols="12" md="10" lg="9"> 
-  
-      <!-- <newSetting></newSetting> -->
-      <Setting
-        :setting="currentSettings.Default_reservation_buffer"
-        :currentValue="currentSettings.Default_reservation_buffer.currentValue"
-        class="mt-4"
-        @saveSetting="settingSave"
-        @updateSetting="settingUpdate"
-      >
-        <v-text-field
-          :value="currentSettings.Default_reservation_buffer.currentValue"
-          min="0"
-          type="number"
-          @input="
-            settingUpdate({
-              setting: 'Default_reservation_buffer',
-              value: $event
-            })
-          "
-        ></v-text-field>
-      </Setting>
-      <Setting
-        :setting="currentSettings.Default_reservation_length"
-        class="mt-4"
-        @saveSetting="settingSave"
-        @updateSetting="settingUpdate"
-      >
-        <v-text-field
-          v-model="currentSettings.Default_reservation_length.currentValue"
-          min="0"
-          type="number"
-          @input="
-            settingUpdate({
-              setting: 'Default_reservation_length',
-              value: $event
-            })
-          "
-        ></v-text-field>
-      </Setting>
-  
-</v-col>
-
-</v-row>
-
+      <v-row justify="center">
+        <v-col cols="12" md="10" lg="9">
+          <!-- <newSetting></newSetting> -->
+          <Setting
+            :setting="currentSettings.Default_reservation_buffer"
+            :currentValue="
+              currentSettings.Default_reservation_buffer.currentValue
+            "
+            class="mt-4"
+            @saveSetting="settingSave"
+            @updateSetting="settingUpdate"
+          >
+            <v-text-field
+              :value="currentSettings.Default_reservation_buffer.currentValue"
+              min="0"
+              type="number"
+              @input="
+                settingUpdate({
+                  setting: 'Default_reservation_buffer',
+                  value: $event
+                })
+              "
+            ></v-text-field>
+          </Setting>
+          <Setting
+            :setting="currentSettings.Default_reservation_length"
+            class="mt-4"
+            @saveSetting="settingSave"
+            @updateSetting="settingUpdate"
+          >
+            <v-text-field
+              v-model="currentSettings.Default_reservation_length.currentValue"
+              min="0"
+              type="number"
+              @input="
+                settingUpdate({
+                  setting: 'Default_reservation_length',
+                  value: $event
+                })
+              "
+            ></v-text-field>
+          </Setting>
+        </v-col>
+      </v-row>
     </v-card-text>
   </v-card>
 </template>

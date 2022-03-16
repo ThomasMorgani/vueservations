@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card tile>
     IMAGES DETAILED
   </v-card>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="primary--text">
+  <v-card tile class="primary--text">
     <v-card-title> {{ setting.name.replaceAll('_', ' ') }}</v-card-title>
     <v-card-text>
       <p>{{ setting.description }}</p>

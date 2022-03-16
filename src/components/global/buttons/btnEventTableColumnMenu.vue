@@ -13,7 +13,7 @@
         ></btn-with-tooltip>
       </v-sheet>
     </template>
-    <v-card>
+    <v-card tile>
       <v-card-text class="py-0">
         <v-list dense flat tile>
           <template v-for="colGroup in Object.keys(calendarTableColumnTypes)">

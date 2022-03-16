@@ -21,7 +21,7 @@
         :btnClass="['mx-4']"
         :btnProps="{ icon: true, color: 'primary' }"
         :iconProps="{ icon: 'mdi-card-plus-outline' }"
-        :tooltipProps="{ disabled: false, top: true }"
+        :tooltipProps="{ disabled: false, bottom: true }"
         :tooltipText="'Add New Field'"
         @click="fieldAdd()"
       ></BtnWithTooltip>
