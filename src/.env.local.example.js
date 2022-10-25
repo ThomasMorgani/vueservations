@@ -2,7 +2,7 @@ export { apiSettings }
 
 //All Urls should include trailing forward slash (/)
 const apiSettings = {
-  appUrl: 'staff.eipl.org/reservations', //URL OF CLIENT WEB APP
+  appUrl: '', //URL OF CLIENT WEB APP
   authUrl: '', //URL OF AUTH ENDPOINT
   baseUrl: '', //BASE URL OF API REQUESTS
   fqdn: '', //BASE FQDN
