@@ -1,3 +1,72 @@
+<script>
+import { mapState } from 'vuex'
+import catalogItemList from '@/components/catalog/catalogItem/ciList'
+import catalogItemEdit from '@/components/catalog/catalogItem/ciEdit'
+import filterBtn from '@/components/global/buttons/btnFilterDrawerToggle'
+import imagePreviewModal from '@/components/images/imagePreviewModal'
+export default {
+  name: 'catalog',
+  components: {
+    catalogItemList,
+    catalogItemEdit,
+    filterBtn,
+    imagePreviewModal
+  },
+  data: () => ({
+    editCategoryData: {
+      id: null,
+      color: 'primary',
+      name: null
+    },
+    viewLabels: {
+      overview: 'OVERVIEW',
+      catalog: 'CATALOG',
+      category: 'CATEGORIES'
+    }
+  }),
+  computed: {
+    ...mapState({
+      catalogView: state => state.catalogView,
+      catalogItemEditing: state => state.catalogItemEditing,
+      ciFieldsEditing: state => state.ciFieldsEditing,
+      categoryEditing: state => state.categoryEditing,
+      filterDrawer: state => state.filterDrawer,
+      imagePreviewData: state => state.imagePreviewData,
+      modalCatalogItemEdit: state => state.modalCatalogItemEdit,
+      modalCategoryEdit: state => state.modalCategoryEdit,
+      modalImageFullPreview: state => state.modalImageFullPreview,
+      settings: state => state.appSettings
+    })
+  },
+  methods: {
+    catalogItemAdd() {
+      this.$store.dispatch('catalogItemNew', { $vuetify: this.$vuetify })
+      setTimeout(() => {
+        this.$store.dispatch('toggleModalCatalogItemEdit')
+      }, 500)
+    },
+    categoryAdd() {
+      this.editCategoryModal = true
+      this.$store.dispatch('setStateValue', {
+        key: 'categoryEditing',
+        value: null
+      })
+      this.$store.dispatch('toggleModalEditCategory')
+    }
+  },
+  mounted() {
+    const lastFilterDrawerState = localStorage.getItem('filterDrawer')
+    if (lastFilterDrawerState === null && this.$vuetify.breakpoint.lgAndUp)
+      this.$store.dispatch('setStateValue', {
+        key: 'filterDrawer',
+        value: true
+      })
+
+    if (lastFilterDrawerState === 'true' && !this.filterDrawer)
+      this.$store.dispatch('toggleStateValue', 'filterDrawer')
+  }
+}
+</script>
 <template>
   <v-row
     fill-height
@@ -53,76 +122,5 @@
     </v-dialog>
   </v-row>
 </template>
-
-<script>
-import { mapState } from 'vuex'
-import catalogItemList from '@/components/catalog/catalogItem/ciList'
-import catalogItemEdit from '@/components/catalog/catalogItem/ciEdit'
-import filterBtn from '@/components/global/buttons/btnFilterDrawerToggle'
-import imagePreviewModal from '@/components/images/imagePreviewModal'
-export default {
-  name: 'catalog',
-  components: {
-    catalogItemList,
-    catalogItemEdit,
-    filterBtn,
-    imagePreviewModal
-  },
-  data: () => ({
-    editCategoryData: {
-      id: null,
-      color: 'primary',
-      name: null
-    },
-    viewLabels: {
-      overview: 'OVERVIEW',
-      catalog: 'CATALOG',
-      category: 'CATEGORIES'
-    }
-  }),
-  computed: {
-    ...mapState({
-      catalogView: state => state.catalogView,
-      catalogItemEditing: state => state.catalogItemEditing,
-      ciFieldsEditing: state => state.ciFieldsEditing,
-      categoryEditing: state => state.categoryEditing,
-      imagePreviewData: state => state.imagePreviewData,
-      modalCatalogItemEdit: state => state.modalCatalogItemEdit,
-
-      modalCategoryEdit: state => state.modalCategoryEdit,
-      modalImageFullPreview: state => state.modalImageFullPreview,
-      settings: state => state.appSettings,
-      filterDrawer: state => state.filterDrawer
-    })
-  },
-  methods: {
-    catalogItemAdd() {
-      this.$store.dispatch('catalogItemNew', { $vuetify: this.$vuetify })
-      setTimeout(() => {
-        this.$store.dispatch('toggleModalCatalogItemEdit')
-      }, 500)
-    },
-    categoryAdd() {
-      this.editCategoryModal = true
-      this.$store.dispatch('setStateValue', {
-        key: 'categoryEditing',
-        value: null
-      })
-      this.$store.dispatch('toggleModalEditCategory')
-    }
-  },
-  mounted() {
-    const lastFilterDrawerState = localStorage.getItem('filterDrawer')
-    if (lastFilterDrawerState === null && this.$vuetify.breakpoint.lgAndUp)
-      this.$store.dispatch('setStateValue', {
-        key: 'filterDrawer',
-        value: true
-      })
-
-    if (lastFilterDrawerState === 'true' && !this.filterDrawer)
-      this.$store.dispatch('toggleStateValue', 'filterDrawer')
-  }
-}
-</script>
 
 <style></style>

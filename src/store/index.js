@@ -64,6 +64,8 @@ export default new Vuex.Store({
     filterVisibility: '',
     images: [],
     imagePreviewData: {},
+    isDemo: process?.env?.VUE_APP_IS_DEMO === 'true',
+    isLocalStore: process?.env?.VUE_APP_STORE === 'local',
     modalCatalogCustomfield: false,
     modalImageFullPreview: false,
     modalCatalogItemEdit: false,
@@ -251,19 +253,42 @@ export default new Vuex.Store({
         )
       })
     },
-
-    initializeApp({ commit }) {
-      return new Promise(resolve => {
-        Object.keys(defaultData).forEach(key => {
-          const localData = localStorage.getItem(key)
-          const data =
-            localData && localData !== 'null' && localData !== 'undefined'
-              ? JSON.parse(localData)
-              : defaultData[key]
-          commit('setStateValue', { key: key, value: data })
+    async appInitialize({ dispatch, state }) {
+      if (!state.isLocalStore && !state.isDemo) {
+        await dispatch('appDataLoad')
+        return true
+      } else {
+        return new Promise(resolve => {
+          dispatch('appDataLoadLocal')
+          resolve()
         })
-        return resolve()
+      }
+    },
+    async appDataLoad({ commit, dispatch }) {
+      try {
+        const data = await dispatch('apiCall', {
+          endpoint: ''
+        })
+        if (data) {
+          Object.keys(data).forEach(key => {
+            commit('setStateValue', { key: key, value: data[key] })
+          })
+        }
+      } catch (e) {
+        console.log('error loading app data: ', e)
+        return e
+      }
+    },
+    appDataLoadLocal({ commit }) {
+      Object.keys(defaultData).forEach(key => {
+        const localData = localStorage.getItem(key)
+        const data =
+          localData && localData !== 'null' && localData !== 'undefined'
+            ? JSON.parse(localData)
+            : defaultData[key]
+        commit('setStateValue', { key: key, value: data })
       })
+      return true
     },
     appDataDelete({ dispatch, commit, state }, datasetsDeleting) {
       return new Promise(resolve => {
@@ -423,7 +448,7 @@ export default new Vuex.Store({
         return resolve(true)
       })
     },
-    catalogItemNew({ getters, state }, {$vuetify, overrides = {}}) {
+    catalogItemNew({ getters, state }, { $vuetify, overrides = {} }) {
       const newItem = { ...state.defaultCatalogItem }
       const {
         Default_reservation_length,

@@ -53,19 +53,15 @@ export default {
         key: 'content',
         value: contentState
       })
-      this.isLoaded = true
     }
   },
-  created() {
+  async created() {
     // const lastRoute = localStorage.getItem('lastRoute') || 'calendar'
     // if (lastRoute && lastRoute !== this.$route.name)
     //   this.$router.push({ name: lastRoute })
-    this.$store.dispatch('initializeApp')
-  },
-  mounted() {
-    setTimeout(() => {
-      this.setDimmensions()
-    }, 1500)
+    await this.$store.dispatch('appInitialize')
+    this.setDimmensions()
+    this.isLoaded = true
   }
 }
 </script>

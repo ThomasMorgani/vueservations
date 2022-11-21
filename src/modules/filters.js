@@ -36,21 +36,22 @@ export default {
     if (!Array.isArray(arr)) {
       return false
     } else {
-      const result = arr.find(el => el[key] === val)
+      const result = arr.find(el => el[key] == val)
       return returnVal ? result[returnVal] : result
     }
   },
   isAllDay(timestamp1, timestamp2) {
     if (!timestamp1 || !timestamp2) return false
     const timeOne = timestamp1.split(' ')[1] || timestamp1
-    const timeTwo= timestamp2.split(' ')[1] || timestamp2
-    return (timeOne.substring(0, 5) === '00:00' && timeTwo.substring(0, 5) === '00:00') 
-
+    const timeTwo = timestamp2.split(' ')[1] || timestamp2
+    return (
+      timeOne.substring(0, 5) === '00:00' && timeTwo.substring(0, 5) === '00:00'
+    )
   },
   testRangeOverlap(startDate1, endDate1, startDate2, endDate2, buffer) {
-     for (let arg of arguments) {
-       if (arg === undefined) return false
-     }
+    for (let arg of arguments) {
+      if (arg === undefined) return false
+    }
     buffer = parseInt(buffer)
     if (isNaN(buffer)) buffer = 0
     // DATES 1
@@ -63,14 +64,14 @@ export default {
     //THIS IS FOR CUSTOM BUFFER PERIODS
     //TODO: make this a setting
     searchStartDate1.setDate(searchStartDate1.getDate() - buffer)
-    
+
     // DATES 2
     let searchStartDate2 =
-    typeof startDate2.getMonth === 'function'
-    ? startDate2
-    : new Date(startDate2)
+      typeof startDate2.getMonth === 'function'
+        ? startDate2
+        : new Date(startDate2)
     let searchEndDate2 =
-    typeof endDate2.getMonth === 'function' ? endDate2 : new Date(endDate2)
+      typeof endDate2.getMonth === 'function' ? endDate2 : new Date(endDate2)
     searchEndDate1.setDate(searchEndDate1.getDate() + buffer)
 
     const searchRange1 = moment.range(searchStartDate1, searchEndDate1)

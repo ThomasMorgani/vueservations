@@ -156,12 +156,17 @@ export default {
   methods: {
     formatcatalogItemData(catalogItem) {
       //format data to be passed to list item
-      if (catalogItem && catalogItem.name) {
+      if (catalogItem?.name) {
         const category = filters.categoryById(
           catalogItem.category,
           this.categories
         )
         catalogItem.categoryName = category.name || 'MISC' //TODO: handle this? default cat?
+
+        //work this into format
+        if (catalogItem?.image_data?.src)
+          catalogItem.image_data.src = `${process.env.VUE_APP_MEDIA_URL}images/${catalogItem.image_data.src}`
+
         catalogItem.lastReservation = formats.ciLastReservation(
           catalogItem,
           this.events,

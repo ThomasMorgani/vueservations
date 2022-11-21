@@ -95,7 +95,6 @@ export default {
     ...mapState({
       catalogItems: state => state.catalogItems,
       catalogView: state => state.catalogView,
-
       filterCategory: state => state.filterCategory,
       settings: state => state.appSettings
     }),

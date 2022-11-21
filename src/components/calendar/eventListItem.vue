@@ -68,9 +68,11 @@
                 </template>
                 <span>Patron Details</span>
               </v-tooltip>
-
-              {{ event.patronData.last_name || '' }},
-              {{ event.patronData.first_name || '' }}
+              {{
+                event.patronData
+                  ? `${event.patronData.last_name}, ${event.patronData.first_name}`
+                  : 'UNK PATRON'
+              }}
             </v-sheet>
             <v-sheet
               color="transparent"

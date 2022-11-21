@@ -1,9 +1,11 @@
 import axios from 'axios'
-import { apiSettings } from '@/.env.local.js'
 
 export default {
   callApi(uri, postData) {
-    let url = apiSettings.baseUrl + uri
+    console.log(process)
+    let url = process.env.VUE_APP_API_URL + uri
+    //remove trailing slash
+    if (url[url.length - 1] === '/') url = url.slice(0, -1)
     if (postData) {
       //MOVE THIS TO A SEPERATE API CALL FUNCTION: uploadApi
       // const params = new URLSearchParams();
@@ -42,7 +44,7 @@ export default {
     }
   },
   postApi(uri, postData) {
-    let url = apiSettings.baseUrl + uri
+    let url = process.env.VUE_APP_API_URL + uri
     //MOVE THIS TO A SEPERATE API CALL FUNCTION: uploadApi
     // const params = new URLSearchParams();
     // for (let key in postData) {

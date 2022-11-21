@@ -1,6 +1,6 @@
 <template>
   <v-footer color="primary" app dark clipped-right class="d-flex flex-nowrap">
-    <demo-tabs></demo-tabs>
+    <demo-tabs v-if="isDemo"></demo-tabs>
     <v-spacer></v-spacer>
     <v-tabs optional right background-color="primary" slider-color="secondary">
       <v-tab
@@ -15,14 +15,17 @@
 </template>
 
 <script>
-import DemoTabs from '@/components/demo/DemoFooterTabs'
+// import DemoTabs from '@/components/demo/DemoFooterTabs'
 
 export default {
   name: 'footerApp',
   components: {
-    DemoTabs
+    DemoTabs: () => import('@/components/demo/DemoFooterTabs')
   },
   computed: {
+    isDemo() {
+      return this.$store.isDemo
+    },
     items() {
       return [
         // {

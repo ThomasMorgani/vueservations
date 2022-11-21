@@ -1,111 +1,7 @@
-<template>
-  <v-row
-    fill-height
-    align-start
-    justify="space-between"
-    dense
-    no-gutters
-    class="d-flex flex-column"
-  >
-    <v-col cols="12" class="pa-0 flex-shrink-1">
-      <!-- <v-sheet height="10vh"> -->
-      <v-toolbar height="56" flat color="background" class="mb-4">
-        <v-toolbar-title
-          class="title primary--text font-weight-bold d-flex align-center pb-0"
-          >IMAGES</v-toolbar-title
-        >
-        <v-spacer></v-spacer>
-        <v-menu bottom>
-          <template v-slot:activator="{ on: menu }">
-            <v-tooltip color="primary" bottom>
-              <template v-slot:activator="{ on: tooltip }">
-                <v-btn icon v-on="{ ...tooltip, ...menu }">
-                  <v-icon color="primary">
-                    {{ viewData[view].icon }}
-                  </v-icon>
-                </v-btn>
-              </template>
-              <span>VIEW</span>
-            </v-tooltip>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for="viewItem in Object.values(viewData)"
-              :key="viewItem.value"
-              @click="onViewSelect(viewItem)"
-            >
-              <v-tooltip :color="viewItem.disabled ? '' : 'primary'" left>
-                <template v-slot:activator="{ on }">
-                  <v-icon
-                    :color="viewItem.value === view ? 'primary' : 'disabled'"
-                    v-on="on"
-                    >{{ viewItem.icon }}</v-icon
-                  >
-                </template>
-                <span>{{ viewItem.text }}</span>
-              </v-tooltip>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-        <BtnWithTooltip
-          :btnClass="['mx-4']"
-          :btnProps="{ icon: true, color: 'primary' }"
-          :iconProps="{ icon: 'mdi-image-plus' }"
-          :tooltipProps="{ disabled: false, bottom: true }"
-          :tooltipText="'Add Image'"
-          @click="newImage()"
-        ></BtnWithTooltip>
-      </v-toolbar>
-    </v-col>
-    <v-col cols="12" class="pa-0 flex-grow-1">
-      <component
-        :is="view"
-        :view="view"
-        :images="images || []"
-        @imageClicked="onImageClicked"
-        @showPreview="onShowPreview"
-        :style="styleContentHeight"
-      ></component>
-    </v-col>
-    <!--
-  move these dialogs to single, dynamic
-    -->
-    <v-dialog
-      v-model="modalVisible"
-      :key="'m' + modalVisible"
-      max-width="800"
-      transition="dialog-transition"
-    >
-      <component
-        :is="modalComp"
-        v-bind="modalCompData"
-        @closeModal="modalVisible = false"
-        @imageAdded="onImageAdded"
-        @imageClicked="onImageClicked"
-        @imageDeleted="onImageDeleted"
-        @imageEditSaved="onImageEditSaved"
-      ></component>
-    </v-dialog>
-
-    <!-- MODAL IMAGE PREVIEW -->
-    <v-dialog
-      :value="modalImageFullPreview"
-      :key="'ip' + modalImageFullPreview"
-      height="unset"
-      width="unset"
-      transition="dialog-transition"
-      class="imagePreviewDialog"
-      @input="$store.dispatch('toggleModalImageFullPreview')"
-    >
-      <imagePreviewModal></imagePreviewModal>
-    </v-dialog>
-  </v-row>
-</template>
-
 <script>
 import { mapGetters, mapState } from 'vuex'
 import imageEdit from '@/components/images/imageEdit'
-
+import * as formats from '@/modules/formats'
 export default {
   components: {
     imageEdit,
@@ -230,9 +126,118 @@ export default {
   },
   async mounted() {
     this.loading = true
+    const result = await this.$store.dispatch('apiCall', { endpoint: 'image' })
+    console.log(result)
+    if (result?.length > 0) {
+      const images = result.map(i => formats.image(i))
+      this.$store.dispatch('setStateValue', { key: 'images', value: images })
+    }
     this.loading = false
   }
 }
 </script>
+<template>
+  <v-row
+    fill-height
+    align-start
+    justify="space-between"
+    dense
+    no-gutters
+    class="d-flex flex-column"
+  >
+    <v-col cols="12" class="pa-0 flex-shrink-1">
+      <!-- <v-sheet height="10vh"> -->
+      <v-toolbar height="56" flat color="background" class="mb-4">
+        <v-toolbar-title
+          class="title primary--text font-weight-bold d-flex align-center pb-0"
+          >IMAGES</v-toolbar-title
+        >
+        <v-spacer></v-spacer>
+        <v-menu bottom>
+          <template v-slot:activator="{ on: menu }">
+            <v-tooltip color="primary" bottom>
+              <template v-slot:activator="{ on: tooltip }">
+                <v-btn icon v-on="{ ...tooltip, ...menu }">
+                  <v-icon color="primary">
+                    {{ viewData[view].icon }}
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>VIEW</span>
+            </v-tooltip>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="viewItem in Object.values(viewData)"
+              :key="viewItem.value"
+              @click="onViewSelect(viewItem)"
+            >
+              <v-tooltip :color="viewItem.disabled ? '' : 'primary'" left>
+                <template v-slot:activator="{ on }">
+                  <v-icon
+                    :color="viewItem.value === view ? 'primary' : 'disabled'"
+                    v-on="on"
+                    >{{ viewItem.icon }}</v-icon
+                  >
+                </template>
+                <span>{{ viewItem.text }}</span>
+              </v-tooltip>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <BtnWithTooltip
+          :btnClass="['mx-4']"
+          :btnProps="{ icon: true, color: 'primary' }"
+          :iconProps="{ icon: 'mdi-image-plus' }"
+          :tooltipProps="{ disabled: false, bottom: true }"
+          :tooltipText="'Add Image'"
+          @click="newImage()"
+        ></BtnWithTooltip>
+      </v-toolbar>
+    </v-col>
+    <v-col cols="12" class="pa-0 flex-grow-1">
+      <component
+        :is="view"
+        :view="view"
+        :images="images || []"
+        @imageClicked="onImageClicked"
+        @showPreview="onShowPreview"
+        :style="styleContentHeight"
+      ></component>
+    </v-col>
+    <!--
+  move these dialogs to single, dynamic
+    -->
+    <v-dialog
+      v-model="modalVisible"
+      :key="'m' + modalVisible"
+      max-width="800"
+      transition="dialog-transition"
+    >
+      <component
+        :is="modalComp"
+        v-bind="modalCompData"
+        @closeModal="modalVisible = false"
+        @imageAdded="onImageAdded"
+        @imageClicked="onImageClicked"
+        @imageDeleted="onImageDeleted"
+        @imageEditSaved="onImageEditSaved"
+      ></component>
+    </v-dialog>
+
+    <!-- MODAL IMAGE PREVIEW -->
+    <v-dialog
+      :value="modalImageFullPreview"
+      :key="'ip' + modalImageFullPreview"
+      height="unset"
+      width="unset"
+      transition="dialog-transition"
+      class="imagePreviewDialog"
+      @input="$store.dispatch('toggleModalImageFullPreview')"
+    >
+      <imagePreviewModal></imagePreviewModal>
+    </v-dialog>
+  </v-row>
+</template>
 
 <style scoped></style>

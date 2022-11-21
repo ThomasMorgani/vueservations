@@ -269,7 +269,9 @@
                 <!-- TODO: add setting for no chip, outline chip, filled chip -->
                 <!-- :text-color="eventColor(event)" -->
                 <v-chip color="secondary" x-small outlined
-                  ><strong>{{ event.ciData.abbreviation }}</strong></v-chip
+                  ><strong>{{
+                    event.ciData ? event.ciData.abbreviation : 'UNK'
+                  }}</strong></v-chip
                 >
                 <span v-html="eventLabel(event)" class="text-truncate"></span>
                 <v-icon v-if="event.notes" small color="white"
@@ -475,7 +477,7 @@ export default {
       modalImageFullPreview: state => state.modalImageFullPreview,
       patrons: state => state.patrons
     }),
-    ...mapGetters(['categoriesById']),
+    ...mapGetters(['appSettingsByName', 'categoriesById']),
     // calendarFocus: {
     //   get() {
     //     console.log(this.calendarFocus)
@@ -501,7 +503,7 @@ export default {
         this[f] && this[f].length > 0 ? (filtersSet[f] = this[f]) : null
       )
 
-      const eventsFocued = this.events.filter(e => {
+      const eventsFocused = this.events.filter(e => {
         return filters.testRangeOverlap(
           this.start?.date || '',
           this.end?.date || '',
@@ -510,7 +512,7 @@ export default {
         )
       })
 
-      eventsFocued.forEach(e => {
+      eventsFocused.forEach(e => {
         eventsFiltered.push(
           formats.eventDetailed(e, this.catalogItems, this.patrons)
         )
@@ -626,6 +628,13 @@ export default {
     },
     eventColor(e) {
       let item = filters.getObjectFromArray(this.catalogItems, 'id', e.item_id)
+      if (!item) {
+        const {
+          setting: defaultCategory
+        } = this.appSettingsByName.Default_Category
+        const category = this.categories.find(c => c.id == defaultCategory)
+        return category.color
+      }
       return this.filterCategory.length === 1
         ? item.color
         : this.categoriesById[item.category].color
@@ -638,7 +647,7 @@ export default {
         end = timeHuman(v.end.time)
       }
       let label = `
-        <span id="${v.ciData.abbreviation}" class="mx-2 subtitle-2">
+        <span id="${v?.ciData?.abbreviation || 'UNK'}" class="mx-2 subtitle-2">
 
           ${v?.patronData?.last_name || '-'} ${start} - ${end}
 
@@ -656,6 +665,7 @@ export default {
       this.showDetails({ type: 'edit' })
     },
     eventEdit(e) {
+      console.log(e)
       if (e) {
         this.$store.dispatch('setStateValue', {
           key: 'eventEditing',

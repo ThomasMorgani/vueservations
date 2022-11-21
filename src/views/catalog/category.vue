@@ -93,6 +93,7 @@ export default {
       filterCategorySelect: state => state.filterCategorySelect
     }),
     categoriesDisplayed() {
+      if (!this.search) return this.categories
       return this.categories
         ? [...this.categories]
             .filter(i =>

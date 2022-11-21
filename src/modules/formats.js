@@ -134,7 +134,7 @@ const eventDetailed = (event, catalogItems, patrons) => {
 const eventListSimple = (events, patrons) => {
   const currYear = new Date().getFullYear().toString()
   return events.map(e => {
-    const patron = patrons.find(p => p.id === parseInt(e.patron_id))
+    const patron = patrons.find(p => parseInt(p.id) === parseInt(e.patron_id))
     const showYear = currYear !== e.start_date.substr(0, 4)
     const eTime = new Date(e.start_date).getTime()
     const newEvent = {
@@ -204,6 +204,13 @@ const eventStatus = ({ startDate, endDate }) => {
     return statusMap.expired
   }
   return statusMap.active
+}
+
+const image = image => {
+  return {
+    ...image,
+    src: `${process.env.VUE_APP_MEDIA_URL}images/${image.file_name}`
+  }
 }
 
 const noteListSimple = notes => {
@@ -303,6 +310,7 @@ export {
   eventListSimple,
   eventPreview,
   eventStatus,
+  image,
   noteListSimple,
   patronHistorySimple,
   timeHuman,
