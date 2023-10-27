@@ -24,11 +24,8 @@
 - Fully customizeable settings, branding, theming
 - Authentication and user roles (coming in future update)
 
-<p align="center">
-  <br>
-  <img src="GIF OF SHORT DEMO" width="600" />
-  <br>
-</p>
+  ![](https://shared.thomasmorgani.com/media/vueservation-slide-show.gif)
+  
 
 ## Quick start
 
