@@ -13,7 +13,7 @@
 
 <p align="center">
   <br>
-  <img src="GIF OF SHORT DEMO" width="600" />
+  <img src="https://shared.thomasmorgani.com/media/vueservation-slide-show.gif" width="600" />
   <br>
 </p>
 
