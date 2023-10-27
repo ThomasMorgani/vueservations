@@ -24,8 +24,8 @@
 - Fully customizeable settings, branding, theming
 - Authentication and user roles (coming in future update)
 
-  ![](https://shared.thomasmorgani.com/media/vueservation-slide-show.gif)
-  
+
+  <img src="https://shared.thomasmorgani.com/media/vueservation-slide-show.gif" alt="demo slideshow of app" title="demo" heigh="auto" width="500"/>
 
 ## Quick start
 
